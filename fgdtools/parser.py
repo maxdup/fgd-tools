@@ -27,7 +27,6 @@ def FgdParse(file):
 
     reader.seek(0)
 
-    lines = 0
     while not eof:
         current_line = reader.readline()
         if not current_line:
@@ -35,8 +34,6 @@ def FgdParse(file):
 
         class_definition_str = ''
         class_properties_str = ''
-
-        lines += 1
 
         # Skip comments
         while current_line.startswith('//') or not current_line.strip():
@@ -75,7 +72,8 @@ def FgdParse(file):
 
             class_definition_str = class_definition_clean(class_definition_str)
             if class_definition_str:
-                class_definition_parse(class_definition_str)
+                fgd_class = class_definition_parse(class_definition_str)
+                game_data.add_class(fgd_class)
 
         # Get class properties
         if '[' in current_line:
@@ -85,15 +83,20 @@ def FgdParse(file):
                     if current_line.strip().startswith('['):
                         depth += 1
                         current_line = current_line.strip('[')
+
                     elif current_line.strip().startswith(']'):
                         depth -= 1
                         current_line = current_line.strip(']')
+
                     if current_line.strip():
                         class_properties_str += current_line.strip() + '\n'
+
                 current_line = reader.readline()
+
             if class_properties_str and False:
                 print('---------------')
                 print(class_properties_str)
+
     return game_data
 
 
@@ -125,35 +128,22 @@ def class_definition_parse(class_definition):
         for p in data_properties_str:
             data_properties.update(data_property_parse(p))
 
-    if len(entity_args) > 1 and entity_args[1].strip('"'):
-        print(entity_args)
-        fgd_data = fgd.FGD_entity(data_type, data_properties,
-                                  entity_args[0],
-                                  entity_args[1].strip('"'))
-    else:
-        fgd_data = fgd.FGD_data(data_type, data_properties)
-
-    '''
     if data_type == '@include' or \
        data_type == '@mapsize' or \
        data_type == '@AutoVisGroup' or \
        data_type == '@MaterialExclusion':
         fgd_data = fgd.FGD_data(data_type, data_properties)
-    elif data_type == '@BaseClass':
-        pass
-    elif class_definition.startswith('@SolidClass'):
-        pass
-    elif class_definition.startswith('@PointClass'):
-        pass
-    elif class_definition.startswith('@FilterClass'):
-        pass
-    elif class_definition.startswith('@KeyFrameClass'):
-        pass
-    elif class_definition.startswith('@MoveClass'):
-        pass
-    elif class_definition.startswith('@NPCClass'):
-        pass
-    '''
+
+    else:
+        entity_name = entity_args[0].strip()
+        if len(entity_args) == 2:
+            entity_desc = entity_args[1].strip('"').strip()
+        else:
+            entity_desc = ''
+
+        fgd_data = fgd.FGD_entity(data_type, data_properties,
+                                  entity_name, entity_desc)
+
     return fgd_data
 
 
@@ -164,7 +154,8 @@ def data_property_parse(property_str):
     property_params = property_parts[1].strip().strip(')')
 
     if (property_params):
-        property[property_name] = property_params.split(',')
+        property[property_name] = re.split(
+            '[\t\n ]*\,[\t\n ]*', property_params)
     else:
         property[property_name] = []
     return property
