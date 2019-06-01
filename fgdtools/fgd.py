@@ -10,14 +10,16 @@ class FGD():
         self._classes.extend(list(basefgd.classes))
 
     def add_class(self, fgd_class):
+
         # find parents
         if fgd_class.data_properties:
             if 'base' in fgd_class.data_properties:
-                for base in fgd_class.data_properties['base']:
-                    base = next(filter(
+                for p_class in fgd_class.data_properties['base']:
+                    b = next(filter(
                         lambda data: isinstance(data, FGD_entity) and
-                        data.entity_name == base, self._classes), None)
-                    fgd_class.add_parent_data(base)
+                        data.entity_name == p_class, self._classes), None)
+                    if b:
+                        fgd_class.add_parent_data(b)
         self._classes.append(fgd_class)
 
 

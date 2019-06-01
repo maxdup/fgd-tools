@@ -10,7 +10,6 @@ def FgdParse(file):
 
     reader = open(file, "r", encoding="iso-8859-1")
 
-    eof = False
     game_data = fgd.FGD()
 
     # Search for @includes
@@ -27,89 +26,143 @@ def FgdParse(file):
 
     reader.seek(0)
 
-    while not eof:
+    lines = 0
+    class_definition_str = ''
+    class_properties_str = ''
+
+    step = 'definition'
+    square_depth = 0
+
+    while True:
+        lines += 1
+
         current_line = reader.readline()
+
+        # file ended
         if not current_line:
             break
-
-        class_definition_str = ''
-        class_properties_str = ''
-
-        # Skip comments
-        while current_line.startswith('//') or not current_line.strip():
-            current_line = reader.readline()
-
+        # skip comments
+        if current_line.startswith('//'):
+            continue
+        # remove comment
         if '//' in current_line:
             current_line = current_line.split('//')[0]
 
-        # Get class definition
-        if current_line.startswith('@'):
-            class_definition_str += current_line
-            current_line = reader.readline().strip()
-            while True:
-                if '@' in current_line:
-                    current_line_parts = current_line.split('@', 1)
-                    class_definition_str += current_line_parts[0].strip()
-                    if len(current_line_parts) > 1:
-                        current_line = current_line_parts[1]
+        while current_line.strip():
+            reject = True
+            if current_line and '@' in current_line:
+
+                splitted = current_line.split('@', 1)
+
+                # otherwise it's part of a string
+                if splitted[0].count('"') % 2 == 0:
+
+                    reject = False
+                    # before @
+                    if step == 'definition':
+                        class_definition_str += splitted[0]
+                    elif step == 'properties':
+                        class_properties_str += splitted[0]
+
+                    # after @
+                    if len(splitted) == 2:
+                        current_line = splitted[1]
                     else:
                         current_line = ''
-                    break
-                elif '[' in current_line:
-                    current_line_parts = current_line.split('[', 1)
-                    class_definition_str += current_line_parts[0].strip()
-                    if len(current_line_parts) > 1:
-                        current_line = current_line_parts[1]
+
+                    step = 'definition'
+
+                    make_class(game_data,
+                               class_definition_str,
+                               class_properties_str)
+                    class_definition_str = ''
+                    class_properties_str = ''
+
+            if current_line and '[' in current_line and square_depth == 0:
+
+                splitted = current_line.split('[', 1)
+
+                # otherwise it's part of a string
+                if splitted[0].count('"') % 2 == 0:
+
+                    square_depth += 1
+                    reject = False
+
+                    # before [
+                    if step == 'definition':
+                        class_definition_str += splitted[0]
+                    elif step == 'properties':
+                        class_properties_str += splitted[0]
+
+                    # after [
+                    if len(splitted) == 2:
+                        current_line = splitted[1]
                     else:
                         current_line = ''
-                    break
-                elif '//' in current_line:
-                    current_line = current_line.split('//')[0].strip()
-                if current_line:
-                    class_definition_str += current_line
 
-                current_line = reader.readline()
+                    step = 'properties'
 
-            class_definition_str = class_definition_clean(class_definition_str)
-            if class_definition_str:
-                fgd_class = class_definition_parse(class_definition_str)
-                game_data.add_class(fgd_class)
+            if current_line and ']' in current_line and square_depth == 1:
 
-        # Get class properties
-        if '[' in current_line:
-            depth = 0
-            while ']' not in current_line or depth > 1:
-                if not current_line.startswith('//'):
-                    if current_line.strip().startswith('['):
-                        depth += 1
-                        current_line = current_line.strip('[')
+                splitted = current_line.split('@', 1)
 
-                    elif current_line.strip().startswith(']'):
-                        depth -= 1
-                        current_line = current_line.strip(']')
+                # otherwise it's part of a string
+                if splitted[0].count('"') % 2 == 0:
 
-                    if current_line.strip():
-                        class_properties_str += current_line.strip() + '\n'
+                    square_depth = 0
+                    reject = False
 
-                current_line = reader.readline()
+                    # before ]
+                    if step == 'definition':
+                        class_definition_str += splitted[0]
+                    elif step == 'properties':
+                        class_properties_str += splitted[0]
 
-            if class_properties_str and False:
-                print('---------------')
-                print(class_properties_str)
+                    # after ]
+                    if len(splitted) == 2:
+                        current_line = splitted[1]
+                    else:
+                        current_line = ''
+
+                    step = ''
+
+                    make_class(game_data,
+                               class_definition_str,
+                               class_properties_str)
+                    class_definition_str = ''
+                    class_properties_str = ''
+
+            if reject:
+                break
+
+        if current_line:
+            if step == 'definition':
+                class_definition_str += current_line
+
+            elif step == 'properties':
+                square_depth += current_line.count(']')
+                square_depth -= current_line.count('[')
+                class_properties_str += current_line
 
     return game_data
 
 
-def class_definition_clean(class_definition):
-    class_definition = class_definition.strip()
+def make_class(game_data, def_str, prop_str):
+    class_definition = def_str.strip()
     class_definition = class_definition.replace('\n', ' ')
     class_definition = class_definition.replace('\t', ' ')
     class_definition = re.sub(re_string_concat, "", class_definition)
     class_definition = re.sub(re_space_normalize, " ", class_definition)
-    return class_definition
+    if class_definition:
+        c = data_definition_parse(class_definition)
+        if c:
+            game_data.add_class(c)
+
+            # todo parse properties
 
 
-def class_definition_parse(class_definition):
+def data_definition_parse(class_definition):
+
     data_type = class_definition.split(' ', 1)[0].split('(')[0]
     data_properties = {}
     class_definition = class_definition[len(data_type):]
@@ -120,20 +173,20 @@ def class_definition_parse(class_definition):
         class_definition = class_definition.split('=', 1)
         data_properties_str = class_definition[0].strip()
         entity_args = re.split('[\t\n ]*:[\t\n ]"', class_definition[1].strip())
+
     else:
         data_properties_str = class_definition
 
     data_properties_str = re.findall(re_function_like, data_properties_str)
     if data_properties_str:
         for p in data_properties_str:
-            data_properties.update(data_property_parse(p))
+            data_properties.update(data_properties_parse(p))
 
-    if data_type == '@include' or \
-       data_type == '@mapsize' or \
-       data_type == '@AutoVisGroup' or \
-       data_type == '@MaterialExclusion':
+    if data_type == 'include' or \
+       data_type == 'mapsize' or \
+       data_type == 'AutoVisGroup' or \
+       data_type == 'MaterialExclusion':
         fgd_data = fgd.FGD_data(data_type, data_properties)
-
     else:
         entity_name = entity_args[0].strip()
         if len(entity_args) == 2:
@@ -147,11 +200,11 @@ def class_definition_parse(class_definition):
     return fgd_data
 
 
-def data_property_parse(property_str):
+def data_properties_parse(property_str):
     property = {}
     property_parts = property_str.split('(')
     property_name = property_parts[0].strip()
-    property_params = property_parts[1].strip().strip(')')
+    property_params = property_parts[1].strip().strip(')').strip()
 
     if (property_params):
         property[property_name] = re.split(
@@ -159,12 +212,3 @@ def data_property_parse(property_str):
     else:
         property[property_name] = []
     return property
-
-
-def classPropertiesParse(reader, node):
-
-    current_line = reader.readline()
-
-    while ']' not in current_line:
-
-        current_line = reader.readline()
