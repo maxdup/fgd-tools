@@ -1,4 +1,4 @@
-from . import fgd
+from .fgd import *
 import re
 
 re_string_concat = re.compile(r'"[\t\n ]*\+[\t\n ]*"', re.IGNORECASE)
@@ -8,7 +8,8 @@ re_function_like = re.compile(r'[^\( \n\t]*\([^\(]*\)', re.IGNORECASE)
 re_bracketless_return = re.compile(
     r'(?:([^\n]*=[\n\t ]*\[[^\]]*\])+)|\n', re.IGNORECASE)
 
-re_quoteless_colon = re.compile(r':(?=([^"]*"[^"]*")*[^"]*$)', re.IGNORECASE)
+re_quoteless_colon = re.compile(
+    r' *: *(?=([^"]*"[^"]*")*[^"]*$)', re.IGNORECASE)
 
 re_group_around_equal = re.compile(
     r'(?:"[^"]*"|[^=])*[^=]*', re.IGNORECASE)
@@ -21,7 +22,7 @@ def FgdParse(file):
 
     reader = open(file, "r", encoding="iso-8859-1")
 
-    game_data = fgd.FGD()
+    game_data = FGD()
 
     # Search for @includes
     while True:
@@ -197,7 +198,7 @@ def data_definitions_parse(class_definitions):
             data_type == 'mapsize' or \
             data_type == 'AutoVisGroup' or \
             data_type == 'MaterialExclusion':
-        fgd_data = fgd.FGD_data(data_type, data_properties)
+        fgd_data = FGD_data(data_type, data_properties)
     else:
         entity_name = entity_args[0].strip()
         if len(entity_args) == 2:
@@ -205,8 +206,8 @@ def data_definitions_parse(class_definitions):
         else:
             entity_desc = ''
 
-        fgd_data = fgd.FGD_entity(data_type, data_properties,
-                                  entity_name, entity_desc)
+        fgd_data = FGD_entity(data_type, data_properties,
+                              entity_name, entity_desc)
 
     return fgd_data
 
@@ -239,24 +240,56 @@ def data_properties_parse(properties_str):
             p_str = re.sub(r'\n ', "\n", p_str)
         if (p_str):
             data_property_parse(p_str)
-            pass
 
 
 def data_property_parse(property_str):
     property_parts = re.findall(re_group_around_equal, property_str)
+    entity_property = None
+
     if not property_parts:
         return
 
-    if len(property_parts) >= 1:
-        property = data_property_definition_parse(property_parts[0].strip())
-    if len(property_parts) > 2:
-        data_property_options_parse(property_parts[0].strip(), property)
-        property_options_str = property_parts[2].strip()
+    p_definition_str = property_parts[0].strip()
+
+    if len(property_parts) <= 2:
+        if (p_definition_str.startswith('output ')):
+            p_data = data_property_definition_parse(p_definition_str[7:])
+            entity_property = FGD_entity_output(*p_data)
+
+        elif (p_definition_str.startswith('input ')):
+            p_data = data_property_definition_parse(p_definition_str[6:])
+            entity_property = FGD_entity_input(*p_data)
+
+        else:
+            p_data = data_property_definition_parse(p_definition_str)
+            entity_property = FGD_entity_property(*p_data)
+
+    elif len(property_parts) > 2:
+
+        p_options_str = property_parts[2].strip()
+        p_options = data_property_options_parse(property_parts[2].strip())
+
+        p_data = data_property_definition_parse(p_definition_str)
+        entity_property = FGD_entity_property_options(*p_data, p_options)
+
+    return entity_property
 
 
 def data_property_definition_parse(p_definition_str):
-    return
+    p_definition_str = p_definition_str.strip()
+
+    args = re.split(
+        r'''[ ]*:[ ]*(?=(?:[^'"]|'[^']*'|"[^"]*")*$)+''', p_definition_str)
+    p_name_str = args[0].split('(')[0]
+    p_type_str = args[0][len(p_name_str):].strip('()').strip()
+
+    if (len(args) > 1):
+        p_args = args[1:]
+    else:
+        p_args = []
+
+    return (p_name_str, p_type_str, p_args)
 
 
-def data_property_options_parse(p_options_str, property):
-    return
+def data_property_options_parse(p_options_str):
+    return []
