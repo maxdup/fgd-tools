@@ -3,7 +3,18 @@ import re
 
 re_string_concat = re.compile(r'"[\t\n ]*\+[\t\n ]*"', re.IGNORECASE)
 re_space_normalize = re.compile(r'[\t\n ]+', re.IGNORECASE)
+re_space_normalize = re.compile(r'[\t ]+', re.IGNORECASE)
 re_function_like = re.compile(r'[^\( \n\t]*\([^\(]*\)', re.IGNORECASE)
+re_bracketless_return = re.compile(
+    r'(?:([^\n]*=[\n\t ]*\[[^\]]*\])+)|\n', re.IGNORECASE)
+
+re_quoteless_colon = re.compile(r':(?=([^"]*"[^"]*")*[^"]*$)', re.IGNORECASE)
+
+re_group_around_equal = re.compile(
+    r'(?:"[^"]*"|[^=])*[^=]*', re.IGNORECASE)
+re_group_around_colon = re.compile(
+    r'(?:"[^"]*"|[^:])*[^:]*', re.IGNORECASE)
+re_choice_definition = re.compile(r'=[\t\n ]*\[', re.IGNORECASE)
 
 
 def FgdParse(file):
@@ -154,38 +165,38 @@ def make_class(game_data, def_str, prop_str):
     class_definition = re.sub(re_string_concat, "", class_definition)
     class_definition = re.sub(re_space_normalize, " ", class_definition)
     if class_definition:
-        c = data_definition_parse(class_definition)
+        c = data_definitions_parse(class_definition)
         if c:
             game_data.add_class(c)
+            data_properties_parse(prop_str)
 
-            # todo parse properties
 
+def data_definitions_parse(class_definitions):
 
-def data_definition_parse(class_definition):
-
-    data_type = class_definition.split(' ', 1)[0].split('(')[0]
+    data_type = class_definitions.split(' ', 1)[0].split('(')[0]
     data_properties = {}
-    class_definition = class_definition[len(data_type):]
+    class_definitions = class_definitions[len(data_type):]
     entity_args = []
     fgd_data = None
 
-    if '=' in class_definition:
-        class_definition = class_definition.split('=', 1)
-        data_properties_str = class_definition[0].strip()
-        entity_args = re.split('[\t\n ]*:[\t\n ]"', class_definition[1].strip())
+    if '=' in class_definitions:
+        class_definitions = class_definitions.split('=', 1)
+        data_properties_str = class_definitions[0].strip()
+        entity_args = re.split('[\t\n ]*:[\t\n ]"',
+                               class_definitions[1].strip())
 
     else:
-        data_properties_str = class_definition
+        data_properties_str = class_definitions
 
     data_properties_str = re.findall(re_function_like, data_properties_str)
     if data_properties_str:
         for p in data_properties_str:
-            data_properties.update(data_properties_parse(p))
+            data_properties.update(data_definition_parse(p))
 
     if data_type == 'include' or \
-       data_type == 'mapsize' or \
-       data_type == 'AutoVisGroup' or \
-       data_type == 'MaterialExclusion':
+            data_type == 'mapsize' or \
+            data_type == 'AutoVisGroup' or \
+            data_type == 'MaterialExclusion':
         fgd_data = fgd.FGD_data(data_type, data_properties)
     else:
         entity_name = entity_args[0].strip()
@@ -200,15 +211,52 @@ def data_definition_parse(class_definition):
     return fgd_data
 
 
-def data_properties_parse(property_str):
-    property = {}
-    property_parts = property_str.split('(')
-    property_name = property_parts[0].strip()
-    property_params = property_parts[1].strip().strip(')').strip()
+def data_definition_parse(definition_str):
+    definition = {}
+    definition_parts = definition_str.split('(')
+    definition_name = definition_parts[0].strip()
+    definition_params = definition_parts[1].strip().strip(')').strip()
 
-    if (property_params):
-        property[property_name] = re.split(
-            '[\t\n ]*\,[\t\n ]*', property_params)
+    if (definition_params):
+        definition[definition_name] = re.split(
+            '[\t\n ]*\,[\t\n ]*', definition_params)
     else:
-        property[property_name] = []
-    return property
+        definition[definition_name] = []
+    return definition
+
+
+def data_properties_parse(properties_str):
+    properties = {}
+    properties_str = re.sub(re_string_concat, "", properties_str)
+    properties_str = re.sub(re_choice_definition, "= [", properties_str)
+    properties_str = properties_str.strip().strip(']').strip()
+    properties_strs = re.split(re_bracketless_return, properties_str)
+
+    for p_str in properties_strs:
+        if (p_str):
+            p_str = p_str.strip()
+            p_str = re.sub(r'[\t ]+', " ", p_str)
+            p_str = re.sub(r'\n ', "\n", p_str)
+        if (p_str):
+            data_property_parse(p_str)
+            pass
+
+
+def data_property_parse(property_str):
+    property_parts = re.findall(re_group_around_equal, property_str)
+    if not property_parts:
+        return
+
+    if len(property_parts) >= 1:
+        property = data_property_definition_parse(property_parts[0].strip())
+    if len(property_parts) > 2:
+        data_property_options_parse(property_parts[0].strip(), property)
+        property_options_str = property_parts[2].strip()
+
+
+def data_property_definition_parse(p_definition_str):
+    return
+
+
+def data_property_options_parse(p_options_str, property):
+    return
