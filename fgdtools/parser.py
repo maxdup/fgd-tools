@@ -292,4 +292,27 @@ def data_property_definition_parse(p_definition_str):
 
 
 def data_property_options_parse(p_options_str):
-    return []
+    options = []
+    p_options_str = p_options_str.strip('[] \n\t')
+    if not p_options_str:
+        return options
+    p_options_strs = p_options_str.split('\n')
+
+    for option_str in p_options_strs:
+        option_s = option_str.strip()
+
+        if not option_s:
+            continue
+
+        p_option_parts = re.findall(re_group_around_colon, option_s)
+
+        option_val = p_option_parts[0].strip()
+        if option_val.isdigit():
+            option_val = int(option_val)
+        else:
+            option_val = option_val.strip("\'\" \n\t")
+
+        option_desc = p_option_parts[2].strip("\'\" \n\t")
+        options.append((option_val, option_desc))
+
+    return options
