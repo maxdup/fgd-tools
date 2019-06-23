@@ -59,6 +59,7 @@ def FgdParse(file):
         # remove comment
         if '//' in current_line:
             current_line = current_line.split('//')[0]
+            current_line += '\n'
 
         while current_line.strip():
             reject = True
@@ -141,6 +142,7 @@ def FgdParse(file):
                     make_class(game_data,
                                class_definition_str,
                                class_properties_str)
+
                     class_definition_str = ''
                     class_properties_str = ''
 
@@ -169,7 +171,9 @@ def make_class(game_data, def_str, prop_str):
         c = data_definitions_parse(class_definition)
         if c:
             game_data.add_class(c)
-            data_properties_parse(prop_str)
+            if isinstance(c, FGD_entity):
+                for property_ in data_properties_parse(prop_str):
+                    c.add_entity_property(property_)
 
 
 def data_definitions_parse(class_definitions):
@@ -227,7 +231,7 @@ def data_definition_parse(definition_str):
 
 
 def data_properties_parse(properties_str):
-    properties = {}
+    properties = []
     properties_str = re.sub(re_string_concat, "", properties_str)
     properties_str = re.sub(re_choice_definition, "= [", properties_str)
     properties_str = properties_str.strip().strip(']').strip()
@@ -239,7 +243,10 @@ def data_properties_parse(properties_str):
             p_str = re.sub(r'[\t ]+', " ", p_str)
             p_str = re.sub(r'\n ', "\n", p_str)
         if (p_str):
-            data_property_parse(p_str)
+            prop = data_property_parse(p_str)
+            properties.append(prop)
+
+    return properties
 
 
 def data_property_parse(property_str):
@@ -299,20 +306,45 @@ def data_property_options_parse(p_options_str):
     p_options_strs = p_options_str.split('\n')
 
     for option_str in p_options_strs:
-        option_s = option_str.strip()
+        option = data_property_option_parse(option_str)
 
-        if not option_s:
-            continue
-
-        p_option_parts = re.findall(re_group_around_colon, option_s)
-
-        option_val = p_option_parts[0].strip()
-        if option_val.isdigit():
-            option_val = int(option_val)
-        else:
-            option_val = option_val.strip("\'\" \n\t")
-
-        option_desc = p_option_parts[2].strip("\'\" \n\t")
-        options.append((option_val, option_desc))
+        if option:
+            options.append(option)
 
     return options
+
+
+def data_property_option_parse(p_option_str):
+    p_option_str = p_option_str.strip()
+
+    if not p_option_str:
+        return None
+
+    option = None
+    p_option_parts = re.findall(re_group_around_colon, p_option_str)
+
+    option_val = p_option_parts[0].strip()
+    try:
+        option_val = int(option_val)
+    except:
+        option_val = option_val.strip("\'\" \n\t")
+
+    option_desc = p_option_parts[2].strip("\'\" \n\t")
+
+    option_default = None
+    if len(p_option_parts) > 4:
+        default_str = p_option_parts[4].strip()
+
+        try:
+            option_default = int(default_str)
+        except:
+            option_default = default_str.strip("\'\" \n\t")
+
+        option = FGD_entity_property_option((option_val,
+                                             option_desc,
+                                             option_default))
+    else:
+        option = FGD_entity_property_option((option_val,
+                                             option_desc))
+
+    return option

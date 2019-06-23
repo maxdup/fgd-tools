@@ -43,8 +43,8 @@ class FGD_data():
         # and parent's parent's parent's....
         return self._data_properties
 
-    def add_property(self, property):
-        self.properties.append(property)
+    def add_data_property(self, property):
+        self.data_properties.append(property)
 
     def add_parent_data(self, parent):
         self._parent_data_types.append(parent)
@@ -77,16 +77,37 @@ class FGD_entity(FGD_data):
         # and parent's parent's parent's....
         return self._entity_properties
 
-    def add_property(self, prop):
+    def add_entity_property(self, prop):
         if (isinstance(prop, FGD_entity_input)):
             self._entity_inputs.append(prop)
-        elif (isinstance(prop, FGD_entity_ouput)):
+        elif (isinstance(prop, FGD_entity_output)):
             self._entity_outputs.append(prop)
-        elif (isinstance(FGD_entity_property)):
+        elif (isinstance(prop, FGD_entity_property)):
             self._entity_properties.append(prop)
 
     def __repr__(self):
-        return self._entity_name
+        sref = '@' + self.data_type
+        for k, v in self.data_properties.items():
+            sref += ' ' + k + "("
+            for arg in v:
+                sref += arg + ', '
+            sref = sref.strip(', ')
+            sref += ")"
+        sref += ' = ' + self._entity_name + ' : "' + \
+            self._entity_description + '"'
+
+        if self._entity_properties or \
+           self._entity_inputs or self._entity_outputs:
+            sref += "\n["
+            for prop in self._entity_properties:
+                sref += "\n\t" + repr(prop)
+            for input in self._entity_inputs:
+                sref += "\n\t" + repr(input)
+            for output in self._entity_outputs:
+                sref += "\n\t" + repr(output)
+            sref += "\n]"
+
+        return sref
 
 
 class FGD_entity_property():
@@ -98,6 +119,18 @@ class FGD_entity_property():
             self._args.append(arg.strip())
         self._options = options
 
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def args(self):
+        return self._args
+
     def set_options(self, options):
         self.options = options
 
@@ -107,20 +140,6 @@ class FGD_entity_property():
             rep_str += ' :'
             if arg:
                 rep_str += ' ' + arg
-        return rep_str
-
-
-class FGD_entity_property_options(FGD_entity_property):
-    def __init__(self, p_name, p_type, args=[], options=[]):
-        FGD_entity_property.__init__(self, p_name, p_type, args)
-        self._options = options
-
-    def __repr__(self):
-        rep_str = FGD_entity_property.__repr__(self)
-        rep_str += ' =\n[\n'
-        for option in self._options:
-            rep_str += option[0] + ' : ' + option[1] + '\n'
-        rep_str += ']'
         return rep_str
 
 
@@ -140,3 +159,44 @@ class FGD_entity_output(FGD_entity_property):
 
     def __repr__(self):
         return 'output ' + FGD_entity_property.__repr__(self)
+
+
+class FGD_entity_property_options(FGD_entity_property):
+    def __init__(self, p_name, p_type, args=[], options=[]):
+        FGD_entity_property.__init__(self, p_name, p_type, args)
+        self._options = options
+
+    def __repr__(self):
+        rep_str = FGD_entity_property.__repr__(self)
+        rep_str += ' =\n\t[\n'
+        for option in self._options:
+            rep_str += '\t\t' + repr(option) + '\n'
+        rep_str += '\t]'
+        return rep_str
+
+
+class FGD_entity_property_option():
+    def __init__(self, tupple):
+        self._value = tupple[0]
+        self._display_name = tupple[1]
+        if len(tupple) > 2:
+            self._default_value = tupple[2]
+        else:
+            self._default_value = None
+
+    def __repr__(self):
+        repr_str = ''
+        if isinstance(self._value, int):
+            repr_str += str(self._value)
+        else:
+            repr_str += '"' + self._value + '"'
+        repr_str += ' : "' + self._display_name + '"'
+
+        if self._default_value:
+            repr_str += ' : '
+            if isinstance(self._default_value, int):
+                repr_str += str(self._default_value)
+            else:
+                repr_str += '"' + self._default_value + '"'
+
+        return repr_str
