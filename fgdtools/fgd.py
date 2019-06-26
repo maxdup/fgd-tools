@@ -6,6 +6,13 @@ class FGD():
     def classes(self):
         return self._classes
 
+    @property
+    def fgd_str(self):
+        fgd_str = ''
+        for c in self.classes:
+            fgd_str += c.fgd_str + '\n\n'
+        return fgd_str
+
     def include(self, basefgd):
         self._classes.extend(list(basefgd.classes))
 
@@ -45,14 +52,23 @@ class FGD_data():
     def data_properties(self):
         return self._data_properties
 
+    @property
+    def fgd_str(self):
+        fgd_str = '@' + self.data_type
+        for k, v in self._data_properties.items():
+            fgd_str += ' ' + k + "("
+            for arg in v:
+                fgd_str += arg + ', '
+            fgd_str = fgd_str.strip(', ')
+            fgd_str += ")"
+
+        return fgd_str
+
     def add_data_property(self, property):
         self.data_properties.append(property)
 
     def add_parent_data(self, parent):
         self._parent_data_types.append(parent)
-
-    def __repr__(self):
-        return self._data_type
 
 
 class FGD_entity(FGD_data):
@@ -94,7 +110,11 @@ class FGD_entity(FGD_data):
         for p in self._properties:
             properties[p.name] = p
 
-        return properties
+        properties_array = []
+        for k, v in properties.items():
+            properties_array.append(v)
+
+        return properties_array
 
     @property
     def inputs(self):
@@ -110,7 +130,11 @@ class FGD_entity(FGD_data):
         for p in self._inputs:
             inputs[p.name] = p
 
-        return inputs
+        inputs_array = []
+        for k, v in inputs.items():
+            inputs_array.append(v)
+
+        return inputs_array
 
     @property
     def outputs(self):
@@ -126,7 +150,30 @@ class FGD_entity(FGD_data):
         for p in self._outputs:
             outputs[p.name] = p
 
-        return outputs
+        outputs_array = []
+        for k, v in outputs.items():
+            outputs_array.append(v)
+
+        return outputs_array
+
+    @property
+    def fgd_str(self):
+        fgd_str = FGD_data.fgd_str(self)
+        fgd_str += ' = ' + self._name + ' : "' + \
+            self._description + '"'
+
+        if self._properties or \
+           self._inputs or self._outputs:
+            fgd_str += "\n["
+            for prop in self._properties:
+                fgd_str += "\n\t" + prop.fgd_str
+            for input in self._inputs:
+                fgd_str += "\n\t" + input.fgd_str
+            for output in self._outputs:
+                fgd_str += "\n\t" + output.fgd_str
+            fgd_str += "\n]"
+
+        return fgd_str
 
     def add_property(self, prop):
         if (isinstance(prop, FGD_input)):
@@ -135,30 +182,6 @@ class FGD_entity(FGD_data):
             self._outputs.append(prop)
         elif (isinstance(prop, FGD_property)):
             self._properties.append(prop)
-
-    def __repr__(self):
-        sref = '@' + self.data_type
-        for k, v in self.data_properties.items():
-            sref += ' ' + k + "("
-            for arg in v:
-                sref += arg + ', '
-            sref = sref.strip(', ')
-            sref += ")"
-        sref += ' = ' + self._name + ' : "' + \
-            self._description + '"'
-
-        if self._properties or \
-           self._inputs or self._outputs:
-            sref += "\n["
-            for prop in self._properties:
-                sref += "\n\t" + repr(prop)
-            for input in self._inputs:
-                sref += "\n\t" + repr(input)
-            for output in self._outputs:
-                sref += "\n\t" + repr(output)
-            sref += "\n]"
-
-        return sref
 
 
 class FGD_property():
@@ -186,29 +209,32 @@ class FGD_property():
     def options(self):
         return self._options
 
-    def __repr__(self):
-        rep_str = self._name + '(' + self._type + ')'
+    @property
+    def fgd_str(self):
+        fdg_str = self._name + '(' + self._type + ')'
         for arg in self._args:
-            rep_str += ' :'
+            fdg_str += ' :'
             if arg:
-                rep_str += ' ' + arg
-        return rep_str
+                fdg_str += ' ' + arg
+        return fdg_str
 
 
 class FGD_input(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
-    def __repr__(self):
-        return 'input ' + FGD_property.__repr__(self)
+    @property
+    def fgd_str(self):
+        return 'input ' + FGD_property.fgd_str(self)
 
 
 class FGD_output(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
-    def __repr__(self):
-        return 'output ' + FGD_property.__repr__(self)
+    @property
+    def fgd_str(self):
+        return 'output ' + FGD_property.fgd_str(self)
 
 
 class FGD_property_options(FGD_property):
@@ -216,13 +242,14 @@ class FGD_property_options(FGD_property):
         FGD_property.__init__(self, p_name, p_type, p_args)
         self._options = p_options
 
-    def __repr__(self):
-        rep_str = FGD_property.__repr__(self)
-        rep_str += ' =\n\t[\n'
+    @property
+    def fgd_str(self):
+        fdg_str = FGD_property.fgd_str(self)
+        fdg_str += ' =\n\t[\n'
         for option in self._options:
-            rep_str += '\t\t' + repr(option) + '\n'
-        rep_str += '\t]'
-        return rep_str
+            fdg_str += '\t\t' + option.fgd_str + '\n'
+        fdg_str += '\t]'
+        return fdg_str
 
 
 class FGD_property_option():
@@ -246,19 +273,20 @@ class FGD_property_option():
     def default_value(self):
         return self._default_value
 
-    def __repr__(self):
-        repr_str = ''
+    @property
+    def fgd_str(self):
+        fdg_str = ''
         if isinstance(self._value, int):
-            repr_str += str(self._value)
+            fdg_str += str(self._value)
         else:
-            repr_str += '"' + self._value + '"'
-        repr_str += ' : "' + self._display_name + '"'
+            fdg_str += '"' + self._value + '"'
+        fdg_str += ' : "' + self._display_name + '"'
 
         if self._default_value:
-            repr_str += ' : '
+            fdg_str += ' : '
             if isinstance(self._default_value, int):
-                repr_str += str(self._default_value)
+                fdg_str += str(self._default_value)
             else:
-                repr_str += '"' + self._default_value + '"'
+                fdg_str += '"' + self._default_value + '"'
 
-        return repr_str
+        return fdg_str
