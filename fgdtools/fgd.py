@@ -26,8 +26,8 @@ class FGD():
 class FGD_data():
     def __init__(self, data_type, data_properties):
         self._data_type = data_type
-        self._data_properties = data_properties or {}
         self._parent_data_types = []
+        self._data_properties = data_properties or {}
 
     @property
     def data_type(self):
@@ -57,6 +57,7 @@ class FGD_entity(FGD_data):
     def __init__(self, data_type, data_properties,
                  entity_name, entity_description=''):
         FGD_data.__init__(self, data_type, data_properties)
+
         self._entity_name = entity_name
         self._entity_description = entity_description
 
@@ -147,13 +148,13 @@ class FGD_entity(FGD_data):
 
 
 class FGD_entity_property():
-    def __init__(self, p_name, p_type, args=[], options=None):
+    def __init__(self, p_name, p_type, p_args=[], p_options=None):
         self._name = p_name
         self._type = p_type
         self._args = []
-        for arg in args:
+        for arg in p_args:
             self._args.append(arg.strip())
-        self._options = options
+        self._options = p_options
 
     @property
     def name(self):
@@ -167,8 +168,9 @@ class FGD_entity_property():
     def args(self):
         return self._args
 
-    def set_options(self, options):
-        self.options = options
+    @property
+    def options(self):
+        return self._options
 
     def __repr__(self):
         rep_str = self._name + '(' + self._type + ')'
@@ -180,27 +182,25 @@ class FGD_entity_property():
 
 
 class FGD_entity_input(FGD_entity_property):
-    def __init__(self, p_name, p_type, args=['""']):
-        args = args or ['""']
-        FGD_entity_property.__init__(self, p_name, p_type, args)
+    def __init__(self, p_name, p_type, p_args=['""']):
+        FGD_entity_property.__init__(self, p_name, p_type, p_args)
 
     def __repr__(self):
         return 'input ' + FGD_entity_property.__repr__(self)
 
 
 class FGD_entity_output(FGD_entity_property):
-    def __init__(self, p_name, p_type, args=['""']):
-        args = args or ['""']
-        FGD_entity_property.__init__(self, p_name, p_type, args)
+    def __init__(self, p_name, p_type, p_args=['""']):
+        FGD_entity_property.__init__(self, p_name, p_type, p_args)
 
     def __repr__(self):
         return 'output ' + FGD_entity_property.__repr__(self)
 
 
 class FGD_entity_property_options(FGD_entity_property):
-    def __init__(self, p_name, p_type, args=[], options=[]):
-        FGD_entity_property.__init__(self, p_name, p_type, args)
-        self._options = options
+    def __init__(self, p_name, p_type, p_args=[], p_options=[]):
+        FGD_entity_property.__init__(self, p_name, p_type, p_args)
+        self._options = p_options
 
     def __repr__(self):
         rep_str = FGD_entity_property.__repr__(self)
@@ -219,6 +219,18 @@ class FGD_entity_property_option():
             self._default_value = tupple[2]
         else:
             self._default_value = None
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def display_name(self):
+        return self._display_name
+
+    @property
+    def default_value(self):
+        return self._default_value
 
     def __repr__(self):
         repr_str = ''
