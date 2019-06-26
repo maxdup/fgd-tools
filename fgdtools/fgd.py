@@ -26,7 +26,7 @@ class FGD():
 class FGD_data():
     def __init__(self, data_type, data_properties):
         self._data_type = data_type
-        self._data_properties = data_properties or []
+        self._data_properties = data_properties or {}
         self._parent_data_types = []
 
     @property
@@ -59,7 +59,8 @@ class FGD_entity(FGD_data):
         FGD_data.__init__(self, data_type, data_properties)
         self._entity_name = entity_name
         self._entity_description = entity_description
-        self._entity_properties = {}
+
+        self._entity_properties = []
         self._entity_inputs = []
         self._entity_outputs = []
 
@@ -69,13 +70,48 @@ class FGD_entity(FGD_data):
 
     @property
     def entity_description(self):
-        # ? and parent's parent's parent's....
+        if not self._entity_description:
+            for parent in self._entity_description:
+                if parent._entity_description:
+                    return parent._entity_description
+
         return self._entity_description
 
     @property
     def entity_properties(self):
-        # and parent's parent's parent's....
-        return self._entity_properties
+        properties = {}
+        for t in self._parent_data_types:
+            if isinstance(t, FGD_entity):
+                for p in t._entity_properties:
+                    properties[p.name] = p
+        for p in self._entity_properties:
+            properties[p.name] = p
+
+        return properties
+
+    @property
+    def entity_inputs(self):
+        inputs = {}
+        for t in self._parent_data_types:
+            if isinstance(t, FGD_entity):
+                for p in t._entity_inputs:
+                    inputs[p.name] = p
+        for p in self._entity_inputs:
+            inputs[p.name] = p
+
+        return inputs
+
+    @property
+    def entity_outputs(self):
+        outputs = {}
+        for t in self._parent_data_types:
+            if isinstance(t, FGD_entity):
+                for p in t._entity_outputs:
+                    outputs[p.name] = p
+        for p in self._entity_outputs:
+            outputs[p.name] = p
+
+        return outputs
 
     def add_entity_property(self, prop):
         if (isinstance(prop, FGD_entity_input)):
