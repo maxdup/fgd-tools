@@ -9,15 +9,19 @@ class FGD():
     def include(self, basefgd):
         self._classes.extend(list(basefgd.classes))
 
-    def add_class(self, fgd_class):
+    def get_entity_by_name(self, entity_name):
+        results = (c for c in self._classes if isinstance(
+            c, FGD_entity) and c.name == entity_name)
+        return next(results, None)
 
+    def add_class(self, fgd_class):
         # find parents
         if fgd_class.data_properties:
             if 'base' in fgd_class.data_properties:
                 for p_class in fgd_class.data_properties['base']:
                     b = next(filter(
                         lambda data: isinstance(data, FGD_entity) and
-                        data.entity_name == p_class, self._classes), None)
+                        data.name == p_class, self._classes), None)
                     if b:
                         fgd_class.add_parent_data(b)
         self._classes.append(fgd_class)
@@ -35,12 +39,10 @@ class FGD_data():
 
     @property
     def parent_data_types(self):
-        # and parent's parent's parent's....
         return self._parent_data_types
 
     @property
     def data_properties(self):
-        # and parent's parent's parent's....
         return self._data_properties
 
     def add_data_property(self, property):
@@ -55,72 +57,84 @@ class FGD_data():
 
 class FGD_entity(FGD_data):
     def __init__(self, data_type, data_properties,
-                 entity_name, entity_description=''):
+                 name, description=''):
         FGD_data.__init__(self, data_type, data_properties)
 
-        self._entity_name = entity_name
-        self._entity_description = entity_description
+        self._name = name
+        self._description = description
 
-        self._entity_properties = []
-        self._entity_inputs = []
-        self._entity_outputs = []
-
-    @property
-    def entity_name(self):
-        return self._entity_name
+        self._properties = []
+        self._inputs = []
+        self._outputs = []
 
     @property
-    def entity_description(self):
-        if not self._entity_description:
-            for parent in self._entity_description:
-                if parent._entity_description:
-                    return parent._entity_description
-
-        return self._entity_description
+    def name(self):
+        return self._name
 
     @property
-    def entity_properties(self):
+    def description(self):
+        if not self._description:
+            for parent in self._description:
+                if parent._description:
+                    return parent._description
+
+        return self._description
+
+    @property
+    def properties(self):
+        return self._properties
+
+    @property
+    def all_properties(self):
         properties = {}
         for t in self._parent_data_types:
             if isinstance(t, FGD_entity):
-                for p in t._entity_properties:
+                for p in t._properties:
                     properties[p.name] = p
-        for p in self._entity_properties:
+        for p in self._properties:
             properties[p.name] = p
 
         return properties
 
     @property
-    def entity_inputs(self):
+    def inputs(self):
+        return self._inputs
+
+    @property
+    def all_inputs(self):
         inputs = {}
         for t in self._parent_data_types:
             if isinstance(t, FGD_entity):
-                for p in t._entity_inputs:
+                for p in t._inputs:
                     inputs[p.name] = p
-        for p in self._entity_inputs:
+        for p in self._inputs:
             inputs[p.name] = p
 
         return inputs
 
     @property
-    def entity_outputs(self):
+    def outputs(self):
+        return self._outputs
+
+    @property
+    def all_outputs(self):
         outputs = {}
         for t in self._parent_data_types:
             if isinstance(t, FGD_entity):
-                for p in t._entity_outputs:
+                for p in t._outputs:
                     outputs[p.name] = p
-        for p in self._entity_outputs:
+        for p in self._outputs:
             outputs[p.name] = p
 
         return outputs
 
-    def add_entity_property(self, prop):
-        if (isinstance(prop, FGD_entity_input)):
-            self._entity_inputs.append(prop)
-        elif (isinstance(prop, FGD_entity_output)):
-            self._entity_outputs.append(prop)
-        elif (isinstance(prop, FGD_entity_property)):
-            self._entity_properties.append(prop)
+    def add_property(self, prop):
+        if (isinstance(prop, FGD_input)):
+            self._inputs.append(prop)
+        elif (isinstance(prop, FGD_output)):
+            self._outputs.append(prop)
+        elif (isinstance(prop, FGD_property)):
+            self._properties.append(prop)
 
     def __repr__(self):
         sref = '@' + self.data_type
@@ -130,24 +144,24 @@ class FGD_entity(FGD_data):
                 sref += arg + ', '
             sref = sref.strip(', ')
             sref += ")"
-        sref += ' = ' + self._entity_name + ' : "' + \
-            self._entity_description + '"'
+        sref += ' = ' + self._name + ' : "' + \
+            self._description + '"'
 
-        if self._entity_properties or \
-           self._entity_inputs or self._entity_outputs:
+        if self._properties or \
+           self._inputs or self._outputs:
             sref += "\n["
-            for prop in self._entity_properties:
+            for prop in self._properties:
                 sref += "\n\t" + repr(prop)
-            for input in self._entity_inputs:
+            for input in self._inputs:
                 sref += "\n\t" + repr(input)
-            for output in self._entity_outputs:
+            for output in self._outputs:
                 sref += "\n\t" + repr(output)
             sref += "\n]"
 
         return sref
 
 
-class FGD_entity_property():
+class FGD_property():
     def __init__(self, p_name, p_type, p_args=[], p_options=None):
         self._name = p_name
         self._type = p_type
@@ -181,29 +195,29 @@ class FGD_entity_property():
         return rep_str
 
 
-class FGD_entity_input(FGD_entity_property):
+class FGD_input(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
-        FGD_entity_property.__init__(self, p_name, p_type, p_args)
+        FGD_property.__init__(self, p_name, p_type, p_args)
 
     def __repr__(self):
-        return 'input ' + FGD_entity_property.__repr__(self)
+        return 'input ' + FGD_property.__repr__(self)
 
 
-class FGD_entity_output(FGD_entity_property):
+class FGD_output(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
-        FGD_entity_property.__init__(self, p_name, p_type, p_args)
+        FGD_property.__init__(self, p_name, p_type, p_args)
 
     def __repr__(self):
-        return 'output ' + FGD_entity_property.__repr__(self)
+        return 'output ' + FGD_property.__repr__(self)
 
 
-class FGD_entity_property_options(FGD_entity_property):
+class FGD_property_options(FGD_property):
     def __init__(self, p_name, p_type, p_args=[], p_options=[]):
-        FGD_entity_property.__init__(self, p_name, p_type, p_args)
+        FGD_property.__init__(self, p_name, p_type, p_args)
         self._options = p_options
 
     def __repr__(self):
-        rep_str = FGD_entity_property.__repr__(self)
+        rep_str = FGD_property.__repr__(self)
         rep_str += ' =\n\t[\n'
         for option in self._options:
             rep_str += '\t\t' + repr(option) + '\n'
@@ -211,7 +225,7 @@ class FGD_entity_property_options(FGD_entity_property):
         return rep_str
 
 
-class FGD_entity_property_option():
+class FGD_property_option():
     def __init__(self, tupple):
         self._value = tupple[0]
         self._display_name = tupple[1]

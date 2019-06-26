@@ -173,7 +173,7 @@ def make_class(game_data, def_str, prop_str):
             game_data.add_class(c)
             if isinstance(c, FGD_entity):
                 for property_ in data_properties_parse(prop_str):
-                    c.add_entity_property(property_)
+                    c.add_property(property_)
 
 
 def data_definitions_parse(class_definitions):
@@ -261,15 +261,15 @@ def data_property_parse(property_str):
     if len(property_parts) <= 2:
         if (p_definition_str.startswith('output ')):
             p_data = data_property_definition_parse(p_definition_str[7:])
-            entity_property = FGD_entity_output(*p_data)
+            entity_property = FGD_output(*p_data)
 
         elif (p_definition_str.startswith('input ')):
             p_data = data_property_definition_parse(p_definition_str[6:])
-            entity_property = FGD_entity_input(*p_data)
+            entity_property = FGD_input(*p_data)
 
         else:
             p_data = data_property_definition_parse(p_definition_str)
-            entity_property = FGD_entity_property(*p_data)
+            entity_property = FGD_property(*p_data)
 
     elif len(property_parts) > 2:
 
@@ -277,7 +277,7 @@ def data_property_parse(property_str):
         p_options = data_property_options_parse(property_parts[2].strip())
 
         p_data = data_property_definition_parse(p_definition_str)
-        entity_property = FGD_entity_property_options(*p_data, p_options)
+        entity_property = FGD_property_options(*p_data, p_options)
 
     return entity_property
 
@@ -340,11 +340,11 @@ def data_property_option_parse(p_option_str):
         except:
             option_default = default_str.strip("\'\" \n\t")
 
-        option = FGD_entity_property_option((option_val,
-                                             option_desc,
-                                             option_default))
+        option = FGD_property_option((option_val,
+                                      option_desc,
+                                      option_default))
     else:
-        option = FGD_entity_property_option((option_val,
-                                             option_desc))
+        option = FGD_property_option((option_val,
+                                      option_desc))
 
     return option
