@@ -6,11 +6,10 @@ class FGD():
     def classes(self):
         return self._classes
 
-    @property
     def fgd_str(self):
         fgd_str = ''
         for c in self.classes:
-            fgd_str += c.fgd_str + '\n\n'
+            fgd_str += c.fgd_str() + '\n\n'
         return fgd_str
 
     def include(self, basefgd):
@@ -35,8 +34,10 @@ class FGD():
 
 
 class FGD_data():
-    def __init__(self, data_type, data_properties):
+    def __init__(self, data_type, data_properties, name=None, description=None):
         self._data_type = data_type
+        self._name = name
+        self._description = description
         self._parent_data_types = []
         self._data_properties = data_properties or {}
 
@@ -53,6 +54,18 @@ class FGD_data():
         return self._data_properties
 
     @property
+    def name(self):
+        return self._name
+
+    @property
+    def description(self):
+        if not self._description:
+            for parent in self._parent_data_types:
+                if parent._description:
+                    return parent._description
+
+        return self._description
+
     def fgd_str(self):
         fgd_str = '@' + self.data_type
         for k, v in self._data_properties.items():
@@ -61,6 +74,11 @@ class FGD_data():
                 fgd_str += arg + ', '
             fgd_str = fgd_str.strip(', ')
             fgd_str += ")"
+
+        if self._name:
+            fgd_str += ' = ' + self._name
+        if self.description:
+            fgd_str += ' : "' + self._description + '"'
 
         return fgd_str
 
@@ -72,29 +90,12 @@ class FGD_data():
 
 
 class FGD_entity(FGD_data):
-    def __init__(self, data_type, data_properties,
-                 name, description=''):
-        FGD_data.__init__(self, data_type, data_properties)
-
-        self._name = name
-        self._description = description
+    def __init__(self, data_type, data_properties, name, description=None):
+        FGD_data.__init__(self, data_type, data_properties, name, description)
 
         self._properties = []
         self._inputs = []
         self._outputs = []
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def description(self):
-        if not self._description:
-            for parent in self._description:
-                if parent._description:
-                    return parent._description
-
-        return self._description
 
     @property
     def properties(self):
@@ -156,21 +157,18 @@ class FGD_entity(FGD_data):
 
         return outputs_array
 
-    @property
     def fgd_str(self):
         fgd_str = FGD_data.fgd_str(self)
-        fgd_str += ' = ' + self._name + ' : "' + \
-            self._description + '"'
 
         if self._properties or \
            self._inputs or self._outputs:
             fgd_str += "\n["
             for prop in self._properties:
-                fgd_str += "\n\t" + prop.fgd_str
+                fgd_str += "\n\t" + prop.fgd_str()
             for input in self._inputs:
-                fgd_str += "\n\t" + input.fgd_str
+                fgd_str += "\n\t" + input.fgd_str()
             for output in self._outputs:
-                fgd_str += "\n\t" + output.fgd_str
+                fgd_str += "\n\t" + output.fgd_str()
             fgd_str += "\n]"
 
         return fgd_str
@@ -209,7 +207,6 @@ class FGD_property():
     def options(self):
         return self._options
 
-    @property
     def fgd_str(self):
         fdg_str = self._name + '(' + self._type + ')'
         for arg in self._args:
@@ -223,7 +220,6 @@ class FGD_input(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
-    @property
     def fgd_str(self):
         return 'input ' + FGD_property.fgd_str(self)
 
@@ -232,7 +228,6 @@ class FGD_output(FGD_property):
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
-    @property
     def fgd_str(self):
         return 'output ' + FGD_property.fgd_str(self)
 
@@ -242,12 +237,11 @@ class FGD_property_options(FGD_property):
         FGD_property.__init__(self, p_name, p_type, p_args)
         self._options = p_options
 
-    @property
     def fgd_str(self):
         fdg_str = FGD_property.fgd_str(self)
         fdg_str += ' =\n\t[\n'
         for option in self._options:
-            fdg_str += '\t\t' + option.fgd_str + '\n'
+            fdg_str += '\t\t' + option.fgd_str() + '\n'
         fdg_str += '\t]'
         return fdg_str
 
@@ -273,7 +267,6 @@ class FGD_property_option():
     def default_value(self):
         return self._default_value
 
-    @property
     def fgd_str(self):
         fdg_str = ''
         if isinstance(self._value, int):

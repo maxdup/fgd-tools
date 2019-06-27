@@ -184,6 +184,9 @@ def data_definitions_parse(class_definitions):
     entity_args = []
     fgd_data = None
 
+    if data_type == 'include':
+        return None
+
     if '=' in class_definitions:
         class_definitions = class_definitions.split('=', 1)
         data_properties_str = class_definitions[0].strip()
@@ -198,20 +201,24 @@ def data_definitions_parse(class_definitions):
         for p in data_properties_str:
             data_properties.update(data_definition_parse(p))
 
-    if data_type == 'include' or \
-            data_type == 'mapsize' or \
-            data_type == 'AutoVisGroup' or \
-            data_type == 'MaterialExclusion':
-        fgd_data = FGD_data(data_type, data_properties)
+    if data_type == 'mapsize' or \
+       data_type == 'AutoVisGroup' or \
+       data_type == 'MaterialExclusion':
+        if entity_args:
+            data_name = entity_args[0].strip('')
+        else:
+            data_name = None
+
+        fgd_data = FGD_data(data_type, data_properties, data_name)
     else:
-        entity_name = entity_args[0].strip()
+        data_name = entity_args[0].strip()
         if len(entity_args) == 2:
             entity_desc = entity_args[1].strip('"').strip()
         else:
             entity_desc = ''
 
         fgd_data = FGD_entity(data_type, data_properties,
-                              entity_name, entity_desc)
+                              data_name, entity_desc)
 
     return fgd_data
 
@@ -260,29 +267,29 @@ def data_property_parse(property_str):
 
     if len(property_parts) <= 2:
         if (p_definition_str.startswith('output ')):
-            p_data = data_property_definition_parse(p_definition_str[7:])
+            p_data = property_definition_parse(p_definition_str[7:])
             entity_property = FGD_output(*p_data)
 
         elif (p_definition_str.startswith('input ')):
-            p_data = data_property_definition_parse(p_definition_str[6:])
+            p_data = property_definition_parse(p_definition_str[6:])
             entity_property = FGD_input(*p_data)
 
         else:
-            p_data = data_property_definition_parse(p_definition_str)
+            p_data = property_definition_parse(p_definition_str)
             entity_property = FGD_property(*p_data)
 
     elif len(property_parts) > 2:
 
         p_options_str = property_parts[2].strip()
-        p_options = data_property_options_parse(property_parts[2].strip())
+        p_options = property_options_parse(property_parts[2].strip())
 
-        p_data = data_property_definition_parse(p_definition_str)
+        p_data = property_definition_parse(p_definition_str)
         entity_property = FGD_property_options(*p_data, p_options)
 
     return entity_property
 
 
-def data_property_definition_parse(p_definition_str):
+def property_definition_parse(p_definition_str):
     p_definition_str = p_definition_str.strip()
 
     args = re.split(
@@ -298,23 +305,23 @@ def data_property_definition_parse(p_definition_str):
     return (p_name_str, p_type_str, p_args)
 
 
-def data_property_options_parse(p_options_str):
-    options = []
+def property_options_parse(p_options_str):
+    p_options = []
     p_options_str = p_options_str.strip('[] \n\t')
     if not p_options_str:
-        return options
+        return p_options
     p_options_strs = p_options_str.split('\n')
 
-    for option_str in p_options_strs:
-        option = data_property_option_parse(option_str)
+    for p_option_str in p_options_strs:
+        p_option = property_option_parse(p_option_str)
 
-        if option:
-            options.append(option)
+        if p_option:
+            p_options.append(p_option)
 
-    return options
+    return p_options
 
 
-def data_property_option_parse(p_option_str):
+def property_option_parse(p_option_str):
     p_option_str = p_option_str.strip()
 
     if not p_option_str:
