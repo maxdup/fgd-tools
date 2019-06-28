@@ -40,6 +40,7 @@ class FGD_data():
         self._description = description
         self._parent_data_types = []
         self._data_properties = data_properties or {}
+        self._data = []
 
     @property
     def data_type(self):
@@ -56,6 +57,10 @@ class FGD_data():
     @property
     def name(self):
         return self._name
+
+    @property
+    def data(self):
+        return self._data_properties
 
     @property
     def description(self):
@@ -77,8 +82,13 @@ class FGD_data():
 
         if self._name:
             fgd_str += ' = ' + self._name
-        if self.description:
+        if self._description:
             fgd_str += ' : "' + self._description + '"'
+        if self._data:
+            fgd_str += '\n[\n'
+            for d in self._data:
+                fgd_str += d.fgd_str()
+            fgd_str += ']\n'
 
         return fgd_str
 
@@ -87,6 +97,9 @@ class FGD_data():
 
     def add_parent_data(self, parent):
         self._parent_data_types.append(parent)
+
+    def add_data(self, data):
+        self._data.append(data)
 
 
 class FGD_entity(FGD_data):
@@ -283,3 +296,26 @@ class FGD_property_option():
                 fdg_str += '"' + self._default_value + '"'
 
         return fdg_str
+
+
+class FGD_data_property():
+    def __init__(self, d_name, d_options=None):
+        self._name = d_name
+        self._options = d_options
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def options(self):
+        return self._options
+
+    def fgd_str(self):
+        fgd_str = '\t"' + self._name + '"\n'
+        if self._options:
+            fgd_str += '\t[\n'
+            for o in self._options:
+                fgd_str += '\t\t"' + o + '"\n'
+            fgd_str += '\t]\n'
+        return fgd_str

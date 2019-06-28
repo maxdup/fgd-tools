@@ -38,7 +38,6 @@ def FgdParse(file):
 
     reader.seek(0)
 
-    lines = 0
     class_definition_str = ''
     class_properties_str = ''
 
@@ -46,8 +45,6 @@ def FgdParse(file):
     square_depth = 0
 
     while True:
-        lines += 1
-
         current_line = reader.readline()
 
         # file ended
@@ -171,9 +168,17 @@ def make_class(game_data, def_str, prop_str):
         c = data_definitions_parse(class_definition)
         if c:
             game_data.add_class(c)
-            if isinstance(c, FGD_entity):
-                for property_ in data_properties_parse(prop_str):
-                    c.add_property(property_)
+
+            # if isinstance(c, FGD_entity):
+            if prop_str:
+                if c.data_type == 'MaterialExclusion' or \
+                   c.data_type == 'AutoVisGroup':
+                    for data_property in data_properties_parse(prop_str):
+                        c.add_data(data_property)
+                else:
+                    for property_ in properties_parse(prop_str):
+                        c.add_property(property_)
+        print(c.fgd_str())
 
 
 def data_definitions_parse(class_definitions):
@@ -237,11 +242,50 @@ def data_definition_parse(definition_str):
     return definition
 
 
-def data_properties_parse(properties_str):
+def data_properties_parse(data_properties_str):
+    data_properties = []
+    data_properties_str = re.sub(re_string_concat, "", data_properties_str)
+    data_properties_str = data_properties_str.strip('\n\t ').strip('[]')
+    data_properties_strs = data_properties_str.split(']')
+    if len(data_properties_strs) == 1:
+        data_properties_strs = data_properties_str.split('\n')
+
+    for s in data_properties_strs:
+        if s:
+            data_property = data_property_parse(s)
+            if data_property:
+                data_properties.append(data_property)
+
+    return data_properties
+
+
+def data_property_parse(data_property_str):
+    data_property_strs = data_property_str.split('[')
+    if len(data_property_strs) == 1:
+        name = data_property_str.strip('\n\t "')
+        if not name:
+            return None
+        data = FGD_data_property(name)
+    else:
+        name = data_property_strs[0].strip('\n\t "')
+        if not name:
+            return None
+        options_strs = data_property_strs[1].split('\n')
+        options = []
+
+        for option_str in options_strs:
+            o_s = option_str.strip('\n\t "')
+            if o_s:
+                options.append(o_s)
+        data = FGD_data_property(name, options)
+    return data
+
+
+def properties_parse(properties_str):
     properties = []
     properties_str = re.sub(re_string_concat, "", properties_str)
     properties_str = re.sub(re_choice_definition, "= [", properties_str)
-    properties_str = properties_str.strip().strip(']').strip()
+    properties_str = properties_str.strip('\n\t ]')
     properties_strs = re.split(re_bracketless_return, properties_str)
 
     for p_str in properties_strs:
@@ -250,13 +294,13 @@ def data_properties_parse(properties_str):
             p_str = re.sub(r'[\t ]+', " ", p_str)
             p_str = re.sub(r'\n ', "\n", p_str)
         if (p_str):
-            prop = data_property_parse(p_str)
+            prop = property_parse(p_str)
             properties.append(prop)
 
     return properties
 
 
-def data_property_parse(property_str):
+def property_parse(property_str):
     property_parts = re.findall(re_group_around_equal, property_str)
     entity_property = None
 
