@@ -22,102 +22,79 @@ class FGD():
 
     def add_class(self, fgd_class):
         # find parents
-        if fgd_class.data_properties:
-            if 'base' in fgd_class.data_properties:
-                for p_class in fgd_class.data_properties['base']:
+        if fgd_class.definitions:
+            if 'base' in fgd_class.definitions:
+                for p_class in fgd_class.definitions['base']:
                     b = next(filter(
                         lambda data: isinstance(data, FGD_entity) and
                         data.name == p_class, self._classes), None)
                     if b:
-                        fgd_class.add_parent_data(b)
+                        fgd_class.add_parent(b)
         self._classes.append(fgd_class)
 
 
-class FGD_data():
-    def __init__(self, data_type, data_properties, name=None, description=None):
-        self._data_type = data_type
+class FGD_entity():
+    # An entity in the FGD
+    def __init__(self, type, definitions, name=None, description=None):
+        self._type = type
+        self._definitions = definitions or {}
+        self._parents = []
         self._name = name
         self._description = description
-        self._parent_data_types = []
-        self._data_properties = data_properties or {}
-        self._data = []
+
+        # only for entities
+        self._properties = []
+        self._inputs = []
+        self._outputs = []
+
+        # only for MaterialExclusion and AutovisGroup
+        self._editor_data = []
 
     @property
-    def data_type(self):
-        return self._data_type
+    def type(self):
+        return self._type
 
     @property
-    def parent_data_types(self):
-        return self._parent_data_types
+    def definitions(self):
+        return self._definitions
 
     @property
-    def data_properties(self):
-        return self._data_properties
+    def parents(self):
+        return self._parents
 
     @property
     def name(self):
         return self._name
 
     @property
-    def data(self):
-        return self._data_properties
-
-    @property
     def description(self):
         if not self._description:
-            for parent in self._parent_data_types:
+            for parent in self._parents:
                 if parent._description:
                     return parent._description
 
         return self._description
-
-    def fgd_str(self):
-        fgd_str = '@' + self.data_type
-        for k, v in self._data_properties.items():
-            fgd_str += ' ' + k + "("
-            for arg in v:
-                fgd_str += arg + ', '
-            fgd_str = fgd_str.strip(', ')
-            fgd_str += ")"
-
-        if self._name:
-            fgd_str += ' = ' + self._name
-        if self._description:
-            fgd_str += ' : "' + self._description + '"'
-        if self._data:
-            fgd_str += '\n[\n'
-            for d in self._data:
-                fgd_str += d.fgd_str()
-            fgd_str += ']\n'
-
-        return fgd_str
-
-    def add_data_property(self, property):
-        self.data_properties.append(property)
-
-    def add_parent_data(self, parent):
-        self._parent_data_types.append(parent)
-
-    def add_data(self, data):
-        self._data.append(data)
-
-
-class FGD_entity(FGD_data):
-    def __init__(self, data_type, data_properties, name, description=None):
-        FGD_data.__init__(self, data_type, data_properties, name, description)
-
-        self._properties = []
-        self._inputs = []
-        self._outputs = []
 
     @property
     def properties(self):
         return self._properties
 
     @property
+    def inputs(self):
+        return self._inputs
+
+    @property
+    def outputs(self):
+        return self._outputs
+
+    @property
+    def editor_data(self):
+        return self._editor_data
+
+    @property
     def all_properties(self):
         properties = {}
-        for t in self._parent_data_types:
+        for t in self._parent:
             if isinstance(t, FGD_entity):
                 for p in t._properties:
                     properties[p.name] = p
@@ -131,13 +108,9 @@ class FGD_entity(FGD_data):
         return properties_array
 
     @property
-    def inputs(self):
-        return self._inputs
-
-    @property
     def all_inputs(self):
         inputs = {}
-        for t in self._parent_data_types:
+        for t in self._parent:
             if isinstance(t, FGD_entity):
                 for p in t._inputs:
                     inputs[p.name] = p
@@ -151,13 +124,9 @@ class FGD_entity(FGD_data):
         return inputs_array
 
     @property
-    def outputs(self):
-        return self._outputs
-
-    @property
     def all_outputs(self):
         outputs = {}
-        for t in self._parent_data_types:
+        for t in self._parent:
             if isinstance(t, FGD_entity):
                 for p in t._outputs:
                     outputs[p.name] = p
@@ -170,8 +139,33 @@ class FGD_entity(FGD_data):
 
         return outputs_array
 
+    def add_definition(self, property):
+        self.definitions.append(property)
+
+    def add_parent(self, parent):
+        self._parents.append(parent)
+
+    def add_editor_data(self, data):
+        self._editor_data.append(data)
+
     def fgd_str(self):
-        fgd_str = FGD_data.fgd_str(self)
+        fgd_str = '@' + self.type
+        for k, v in self._definitions.items():
+            fgd_str += ' ' + k + "("
+            for arg in v:
+                fgd_str += arg + ', '
+            fgd_str = fgd_str.strip(', ')
+            fgd_str += ")"
+
+        if self._name:
+            fgd_str += ' = ' + self._name
+        if self._description:
+            fgd_str += ' : "' + self._description + '"'
+        if self._editor_data:
+            fgd_str += '\n[\n'
+            for d in self._editor_data:
+                fgd_str += d.fgd_str()
+            fgd_str += ']\n'
 
         if self._properties or \
            self._inputs or self._outputs:
@@ -196,13 +190,13 @@ class FGD_entity(FGD_data):
 
 
 class FGD_property():
-    def __init__(self, p_name, p_type, p_args=[], p_options=None):
+    # A Property in an Entity
+    def __init__(self, p_name, p_type, p_args=[]):
         self._name = p_name
         self._type = p_type
         self._args = []
         for arg in p_args:
             self._args.append(arg.strip())
-        self._options = p_options
 
     @property
     def name(self):
@@ -216,10 +210,6 @@ class FGD_property():
     def args(self):
         return self._args
 
-    @property
-    def options(self):
-        return self._options
-
     def fgd_str(self):
         fdg_str = self._name + '(' + self._type + ')'
         for arg in self._args:
@@ -230,6 +220,7 @@ class FGD_property():
 
 
 class FGD_input(FGD_property):
+    # An Input in an Entity
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
@@ -238,6 +229,7 @@ class FGD_input(FGD_property):
 
 
 class FGD_output(FGD_property):
+    # An Output in an Entity
     def __init__(self, p_name, p_type, p_args=['""']):
         FGD_property.__init__(self, p_name, p_type, p_args)
 
@@ -246,9 +238,14 @@ class FGD_output(FGD_property):
 
 
 class FGD_property_options(FGD_property):
+    # An Entity Property that lists options
     def __init__(self, p_name, p_type, p_args=[], p_options=[]):
         FGD_property.__init__(self, p_name, p_type, p_args)
         self._options = p_options
+
+    @property
+    def options(self):
+        return self._options
 
     def fgd_str(self):
         fdg_str = FGD_property.fgd_str(self)
@@ -260,6 +257,7 @@ class FGD_property_options(FGD_property):
 
 
 class FGD_property_option():
+    # An Option within an Entity Property
     def __init__(self, tupple):
         self._value = tupple[0]
         self._display_name = tupple[1]
@@ -298,7 +296,9 @@ class FGD_property_option():
         return fdg_str
 
 
-class FGD_data_property():
+class FGD_editor_data():
+    # editor data, as found in nodes like
+    # @MaterialExclusion or @AutoVisGroup
     def __init__(self, d_name, d_options=None):
         self._name = d_name
         self._options = d_options
