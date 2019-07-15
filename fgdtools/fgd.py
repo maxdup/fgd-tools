@@ -94,7 +94,7 @@ class FGD_entity():
     @property
     def all_properties(self):
         properties = {}
-        for t in self._parent:
+        for t in self._parents:
             if isinstance(t, FGD_entity):
                 for p in t._properties:
                     properties[p.name] = p
@@ -110,7 +110,7 @@ class FGD_entity():
     @property
     def all_inputs(self):
         inputs = {}
-        for t in self._parent:
+        for t in self._parents:
             if isinstance(t, FGD_entity):
                 for p in t._inputs:
                     inputs[p.name] = p
@@ -179,6 +179,13 @@ class FGD_entity():
             fgd_str += "\n]"
 
         return fgd_str
+
+    @property
+    def schema(self):
+        schema_obj = {'classname': 'string', 'id': 'integer'}
+        for p in self.all_properties:
+            schema_obj[p.name] = p.type
+        return schema_obj
 
     def add_property(self, prop):
         if (isinstance(prop, FGD_input)):
