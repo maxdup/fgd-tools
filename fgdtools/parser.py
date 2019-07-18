@@ -112,9 +112,9 @@ def FgdParse(file):
 
                     step = 'properties'
 
-            if current_line and ']' in current_line and square_depth == 1:
-
-                splitted = current_line.split('@', 1)
+            if current_line and ']' in current_line and square_depth == 1 and \
+               '[' not in current_line:
+                splitted = current_line.split(']', 1)
 
                 # otherwise it's part of a string
                 if splitted[0].count('"') % 2 == 0:
@@ -151,8 +151,8 @@ def FgdParse(file):
                 class_definition_str += current_line
 
             elif step == 'properties':
-                square_depth += current_line.count(']')
                 square_depth -= current_line.count('[')
+                square_depth += current_line.count(']')
                 class_properties_str += current_line
 
     return game_data

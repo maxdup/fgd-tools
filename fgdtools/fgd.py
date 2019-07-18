@@ -96,7 +96,7 @@ class FGD_entity():
         properties = {}
         for t in self._parents:
             if isinstance(t, FGD_entity):
-                for p in t._properties:
+                for p in t.all_properties:
                     properties[p.name] = p
         for p in self._properties:
             properties[p.name] = p
@@ -112,7 +112,7 @@ class FGD_entity():
         inputs = {}
         for t in self._parents:
             if isinstance(t, FGD_entity):
-                for p in t._inputs:
+                for p in t.all_inputs:
                     inputs[p.name] = p
         for p in self._inputs:
             inputs[p.name] = p
@@ -128,7 +128,7 @@ class FGD_entity():
         outputs = {}
         for t in self._parents:
             if isinstance(t, FGD_entity):
-                for p in t._outputs:
+                for p in t.all_outputs:
                     outputs[p.name] = p
         for p in self._outputs:
             outputs[p.name] = p
