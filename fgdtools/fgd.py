@@ -126,7 +126,7 @@ class FGD_entity():
     @property
     def all_outputs(self):
         outputs = {}
-        for t in self._parent:
+        for t in self._parents:
             if isinstance(t, FGD_entity):
                 for p in t._outputs:
                     outputs[p.name] = p
@@ -182,8 +182,31 @@ class FGD_entity():
 
     @property
     def schema(self):
+        schema_obj = {
+            'properties': self.property_schema,
+            'inputs': self.input_schema,
+            'outputs': self.output_schema
+        }
+        return schema_obj
+
+    @property
+    def property_schema(self):
         schema_obj = {'classname': 'string', 'id': 'integer'}
         for p in self.all_properties:
+            schema_obj[p.name] = p.type
+        return schema_obj
+
+    @property
+    def input_schema(self):
+        schema_obj = {}
+        for p in self.all_inputs:
+            schema_obj[p.name] = p.type
+        return schema_obj
+
+    @property
+    def output_schema(self):
+        schema_obj = {}
+        for p in self.all_outputs:
             schema_obj[p.name] = p.type
         return schema_obj
 
