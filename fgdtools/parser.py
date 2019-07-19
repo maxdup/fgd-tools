@@ -2,6 +2,7 @@ from .fgd import *
 import re
 
 re_string_concat = re.compile(r'"[\t\n ]*\+[\t\n ]*"', re.IGNORECASE)
+re_property_concat = re.compile(r'\:[\t ]*\n[\t\n ]', re.IGNORECASE)
 re_space_normalize = re.compile(r'[\t\n ]+', re.IGNORECASE)
 re_space_normalize = re.compile(r'[\t ]+', re.IGNORECASE)
 re_function_like = re.compile(r'[^\( \n\t]*\([^\(]*\)', re.IGNORECASE)
@@ -81,7 +82,6 @@ def FgdParse(file):
                         current_line = ''
 
                     step = 'definition'
-
                     make_class(game_data,
                                class_definition_str,
                                class_properties_str)
@@ -248,9 +248,6 @@ def editor_datas_parse(editor_datas_str):
     editor_datas_str = re.sub(re_string_concat, "", editor_datas_str)
     editor_datas_str = editor_datas_str.strip('\n\t ').strip('[]')
     editor_data_strs = editor_datas_str.split(']')
-    if len(editor_data_strs) == 1:
-        editor_data_strs = editor_datas_str.split('\n')
-
     for s in editor_data_strs:
         if s:
             editor_data = editor_data_parse(s)
@@ -285,6 +282,7 @@ def editor_data_parse(editor_data_str):
 def properties_parse(properties_str):
     properties = []
     properties_str = re.sub(re_string_concat, "", properties_str)
+    properties_str = re.sub(re_property_concat, ": ", properties_str)
     properties_str = re.sub(re_choice_definition, "= [", properties_str)
     properties_str = properties_str.strip('\n\t ')
     properties_strs = re.split(re_bracketless_return, properties_str)
@@ -335,18 +333,22 @@ def property_parse(property_str):
 
 def property_definition_parse(p_definition_str):
     p_definition_str = p_definition_str.strip()
-
     args = re.split(
         r'''[ ]*:[ ]*(?=(?:[^'"]|'[^']*'|"[^"]*")*$)+''', p_definition_str)
-    p_name_str = args[0].split('(')[0]
-    p_type_str = args[0][len(p_name_str):].strip('()').strip()
+
+    definition_args = args[0].split('(', 1)
+    p_name_str = definition_args[0].strip()
+
+    definition_args = definition_args[1].split(')', 1)
+    p_type_str = definition_args[0].strip()
+    p_attr_str = definition_args[1].strip() or None
 
     if (len(args) > 1):
         p_args = args[1:]
     else:
         p_args = []
 
-    return (p_name_str, p_type_str, p_args)
+    return (p_name_str, p_type_str, p_attr_str, p_args)
 
 
 def property_options_parse(p_options_str):
@@ -390,7 +392,6 @@ def property_option_parse(p_option_str):
             option_default = int(default_str)
         except:
             option_default = default_str.strip("\'\" \n\t")
-
         option = FGD_property_option((option_val,
                                       option_desc,
                                       option_default))

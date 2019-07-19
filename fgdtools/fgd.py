@@ -178,6 +178,9 @@ class FGD_entity():
                 fgd_str += "\n\t" + output.fgd_str()
             fgd_str += "\n]"
 
+        elif self._name and not self._editor_data:
+            fgd_str += " []"
+
         return fgd_str
 
     @property
@@ -221,9 +224,10 @@ class FGD_entity():
 
 class FGD_property():
     # A Property in an Entity
-    def __init__(self, p_name, p_type, p_args=[]):
+    def __init__(self, p_name, p_type, p_attr, p_args=[]):
         self._name = p_name
         self._type = p_type
+        self._attr = p_attr
         self._args = []
         for arg in p_args:
             self._args.append(arg.strip())
@@ -241,18 +245,20 @@ class FGD_property():
         return self._args
 
     def fgd_str(self):
-        fdg_str = self._name + '(' + self._type + ')'
+        fgd_str = self._name + '(' + self._type + ')'
+        if self._attr:
+            fgd_str += ' ' + self._attr
         for arg in self._args:
-            fdg_str += ' :'
+            fgd_str += ' :'
             if arg:
-                fdg_str += ' ' + arg
-        return fdg_str
+                fgd_str += ' ' + arg
+        return fgd_str
 
 
 class FGD_input(FGD_property):
     # An Input in an Entity
-    def __init__(self, p_name, p_type, p_args=['""']):
-        FGD_property.__init__(self, p_name, p_type, p_args)
+    def __init__(self, p_name, p_type, p_attr, p_args=['""']):
+        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
 
     def fgd_str(self):
         return 'input ' + FGD_property.fgd_str(self)
@@ -260,8 +266,8 @@ class FGD_input(FGD_property):
 
 class FGD_output(FGD_property):
     # An Output in an Entity
-    def __init__(self, p_name, p_type, p_args=['""']):
-        FGD_property.__init__(self, p_name, p_type, p_args)
+    def __init__(self, p_name, p_type, p_attr, p_args=['""']):
+        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
 
     def fgd_str(self):
         return 'output ' + FGD_property.fgd_str(self)
@@ -269,8 +275,8 @@ class FGD_output(FGD_property):
 
 class FGD_property_options(FGD_property):
     # An Entity Property that lists options
-    def __init__(self, p_name, p_type, p_args=[], p_options=[]):
-        FGD_property.__init__(self, p_name, p_type, p_args)
+    def __init__(self, p_name, p_type, p_attr, p_args=[], p_options=[]):
+        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
         self._options = p_options
 
     @property
@@ -278,12 +284,12 @@ class FGD_property_options(FGD_property):
         return self._options
 
     def fgd_str(self):
-        fdg_str = FGD_property.fgd_str(self)
-        fdg_str += ' =\n\t[\n'
+        fgd_str = FGD_property.fgd_str(self)
+        fgd_str += ' =\n\t[\n'
         for option in self._options:
-            fdg_str += '\t\t' + option.fgd_str() + '\n'
-        fdg_str += '\t]'
-        return fdg_str
+            fgd_str += '\t\t' + option.fgd_str() + '\n'
+        fgd_str += '\t]'
+        return fgd_str
 
 
 class FGD_property_option():
@@ -309,21 +315,21 @@ class FGD_property_option():
         return self._default_value
 
     def fgd_str(self):
-        fdg_str = ''
+        fgd_str = ''
         if isinstance(self._value, int):
-            fdg_str += str(self._value)
+            fgd_str += str(self._value)
         else:
-            fdg_str += '"' + self._value + '"'
-        fdg_str += ' : "' + self._display_name + '"'
+            fgd_str += '"' + self._value + '"'
+        fgd_str += ' : "' + self._display_name + '"'
 
-        if self._default_value:
-            fdg_str += ' : '
+        if self._default_value != None:
+            fgd_str += ' : '
             if isinstance(self._default_value, int):
-                fdg_str += str(self._default_value)
+                fgd_str += str(self._default_value)
             else:
-                fdg_str += '"' + self._default_value + '"'
+                fgd_str += '"' + self._default_value + '"'
 
-        return fdg_str
+        return fgd_str
 
 
 class FGD_editor_data():
