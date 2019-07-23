@@ -224,13 +224,14 @@ class FGD_entity():
 
 class FGD_property():
     # A Property in an Entity
-    def __init__(self, p_name, p_type, p_attr, p_args=[]):
+    def __init__(self, p_name, p_type, p_attr, p_args=[], p_options=[]):
         self._name = p_name
         self._type = p_type
         self._attr = p_attr
         self._args = []
         for arg in p_args:
             self._args.append(arg.strip())
+        self._options = p_options
 
     @property
     def name(self):
@@ -244,6 +245,13 @@ class FGD_property():
     def args(self):
         return self._args
 
+    @property
+    def options(self):
+        if self._type in ['choices', 'flags']:
+            return self._options
+        else:
+            return None
+
     def fgd_str(self):
         fgd_str = self._name + '(' + self._type + ')'
         if self._attr:
@@ -252,6 +260,12 @@ class FGD_property():
             fgd_str += ' :'
             if arg:
                 fgd_str += ' ' + arg
+
+        if self.options:
+            fgd_str += ' =\n\t[\n'
+            for option in self._options:
+                fgd_str += '\t\t' + option.fgd_str() + '\n'
+            fgd_str += '\t]'
         return fgd_str
 
 
@@ -271,25 +285,6 @@ class FGD_output(FGD_property):
 
     def fgd_str(self):
         return 'output ' + FGD_property.fgd_str(self)
-
-
-class FGD_property_options(FGD_property):
-    # An Entity Property that lists options
-    def __init__(self, p_name, p_type, p_attr, p_args=[], p_options=[]):
-        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
-        self._options = p_options
-
-    @property
-    def options(self):
-        return self._options
-
-    def fgd_str(self):
-        fgd_str = FGD_property.fgd_str(self)
-        fgd_str += ' =\n\t[\n'
-        for option in self._options:
-            fgd_str += '\t\t' + option.fgd_str() + '\n'
-        fgd_str += '\t]'
-        return fgd_str
 
 
 class FGD_property_option():

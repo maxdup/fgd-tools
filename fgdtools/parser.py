@@ -326,7 +326,7 @@ def property_parse(property_str):
         p_options = property_options_parse(property_parts[2].strip())
 
         p_data = property_definition_parse(p_definition_str)
-        entity_property = FGD_property_options(*p_data, p_options)
+        entity_property = FGD_property(*p_data, p_options)
 
     return entity_property
 
