@@ -165,19 +165,67 @@ def make_class(game_data, meta_str, prop_str):
     class_metadatas_str = re.sub(re_string_concat, "", class_metadatas_str)
     class_metadatas_str = re.sub(re_space_normalize, " ", class_metadatas_str)
     if class_metadatas_str:
-        c = class_metadatas_parse(class_metadatas_str)
-        if c:
-            game_data.add_class(c)
+        if class_metadatas_str.startswith('include'):
+            return
 
-            # if isinstance(c, FGD_entity):
-            if prop_str:
-                if c.type == 'MaterialExclusion' or \
-                   c.type == 'AutoVisGroup':
-                    for editor_data in editor_datas_parse(prop_str):
-                        c.add_editor_data(editor_data)
-                else:
+        if class_metadatas_str.startswith('MaterialExclusion') or \
+           class_metadatas_str.startswith('AutoVisGroup') or \
+           class_metadatas_str.startswith('mapsize'):
+            c = editor_metadatas_parse(class_metadatas_str, prop_str)
+            if c:
+                game_data.add_editor_data(c)
+        else:
+            c = class_metadatas_parse(class_metadatas_str)
+            if c:
+                game_data.add_entity(c)
+                if prop_str:
                     for property_ in properties_parse(prop_str):
                         c.add_property(property_)
+
+
+def editor_metadatas_parse(meta_str, prop_str):
+    d_type = ''
+    d_name = None
+    d_data = None
+
+    d_type = re.split('[ =\(]', meta_str)[0]
+    meta_str = meta_str[len(d_type):].strip()
+    if meta_str.startswith('='):
+        meta_str = meta_str.lstrip('= "')
+        d_name = meta_str.split('"', 1)[0]
+        meta_str = meta_str[len(d_name):].lstrip('"\n\t ')
+    if meta_str.startswith('('):
+        d_data = ()
+        tups = meta_str.strip('()\n\t ').split(',')
+        for t in tups:
+            d_data = d_data + (t.strip(),)
+    elif prop_str.strip():
+        if '[' in prop_str:
+            d_data = {}
+            datas = prop_str.split(']')
+
+            for data in datas:
+                if not data.strip():
+                    continue
+                ds = data.strip().split('[', 1)
+
+                d_list = []
+                d_key = ds[0].strip('" \n\t')
+                dl = ds[1].split('\n')
+                for d in dl:
+                    d_val = d.strip('" \n\t')
+                    if d_val:
+                        d_list.append(d.strip('" \n\t'))
+                d_data[d_key] = d_list
+        else:
+            d_data = []
+            datas = prop_str.split('\n')
+            for data in datas:
+                d = data.strip('" \n\t')
+                if d:
+                    d_data.append(d.strip())
+    data = FGD_editor_data(d_type, d_name, d_data)
+    return data
 
 
 def class_metadatas_parse(class_metadatas_str):
@@ -188,9 +236,6 @@ def class_metadatas_parse(class_metadatas_str):
     definitions = {}
     entity_args = []
     fgd_data = None
-
-    if type == 'include':
-        return None
 
     if '=' in class_metadatas_str:
         class_metadatas_str = class_metadatas_str.split('=', 1)
@@ -206,24 +251,14 @@ def class_metadatas_parse(class_metadatas_str):
         for d in definitions_strs:
             definitions.update(definition_parse(d))
 
-    if type == 'mapsize' or \
-       type == 'AutoVisGroup' or \
-       type == 'MaterialExclusion':
-        if entity_args:
-            name = entity_args[0].strip('')
-        else:
-            name = None
-
-        fgd_data = FGD_entity(type, definitions, name)
+    name = entity_args[0].strip()
+    if len(entity_args) == 2:
+        description = entity_args[1].strip('"').strip()
     else:
-        name = entity_args[0].strip()
-        if len(entity_args) == 2:
-            description = entity_args[1].strip('"').strip()
-        else:
-            description = ''
+        description = ''
 
-        fgd_data = FGD_entity(type, definitions,
-                              name, description)
+    fgd_data = FGD_entity(type, definitions,
+                          name, description)
 
     return fgd_data
 
@@ -241,42 +276,6 @@ def definition_parse(definition_str):
         definition[definition_name] = []
 
     return definition
-
-
-def editor_datas_parse(editor_datas_str):
-    editor_datas = []
-    editor_datas_str = re.sub(re_string_concat, "", editor_datas_str)
-    editor_datas_str = editor_datas_str.strip('\n\t ').strip('[]')
-    editor_data_strs = editor_datas_str.split(']')
-    for s in editor_data_strs:
-        if s:
-            editor_data = editor_data_parse(s)
-            if editor_data:
-                editor_datas.append(editor_data)
-
-    return editor_datas
-
-
-def editor_data_parse(editor_data_str):
-    editor_data_strs = editor_data_str.split('[')
-    if len(editor_data_strs) == 1:
-        name = editor_data_str.strip('\n\t "')
-        if not name:
-            return None
-        editor_data = FGD_editor_data(name)
-    else:
-        name = editor_data_strs[0].strip('\n\t "')
-        if not name:
-            return None
-        options_strs = editor_data_strs[1].split('\n')
-        options = []
-
-        for option_str in options_strs:
-            o_s = option_str.strip('\n\t "')
-            if o_s:
-                options.append(o_s)
-        editor_data = FGD_editor_data(name, options)
-    return editor_data
 
 
 def properties_parse(properties_str):

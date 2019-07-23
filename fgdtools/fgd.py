@@ -1,54 +1,116 @@
 class FGD():
+    """Contains all the data parsed from a FGD file
+    """
+
     def __init__(self):
-        self._classes = []
+        self._entities = []
+        self._editor_data = []
 
     @property
-    def classes(self):
-        return self._classes
+    def entities(self):
+        return self._entities
 
-    def fgd_str(self):
-        fgd_str = ''
-        for c in self.classes:
-            fgd_str += c.fgd_str() + '\n\n'
-        return fgd_str
+    @property
+    def editor_data(self):
+        return self._editor_data
 
     def include(self, basefgd):
-        self._classes.extend(list(basefgd.classes))
+        self._entities.extend(list(basefgd.entities))
+
+    def add_entity(self, fgd_entity):
+        """Adds an entity to the FGD
+        :param fgd_entity: a FGD_entity object to be added to FGD._entities
+        :type fgd_entity: FGD_entity
+        """
+        # find parents
+        if fgd_entity.definitions:
+            if 'base' in fgd_entity.definitions:
+                for p_entity in fgd_entity.definitions['base']:
+                    b = next(filter(
+                        lambda data: isinstance(data, FGD_entity) and
+                        data.name == p_entity, self._entities), None)
+                    if b:
+                        fgd_entity.add_parent(b)
+        self._entities.append(fgd_entity)
+
+    def add_editor_data(self, fgd_editor_data):
+        self._editor_data.append(fgd_editor_data)
 
     def get_entity_by_name(self, entity_name):
-        results = (c for c in self._classes if isinstance(
+        results = (c for c in self._entities if isinstance(
             c, FGD_entity) and c.name == entity_name)
         return next(results, None)
 
-    def add_class(self, fgd_class):
-        # find parents
-        if fgd_class.definitions:
-            if 'base' in fgd_class.definitions:
-                for p_class in fgd_class.definitions['base']:
-                    b = next(filter(
-                        lambda data: isinstance(data, FGD_entity) and
-                        data.name == p_class, self._classes), None)
-                    if b:
-                        fgd_class.add_parent(b)
-        self._classes.append(fgd_class)
+    def fgd_str(self):
+        fgd_str = ''
+        for d in self.editor_data:
+            fgd_str += d.fgd_str() + '\n\n'
+        for e in self.entities:
+            fgd_str += e.fgd_str() + '\n\n'
+        return fgd_str
+
+
+class FGD_editor_data():
+    # editor data, as found in nodes like
+    # @mapsize, @MaterialExclusion or @AutoVisGroup
+    def __init__(self, type, name, data=None):
+        self._type = type
+        self._name = name
+        self._data = data
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def data(self):
+        return self._data
+
+    def fgd_str(self):
+        fgd_str = '@' + self._type
+        if self._name:
+            fgd_str += ' = "' + self.name + '"'
+        if self._data and isinstance(self._data, tuple):
+            fgd_str += '('
+            for t in self._data:
+                fgd_str += str(t) + ', '
+            fgd_str = fgd_str.strip(', ') + ')'
+        fgd_str += "\n"
+
+        if self._data:
+            if isinstance(self._data, dict):
+                fgd_str += '['
+                for k, v in self._data.items():
+                    fgd_str += '\n\t"' + k + '"\n\t['
+                    for i in v:
+                        fgd_str += '\n\t\t"' + i + '"'
+                    fgd_str += '\n\t]'
+                fgd_str += '\n]'
+            elif isinstance(self._data, list):
+                fgd_str += '['
+                for i in self._data:
+                    fgd_str += '\n\t"' + i + '"'
+                fgd_str += '\n]'
+        return fgd_str
 
 
 class FGD_entity():
     # An entity in the FGD
-    def __init__(self, type, definitions, name=None, description=None):
-        self._type = type
+    def __init__(self, e_type, definitions, name, description=None):
+        self._type = e_type
         self._definitions = definitions or {}
-        self._parents = []
         self._name = name
         self._description = description
+        self._parents = []
 
         # only for entities
         self._properties = []
         self._inputs = []
         self._outputs = []
-
-        # only for MaterialExclusion and AutovisGroup
-        self._editor_data = []
 
     @property
     def type(self):
@@ -86,10 +148,6 @@ class FGD_entity():
     @property
     def outputs(self):
         return self._outputs
-
-    @property
-    def editor_data(self):
-        return self._editor_data
 
     @property
     def all_properties(self):
@@ -145,9 +203,6 @@ class FGD_entity():
     def add_parent(self, parent):
         self._parents.append(parent)
 
-    def add_editor_data(self, data):
-        self._editor_data.append(data)
-
     def fgd_str(self):
         fgd_str = '@' + self.type
         for k, v in self._definitions.items():
@@ -161,11 +216,6 @@ class FGD_entity():
             fgd_str += ' = ' + self._name
         if self._description:
             fgd_str += ' : "' + self._description + '"'
-        if self._editor_data:
-            fgd_str += '\n[\n'
-            for d in self._editor_data:
-                fgd_str += d.fgd_str()
-            fgd_str += ']\n'
 
         if self._properties or \
            self._inputs or self._outputs:
@@ -177,9 +227,6 @@ class FGD_entity():
             for output in self._outputs:
                 fgd_str += "\n\t" + output.fgd_str()
             fgd_str += "\n]"
-
-        elif self._name and not self._editor_data:
-            fgd_str += " []"
 
         return fgd_str
 
@@ -324,29 +371,4 @@ class FGD_property_option():
             else:
                 fgd_str += '"' + self._default_value + '"'
 
-        return fgd_str
-
-
-class FGD_editor_data():
-    # editor data, as found in nodes like
-    # @MaterialExclusion or @AutoVisGroup
-    def __init__(self, d_name, d_options=None):
-        self._name = d_name
-        self._options = d_options
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def options(self):
-        return self._options
-
-    def fgd_str(self):
-        fgd_str = '\t"' + self._name + '"\n'
-        if self._options:
-            fgd_str += '\t[\n'
-            for o in self._options:
-                fgd_str += '\t\t"' + o + '"\n'
-            fgd_str += '\t]\n'
         return fgd_str
