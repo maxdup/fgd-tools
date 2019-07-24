@@ -20,7 +20,13 @@ re_choice_definition = re.compile(r'=[\t\n ]*\[', re.IGNORECASE)
 
 
 def FgdParse(file):
+    """Parse a .fgd file and return a FGD object
 
+    :param file: A path to the .fgd file to be parsed
+    :type file: string
+    :return: a FGD object
+    :rtype: FGD
+    """
     reader = open(file, "r", encoding="iso-8859-1")
 
     game_data = FGD()
@@ -35,7 +41,8 @@ def FgdParse(file):
             current_line = current_line.strip('@include').strip(' ').strip('"')
             fgdName = current_line.split('"')[0]
             base_game_data = FgdParse(fgdName)
-            game_data.include(base_game_data)
+            game_data._entities.extend(list(base_game_data.entities))
+            game_data._editor_data.extend(list(base_game_data.editor_data))
 
     reader.seek(0)
 
@@ -167,23 +174,20 @@ def make_class(game_data, meta_str, prop_str):
     if class_metadatas_str:
         if class_metadatas_str.startswith('include'):
             return
-
         if class_metadatas_str.startswith('MaterialExclusion') or \
            class_metadatas_str.startswith('AutoVisGroup') or \
            class_metadatas_str.startswith('mapsize'):
-            c = editor_metadatas_parse(class_metadatas_str, prop_str)
-            if c:
-                game_data.add_editor_data(c)
+            return
+            editor_data = editor_data_parse(class_metadatas_str, prop_str)
+            if editor_data:
+                game_data.add_editor_data(editor_data)
         else:
-            c = class_metadatas_parse(class_metadatas_str)
-            if c:
-                game_data.add_entity(c)
-                if prop_str:
-                    for property_ in properties_parse(prop_str):
-                        c.add_property(property_)
+            entity = entity_parse(class_metadatas_str, prop_str)
+            if entity:
+                game_data.add_entity(entity)
 
 
-def editor_metadatas_parse(meta_str, prop_str):
+def editor_data_parse(meta_str, prop_str):
     d_type = ''
     d_name = None
     d_data = None
@@ -228,23 +232,26 @@ def editor_metadatas_parse(meta_str, prop_str):
     return data
 
 
-def class_metadatas_parse(class_metadatas_str):
+def entity_parse(meta_str, prop_str):
+    properties = []
+    inputs = []
+    outputs = []
 
-    type = class_metadatas_str.split(' ', 1)[0].split('(')[0]
-    class_metadatas_str = class_metadatas_str[len(type):]
+    e_type = meta_str.split(' ', 1)[0].split('(')[0]
+    meta_str = meta_str[len(e_type):]
 
     definitions = {}
     entity_args = []
     fgd_data = None
 
-    if '=' in class_metadatas_str:
-        class_metadatas_str = class_metadatas_str.split('=', 1)
-        definitions_str = class_metadatas_str[0].strip()
+    if '=' in meta_str:
+        meta_str = meta_str.split('=', 1)
+        definitions_str = meta_str[0].strip()
         entity_args = re.split('[\t\n ]*:[\t\n ]"',
-                               class_metadatas_str[1].strip())
+                               meta_str[1].strip())
 
     else:
-        definitions_str = class_metadatas_str
+        definitions_str = meta_str
 
     definitions_strs = re.findall(re_function_like, definitions_str)
     if definitions_strs:
@@ -257,10 +264,21 @@ def class_metadatas_parse(class_metadatas_str):
     else:
         description = ''
 
-    fgd_data = FGD_entity(type, definitions,
-                          name, description)
+    for property_ in properties_parse(prop_str):
+        if (isinstance(property_, FGD_input)):
+            inputs.append(property_)
+        elif (isinstance(property_, FGD_output)):
+            outputs.append(property_)
+        elif (isinstance(property_, FGD_property)):
+            properties.append(property_)
 
-    return fgd_data
+    if not e_type or not name:
+        return None
+
+    entity = FGD_entity(e_type, definitions, name, description,
+                        properties, inputs, outputs)
+
+    return entity
 
 
 def definition_parse(definition_str):
@@ -309,23 +327,29 @@ def property_parse(property_str):
     if len(property_parts) <= 2:
         if (p_definition_str.startswith('output ')):
             p_data = property_definition_parse(p_definition_str[7:])
-            entity_property = FGD_output(*p_data)
+            if 'display_name' in p_data:
+                p_data['description'] = p_data.pop('display_name')
+            p_data['output_type'] = p_data.pop('property_type')
+            entity_property = FGD_output(**p_data)
 
         elif (p_definition_str.startswith('input ')):
             p_data = property_definition_parse(p_definition_str[6:])
-            entity_property = FGD_input(*p_data)
+            if 'display_name' in p_data:
+                p_data['description'] = p_data.pop('display_name')
+            p_data['input_type'] = p_data.pop('property_type')
+            entity_property = FGD_input(**p_data)
 
         else:
             p_data = property_definition_parse(p_definition_str)
-            entity_property = FGD_property(*p_data)
+            entity_property = FGD_property(**p_data)
 
     elif len(property_parts) > 2:
 
         p_options_str = property_parts[2].strip()
         p_options = property_options_parse(property_parts[2].strip())
-
         p_data = property_definition_parse(p_definition_str)
-        entity_property = FGD_property(*p_data, p_options)
+        p_data['options'] = p_options
+        entity_property = FGD_property(**p_data)
 
     return entity_property
 
@@ -340,14 +364,21 @@ def property_definition_parse(p_definition_str):
 
     definition_args = definition_args[1].split(')', 1)
     p_type_str = definition_args[0].strip()
-    p_attr_str = definition_args[1].strip() or None
+    p_readonly = bool(definition_args[1].strip() or False)
 
+    kargs = {
+        'name': p_name_str,
+        'property_type': p_type_str,
+    }
+    if p_readonly:
+        kargs['readonly'] = True
     if (len(args) > 1):
-        p_args = args[1:]
-    else:
-        p_args = []
-
-    return (p_name_str, p_type_str, p_attr_str, p_args)
+        kargs['display_name'] = args[1].strip('" \n\t')
+    if (len(args) > 2):
+        kargs['default_value'] = args[2].strip()
+    if (len(args) > 3):
+        kargs['description'] = args[3].strip('" \n\t')
+    return kargs
 
 
 def property_options_parse(p_options_str):

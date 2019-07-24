@@ -14,14 +14,14 @@ class FGD():
     def editor_data(self):
         return self._editor_data
 
-    def include(self, basefgd):
-        self._entities.extend(list(basefgd.entities))
-
     def add_entity(self, fgd_entity):
         """Adds an entity to the FGD
         :param fgd_entity: a FGD_entity object to be added to FGD._entities
         :type fgd_entity: FGD_entity
         """
+        if not fgd_entity:
+            return
+
         # find parents
         if fgd_entity.definitions:
             if 'base' in fgd_entity.definitions:
@@ -30,13 +30,16 @@ class FGD():
                         lambda data: isinstance(data, FGD_entity) and
                         data.name == p_entity, self._entities), None)
                     if b:
-                        fgd_entity.add_parent(b)
+                        fgd_entity._parents.append(b)
         self._entities.append(fgd_entity)
 
     def add_editor_data(self, fgd_editor_data):
+        if not fgd_editor_data:
+            return
+
         self._editor_data.append(fgd_editor_data)
 
-    def get_entity_by_name(self, entity_name):
+    def entity_by_name(self, entity_name):
         results = (c for c in self._entities if isinstance(
             c, FGD_entity) and c.name == entity_name)
         return next(results, None)
@@ -53,14 +56,14 @@ class FGD():
 class FGD_editor_data():
     # editor data, as found in nodes like
     # @mapsize, @MaterialExclusion or @AutoVisGroup
-    def __init__(self, type, name, data=None):
-        self._type = type
+    def __init__(self, class_type, name, data=None):
+        self._class_type = class_type
         self._name = name
         self._data = data
 
     @property
-    def type(self):
-        return self._type
+    def class_type(self):
+        return self._class_type
 
     @property
     def name(self):
@@ -71,7 +74,7 @@ class FGD_editor_data():
         return self._data
 
     def fgd_str(self):
-        fgd_str = '@' + self._type
+        fgd_str = '@' + self._class_type
         if self._name:
             fgd_str += ' = "' + self.name + '"'
         if self._data and isinstance(self._data, tuple):
@@ -100,21 +103,21 @@ class FGD_editor_data():
 
 class FGD_entity():
     # An entity in the FGD
-    def __init__(self, e_type, definitions, name, description=None):
-        self._type = e_type
+    def __init__(self, class_type, definitions, name, description=None,
+                 properties=[], inputs=[], outputs=[]):
+        self._class_type = class_type
         self._definitions = definitions or {}
         self._name = name
         self._description = description
+        self._properties = properties
+        self._inputs = inputs
+        self._outputs = outputs
+
         self._parents = []
 
-        # only for entities
-        self._properties = []
-        self._inputs = []
-        self._outputs = []
-
     @property
-    def type(self):
-        return self._type
+    def class_type(self):
+        return self._class_type
 
     @property
     def definitions(self):
@@ -197,14 +200,20 @@ class FGD_entity():
 
         return outputs_array
 
-    def add_definition(self, property):
-        self.definitions.append(property)
+    def property_by_name(self, prop_name):
+        results = (p for p in self.all_properties if p.name == prop_name)
+        return next(results, None)
 
-    def add_parent(self, parent):
-        self._parents.append(parent)
+    def input_by_name(self, input_name):
+        results = (i for i in self.all_inputs if i.name == input_name)
+        return next(results, None)
+
+    def output_by_name(self, output_name):
+        results = (o for o in self.all_outputs if o.name == output_name)
+        return next(results, None)
 
     def fgd_str(self):
-        fgd_str = '@' + self.type
+        fgd_str = '@' + self.class_type
         for k, v in self._definitions.items():
             fgd_str += ' ' + k + "("
             for arg in v:
@@ -227,6 +236,8 @@ class FGD_entity():
             for output in self._outputs:
                 fgd_str += "\n\t" + output.fgd_str()
             fgd_str += "\n]"
+        else:
+            fgd_str += " []"
 
         return fgd_str
 
@@ -243,95 +254,160 @@ class FGD_entity():
     def property_schema(self):
         schema_obj = {'classname': 'string', 'id': 'integer'}
         for p in self.all_properties:
-            schema_obj[p.name] = p.type
+            schema_obj[p.name] = p.property_type
         return schema_obj
 
     @property
     def input_schema(self):
         schema_obj = {}
         for p in self.all_inputs:
-            schema_obj[p.name] = p.type
+            schema_obj[p.name] = p.property_type
         return schema_obj
 
     @property
     def output_schema(self):
         schema_obj = {}
         for p in self.all_outputs:
-            schema_obj[p.name] = p.type
+            schema_obj[p.name] = p.property_type
         return schema_obj
-
-    def add_property(self, prop):
-        if (isinstance(prop, FGD_input)):
-            self._inputs.append(prop)
-        elif (isinstance(prop, FGD_output)):
-            self._outputs.append(prop)
-        elif (isinstance(prop, FGD_property)):
-            self._properties.append(prop)
 
 
 class FGD_property():
     # A Property in an Entity
-    def __init__(self, p_name, p_type, p_attr, p_args=[], p_options=[]):
-        self._name = p_name
-        self._type = p_type
-        self._attr = p_attr
-        self._args = []
-        for arg in p_args:
-            self._args.append(arg.strip())
-        self._options = p_options
+    def __init__(self, name, property_type, readonly=False,
+                 display_name=None, default_value=None, description=None,
+                 options=[]):
+        self._name = name
+        self._property_type = property_type.lower()
+        self._readonly = readonly  # usually to set property to readonly
+
+        self._display_name = display_name
+        self._default_value = default_value
+        self._description = description
+
+        self._options = options
 
     @property
     def name(self):
         return self._name
 
     @property
-    def type(self):
-        return self._type
+    def property_type(self):
+        return self._property_type
 
     @property
-    def args(self):
-        return self._args
+    def readonly(self):
+        return self._readonly
+
+    @property
+    def display_name(self):
+        return self._display_name
+
+    @property
+    def default_value(self):
+        return self._default_value
+
+    @property
+    def description(self):
+        return self._description
 
     @property
     def options(self):
-        if self._type in ['choices', 'flags']:
+        if self._property_type.lower() in ['choices', 'flags']:
             return self._options
         else:
             return None
 
-    def fgd_str(self):
-        fgd_str = self._name + '(' + self._type + ')'
-        if self._attr:
-            fgd_str += ' ' + self._attr
-        for arg in self._args:
-            fgd_str += ' :'
-            if arg:
-                fgd_str += ' ' + arg
+    def option_by_value(self, option_value):
+        results = (o for o in self._options if o.value == option_value)
+        return next(results, None)
 
+    def fgd_str(self):
+        # name
+        fgd_str = self._name + '(' + self._property_type + ')'
+
+        # readonly
+        if self._readonly:
+            fgd_str += ' readonly'
+
+        # display name
+        if self._display_name:
+            fgd_str += ' : "' + self._display_name + '"'
+        elif self._description or self._default_value and \
+                not isinstance(self, FGD_input) and \
+                not isinstance(self, FGD_output):
+            fgd_str += ' :'
+
+        # default_value
+        if self._default_value:
+            fgd_str += ' : ' + str(self._default_value)
+        elif self._description and \
+                not isinstance(self, FGD_input) and \
+                not isinstance(self, FGD_output):
+            fgd_str += ' :'
+
+        # description
+        if self._description:
+            fgd_str += ' : "' + self._description + '"'
+
+        # options
         if self.options:
             fgd_str += ' =\n\t[\n'
             for option in self._options:
                 fgd_str += '\t\t' + option.fgd_str() + '\n'
             fgd_str += '\t]'
+        elif self._property_type.lower() in ['choices', 'flags']:
+            fgd_str += ' =\n\t[\n\t]'
+
         return fgd_str
 
 
-class FGD_input(FGD_property):
+class FGD_input():
     # An Input in an Entity
-    def __init__(self, p_name, p_type, p_attr, p_args=['""']):
-        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
+    def __init__(self, name, input_type, description=''):
+        self._name = name
+        self._input_type = input_type
+        self._description = description
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def input_type(self):
+        return self._input_type
+
+    @property
+    def description(self):
+        return self._description
 
     def fgd_str(self):
-        return 'input ' + FGD_property.fgd_str(self)
+        return 'input ' + self._name + '(' + self._input_type + ')' + \
+            ' : "' + str(self.description) + '"'
 
 
-class FGD_output(FGD_property):
+class FGD_output():
     # An Output in an Entity
-    def __init__(self, p_name, p_type, p_attr, p_args=['""']):
-        FGD_property.__init__(self, p_name, p_type, p_attr, p_args)
+    def __init__(self, name, output_type, description=''):
+        self._name = name
+        self._output_type = output_type
+        self._description = description
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def output_type(self):
+        return self._output_type
+
+    @property
+    def description(self):
+        return self._description
 
     def fgd_str(self):
-        return 'output ' + FGD_property.fgd_str(self)
+        return 'output ' + self._name + '(' + self._output_type + ')' + \
+            ' : "' + str(self.description) + '"'
 
 
 class FGD_property_option():
