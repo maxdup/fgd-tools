@@ -59,7 +59,7 @@ class Fgd():
 
         :param entity_name: The entity name to look for.
         :type entity_name: str
-        :return: An entity with matching name
+        :return: An entity with matching name, None if not found.
         :rtype: FgdEntity
         """
 
@@ -200,6 +200,60 @@ class FgdEntity():
         self._parents = []
 
     @property
+    def schema(self):
+        """A schematic view of this entity's attributes.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'properties': self.property_schema,
+            'inputs': self.input_schema,
+            'outputs': self.output_schema
+        }
+        return schema_obj
+
+    @property
+    def property_schema(self):
+        """A schematic view of this entity's properties.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {'classname': 'string', 'id': 'integer'}
+        for p in self.properties:
+            schema_obj[p.name] = p.schema
+        return schema_obj
+
+    @property
+    def input_schema(self):
+        """A schematic view of this entity's inputs.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {}
+        for i in self.inputs:
+            schema_obj[i.name] = i.schema
+        return schema_obj
+
+    @property
+    def output_schema(self):
+        """A schematic view of this entity's outputs.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {}
+        for o in self.outputs:
+            schema_obj[o.name] = o.schema
+        return schema_obj
+
+    @property
     def class_type(self):
         """The entity's type.
 
@@ -311,7 +365,7 @@ class FgdEntity():
 
         :param prop_name: The entity property name to look for.
         :type prop_name: str
-        :return: An entity property with matching name
+        :return: An entity property with matching name, None if not found.
         :rtype: FgdEntityProperty
         """
 
@@ -323,7 +377,7 @@ class FgdEntity():
 
         :param input_name: The entity input name to look for.
         :type input_name: str
-        :return: An entity input with matching name
+        :return: An entity input with matching name, None if not found.
         :rtype: FgdEntityInput
         """
 
@@ -335,7 +389,7 @@ class FgdEntity():
 
         :param output_name: The entity output name to look for.
         :type output_name: str
-        :return: An entity output with matching name
+        :return: An entity output with matching name, None if not found.
         :rtype: FgdEntityOutput
         """
 
@@ -345,8 +399,8 @@ class FgdEntity():
     def fgd_str(self):
         """A string representation of the FgdEntity formated as in the a .fgd file
 
-        : return: Fgd formated string.
-        : rtype: str
+        :return: Fgd formated string.
+        :rtype: str
         """
 
         fgd_str = '@' + self.class_type
@@ -377,44 +431,38 @@ class FgdEntity():
 
         return fgd_str
 
-    @property
-    def schema(self):
-        schema_obj = {
-            'properties': self.property_schema,
-            'inputs': self.input_schema,
-            'outputs': self.output_schema
-        }
-        return schema_obj
-
-    @property
-    def property_schema(self):
-        schema_obj = {'classname': 'string', 'id': 'integer'}
-        for p in self.properties:
-            schema_obj[p.name] = p.property_type
-        return schema_obj
-
-    @property
-    def input_schema(self):
-        schema_obj = {}
-        for p in self.inputs:
-            schema_obj[p.name] = p.property_type
-        return schema_obj
-
-    @property
-    def output_schema(self):
-        schema_obj = {}
-        for p in self.outputs:
-            schema_obj[p.name] = p.property_type
-        return schema_obj
-
 
 class FgdEntityProperty():
-    # A Property in an Entity
-    def __init__(self, name, property_type, readonly=False,
+    """An entity property, as reprented in a FGD file.
+
+    :param name: The property's name.
+    :type name: str
+
+    :param value_type: The property's value type
+                    ex: 'integer', 'float', 'choices', etc...
+    :type value_type: str
+
+    :param name: The property's readonly status.
+    :type name: bool, optional
+
+    :param display_name: The property's display name.
+    :type display_name: str, optional
+
+    :param default_value: The property's unparsed default value.
+    :type default_value: str, optional
+
+    :param description: The property's description.
+    :type description: str, optional
+
+    :param options: The property's options. (applicable only to types "choices" and "flags")
+    :type options: list[FgdEntityPropertyOption], optional
+    """
+
+    def __init__(self, name, value_type, readonly=False,
                  display_name=None, default_value=None, description=None,
                  options=[]):
         self._name = name
-        self._property_type = property_type.lower()
+        self._value_type = value_type.lower()
         self._readonly = readonly
 
         self._display_name = display_name
@@ -424,37 +472,102 @@ class FgdEntityProperty():
         self._options = options
 
     @property
+    def schema(self):
+        """A schematic view of this entity property's attributes.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'display_name': self._value_type,
+            'description': self._description,
+            'readonly': self._readonly,
+            'type': self._value_type,
+            'default_value': self._default_value,
+        }
+        if self._options:
+            options = []
+            for option in self._options:
+                o = {'value': option.value,
+                     'display_name': option.display_name}
+                if self.value_type.lower() == 'flags':
+                    o['default_value'] = option.default_value
+                options.append(o)
+            schema_obj['options'] = options
+        return schema_obj
+
+    @property
     def name(self):
+        """The property's name.
+
+        :rtype: str"""
+
         return self._name
 
     @property
-    def property_type(self):
-        return self._property_type
+    def value_type(self):
+        """The property's type.
+
+        :rtype: str"""
+
+        return self._value_type
 
     @property
     def readonly(self):
+        """The property's readonly status.
+
+        :rtype: bool"""
+
         return self._readonly
 
     @property
     def display_name(self):
+        """The property's display_name.
+
+        :rtype: str"""
+
         return self._display_name
 
     @property
     def default_value(self):
+        """The property's unparsed default_value.
+
+        :rtype: str"""
+
         return self._default_value
 
     @property
     def description(self):
+        """The property's description.
+
+        :rtype: str"""
+
         return self._description
 
     @property
     def options(self):
-        if self._property_type.lower() in ['choices', 'flags']:
+        """The property's options.
+
+        :rtype: list[FgdEntityPropertyOption]"""
+
+        if self._value_type.lower() in ['choices', 'flags']:
             return self._options
         else:
             return None
 
     def option_by_value(self, option_value):
+        """Finds a property option by its value
+
+        :param option_value: The property option value to look for.
+        :type option_value: int
+        :return: A property option with matching value, None if not found, None if option_value is not of type int
+        :rtype: FgdEntityPropertyOption
+        """
+
+        if not isinstance(option_value, int):
+            return None
+
         results = (o for o in self._options if o.value == option_value)
         return next(results, None)
 
@@ -462,12 +575,12 @@ class FgdEntityProperty():
         """A string representation of the entity property
         formated as in the a .fgd file
 
-        : return: Fgd formated string.
-        : rtype: str
+        :return: Fgd formated string.
+        :rtype: str
         """
 
         # name
-        fgd_str = self._name + '(' + self._property_type + ')'
+        fgd_str = self._name + '(' + self._value_type + ')'
 
         # readonly
         if self._readonly:
@@ -499,7 +612,7 @@ class FgdEntityProperty():
             for option in self._options:
                 fgd_str += '\t\t' + option.fgd_str() + '\n'
             fgd_str += '\t]'
-        elif self._property_type.lower() in ['choices', 'flags']:
+        elif self._value_type.lower() in ['choices', 'flags']:
             fgd_str += ' =\n\t[\n\t]'
 
         return fgd_str
@@ -522,6 +635,20 @@ class FgdEntityInput():
         self._name = name
         self._input_type = input_type
         self._description = description
+
+    @property
+    def schema(self):
+        """A schematic view of this entity input's attributes.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'type': self._input_type,
+            'description': self._description,
+        }
+        return schema_obj
 
     @property
     def name(self):
@@ -572,11 +699,24 @@ class FgdEntityOutput():
     :type description: str
     """
 
-    # An Output in an Entity
     def __init__(self, name, output_type, description=''):
         self._name = name
         self._output_type = output_type
         self._description = description
+
+    @property
+    def schema(self):
+        """A schematic view of this entity output's attributes.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'type': self._output_type,
+            'description': self._description,
+        }
+        return schema_obj
 
     @property
     def name(self):
