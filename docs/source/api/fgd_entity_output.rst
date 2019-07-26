@@ -1,4 +1,5 @@
-FGD_entity_output
+FgdEntityOutput
 =================
 
-Placeholder
+.. autoclass:: fgdtools.FgdEntityOutput
+   :members:

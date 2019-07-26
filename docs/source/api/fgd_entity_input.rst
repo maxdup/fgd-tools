@@ -1,4 +1,5 @@
-FGD_entity_input
+FgdEntityInput
 ================
 
-Placeholder
+.. autoclass:: fgdtools.FgdEntityInput
+   :members:

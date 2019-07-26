@@ -19,9 +19,14 @@
 
 # -- Project information -----------------------------------------------------
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath('../../'))
+
 project = u'Fgd-tools'
 copyright = u'2019, Maxime Dupuis'
 author = u'Maxime Dupuis'
+
 
 # The short X.Y version
 version = u''
@@ -184,3 +189,5 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+autodoc_member_order = 'bysource'

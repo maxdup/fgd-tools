@@ -1,4 +1,5 @@
-FGD
+Fgd
 ===
 
-Placeholder
+.. autoclass:: fgdtools.Fgd
+   :members:

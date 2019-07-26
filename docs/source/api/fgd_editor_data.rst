@@ -1,4 +1,5 @@
-FGD_editor_data
+FgdEditorData
 ===============
 
-Placeholder
+.. autoclass:: fgdtools.FgdEditorData
+   :members:

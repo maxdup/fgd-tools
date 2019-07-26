@@ -1,4 +1,5 @@
-FGD_entity_property
+FgdEntityProperty
 ===================
 
-Placeholder
+.. autoclass:: fgdtools.FgdEntityProperty
+   :members:

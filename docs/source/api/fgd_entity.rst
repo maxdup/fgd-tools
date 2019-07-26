@@ -1,4 +1,5 @@
-FGD_entity
+FgdEntity
 ==========
 
-Placeholder
+.. autoclass:: fgdtools.FgdEntity
+   :members:

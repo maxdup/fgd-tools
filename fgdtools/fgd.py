@@ -1,5 +1,6 @@
-class FGD():
-    """Contains all the data parsed from a FGD file
+class Fgd():
+    """Contains all the data from an Fgd file such as
+    entities and other editor informations.
     """
 
     def __init__(self):
@@ -8,16 +9,20 @@ class FGD():
 
     @property
     def entities(self):
+        """A list containing all :class:`fgdtools.FgdEntity`"""
         return self._entities
 
     @property
     def editor_data(self):
+        """A list containing all :class:`fgdtools.FgdEditorData`"""
         return self._editor_data
 
     def add_entity(self, fgd_entity):
-        """Adds an entity to the FGD
-        :param fgd_entity: a FGD_entity object to be added to FGD._entities
-        :type fgd_entity: FGD_entity
+        """Adds an entity to the Fgd
+
+        :param fgd_entity: a FgdEntity object to be added
+                           to this Fgd instance.
+        :type fgd_entity: FgdEntity
         """
         if not fgd_entity:
             return
@@ -27,24 +32,43 @@ class FGD():
             if 'base' in fgd_entity.definitions:
                 for p_entity in fgd_entity.definitions['base']:
                     b = next(filter(
-                        lambda data: isinstance(data, FGD_entity) and
+                        lambda data: isinstance(data, FgdEntity) and
                         data.name == p_entity, self._entities), None)
                     if b:
                         fgd_entity._parents.append(b)
         self._entities.append(fgd_entity)
 
     def add_editor_data(self, fgd_editor_data):
+        """Adds editor data to the Fgd
+
+        :param fgd_editor_data: a FgdEditorData object to be added
+                                to this Fgd instance.
+        :type fgd_editor_data: FgdEditorData
+        """
         if not fgd_editor_data:
             return
 
         self._editor_data.append(fgd_editor_data)
 
     def entity_by_name(self, entity_name):
+        """Finds an entity by its entity name
+
+        :param entity_name:
+        :type fgd_editor_data: FgdEditorData
+        :return: returns an entity with matching name
+        :rtype: FgdEntity
+        """
         results = (c for c in self._entities if isinstance(
-            c, FGD_entity) and c.name == entity_name)
+            c, FgdEntity) and c.name == entity_name)
         return next(results, None)
 
     def fgd_str(self):
+        """A string representation of the Fgd formated as in the a .fgd file
+
+        :return: Fgd formated string.
+        :rtype: str
+        """
+
         fgd_str = ''
         for d in self.editor_data:
             fgd_str += d.fgd_str() + '\n\n'
@@ -53,9 +77,21 @@ class FGD():
         return fgd_str
 
 
-class FGD_editor_data():
-    # editor data, as found in nodes like
-    # @mapsize, @MaterialExclusion or @AutoVisGroup
+class FgdEditorData():
+    """Editor data, as reprented in a FGD file, usually of type such as:
+    @mapsize, @MaterialExclusion or @AutoVisGroup
+
+    :param class_type: The editor_data's type
+                       ex: 'mapsize', 'MaterialExclusion', 'AutoVisGroup' etc...
+    :type class_type: str
+
+    :param name: The editor_data's display name.
+    :type name: str
+
+    :param data: The editor_data's data.
+    :type data: tuple or list or dict
+    """
+
     def __init__(self, class_type, name, data=None):
         self._class_type = class_type
         self._name = name
@@ -74,6 +110,12 @@ class FGD_editor_data():
         return self._data
 
     def fgd_str(self):
+        """A string representation of FgdEditorData formated as in the a .fgd file.
+
+        :return: Fgd formated string.
+        :rtype: str
+        """
+
         fgd_str = '@' + self._class_type
         if self._name:
             fgd_str += ' = "' + self.name + '"'
@@ -101,8 +143,33 @@ class FGD_editor_data():
         return fgd_str
 
 
-class FGD_entity():
-    # An entity in the FGD
+class FgdEntity():
+    """An entity, as reprented in a FGD file.
+
+    :param class_type: The entity's type
+                       ex: 'BaseClass', 'SolidClass', 'PointClass' etc...
+    :type class_type: str
+
+    :param definitions: Information defining the entity within the editor.
+                       ex: 'base()', 'size()', 'line()', 'studioprop()' etc...
+    :type definitions: dict
+
+    :param name: The entity's name.
+    :type name: str
+
+    :param description: The entity's description.
+    :type description: str, optional
+
+    :param properties: The entity's properties.
+    :type properties: list[FgdEntityProperty], optional
+
+    :param inputs: The entity's inputs.
+    :type inputs: list[FgdEntityInput], optional
+
+    :param output: The entity's output.
+    :type output: list[FgdEntityOutput], optional
+    """
+
     def __init__(self, class_type, definitions, name, description=None,
                  properties=[], inputs=[], outputs=[]):
         self._class_type = class_type
@@ -117,22 +184,39 @@ class FGD_entity():
 
     @property
     def class_type(self):
+        """The entity's type.
+
+        :rtype: str"""
+
         return self._class_type
 
     @property
     def definitions(self):
+        """The entity's definitions.
+
+        :rtype: dict"""
+
         return self._definitions
 
     @property
     def parents(self):
+        """The entity's parent entities, as defined in the entity's base(definition).
+
+        :rtype: list[FgdEntity]"""
         return self._parents
 
     @property
     def name(self):
+        """The entity's type.
+
+        :rtype: str"""
         return self._name
 
     @property
     def description(self):
+        """The entity's description.
+
+        :rtype: str"""
         if not self._description:
             for parent in self._parents:
                 if parent._description:
@@ -142,22 +226,14 @@ class FGD_entity():
 
     @property
     def properties(self):
-        return self._properties
+        """The entity's properties, including inherited inputs.
 
-    @property
-    def inputs(self):
-        return self._inputs
+        :rtype: list[FgdEntityOutput]"""
 
-    @property
-    def outputs(self):
-        return self._outputs
-
-    @property
-    def all_properties(self):
         properties = {}
         for t in self._parents:
-            if isinstance(t, FGD_entity):
-                for p in t.all_properties:
+            if isinstance(t, FgdEntity):
+                for p in t.properties:
                     properties[p.name] = p
         for p in self._properties:
             properties[p.name] = p
@@ -169,11 +245,15 @@ class FGD_entity():
         return properties_array
 
     @property
-    def all_inputs(self):
+    def inputs(self):
+        """The entity's inputs, including inherited inputs.
+
+        :rtype: list[FgdEntityInput]"""
+
         inputs = {}
         for t in self._parents:
-            if isinstance(t, FGD_entity):
-                for p in t.all_inputs:
+            if isinstance(t, FgdEntity):
+                for p in t.inputs:
                     inputs[p.name] = p
         for p in self._inputs:
             inputs[p.name] = p
@@ -185,11 +265,15 @@ class FGD_entity():
         return inputs_array
 
     @property
-    def all_outputs(self):
+    def outputs(self):
+        """The entity's outputs, including inherited outputs.
+
+        :rtype: list[FgdEntityOutput]"""
+
         outputs = {}
         for t in self._parents:
-            if isinstance(t, FGD_entity):
-                for p in t.all_outputs:
+            if isinstance(t, FgdEntity):
+                for p in t.outputs:
                     outputs[p.name] = p
         for p in self._outputs:
             outputs[p.name] = p
@@ -200,19 +284,27 @@ class FGD_entity():
 
         return outputs_array
 
+        return self._outputs
+
     def property_by_name(self, prop_name):
-        results = (p for p in self.all_properties if p.name == prop_name)
+        results = (p for p in self.properties if p.name == prop_name)
         return next(results, None)
 
     def input_by_name(self, input_name):
-        results = (i for i in self.all_inputs if i.name == input_name)
+        results = (i for i in self.inputs if i.name == input_name)
         return next(results, None)
 
     def output_by_name(self, output_name):
-        results = (o for o in self.all_outputs if o.name == output_name)
+        results = (o for o in self.outputs if o.name == output_name)
         return next(results, None)
 
     def fgd_str(self):
+        """A string representation of the FgdEntity formated as in the a .fgd file
+
+        : return: Fgd formated string.
+        : rtype: str
+        """
+
         fgd_str = '@' + self.class_type
         for k, v in self._definitions.items():
             fgd_str += ' ' + k + "("
@@ -253,33 +345,33 @@ class FGD_entity():
     @property
     def property_schema(self):
         schema_obj = {'classname': 'string', 'id': 'integer'}
-        for p in self.all_properties:
+        for p in self.properties:
             schema_obj[p.name] = p.property_type
         return schema_obj
 
     @property
     def input_schema(self):
         schema_obj = {}
-        for p in self.all_inputs:
+        for p in self.inputs:
             schema_obj[p.name] = p.property_type
         return schema_obj
 
     @property
     def output_schema(self):
         schema_obj = {}
-        for p in self.all_outputs:
+        for p in self.outputs:
             schema_obj[p.name] = p.property_type
         return schema_obj
 
 
-class FGD_property():
+class FgdEntityProperty():
     # A Property in an Entity
     def __init__(self, name, property_type, readonly=False,
                  display_name=None, default_value=None, description=None,
                  options=[]):
         self._name = name
         self._property_type = property_type.lower()
-        self._readonly = readonly  # usually to set property to readonly
+        self._readonly = readonly
 
         self._display_name = display_name
         self._default_value = default_value
@@ -323,6 +415,13 @@ class FGD_property():
         return next(results, None)
 
     def fgd_str(self):
+        """A string representation of the entity property
+        formated as in the a .fgd file
+
+        : return: Fgd formated string.
+        : rtype: str
+        """
+
         # name
         fgd_str = self._name + '(' + self._property_type + ')'
 
@@ -334,16 +433,16 @@ class FGD_property():
         if self._display_name:
             fgd_str += ' : "' + self._display_name + '"'
         elif self._description or self._default_value and \
-                not isinstance(self, FGD_input) and \
-                not isinstance(self, FGD_output):
+                not isinstance(self, FgdEntityInput) and \
+                not isinstance(self, FgdEntityOutput):
             fgd_str += ' :'
 
         # default_value
         if self._default_value:
             fgd_str += ' : ' + str(self._default_value)
         elif self._description and \
-                not isinstance(self, FGD_input) and \
-                not isinstance(self, FGD_output):
+                not isinstance(self, FgdEntityInput) and \
+                not isinstance(self, FgdEntityOutput):
             fgd_str += ' :'
 
         # description
@@ -362,8 +461,9 @@ class FGD_property():
         return fgd_str
 
 
-class FGD_input():
-    # An Input in an Entity
+class FgdEntityInput():
+    """An entity input"""
+
     def __init__(self, name, input_type, description=''):
         self._name = name
         self._input_type = input_type
@@ -382,11 +482,18 @@ class FGD_input():
         return self._description
 
     def fgd_str(self):
+        """A string representation of the entity input
+        formated as in the a .fgd file
+
+        : return: Fgd formated string.
+        : rtype: str
+        """
+
         return 'input ' + self._name + '(' + self._input_type + ')' + \
             ' : "' + str(self.description) + '"'
 
 
-class FGD_output():
+class FgdEntityOutput():
     # An Output in an Entity
     def __init__(self, name, output_type, description=''):
         self._name = name
@@ -406,11 +513,17 @@ class FGD_output():
         return self._description
 
     def fgd_str(self):
+        """A string representation of the entity output
+        formated as in the a .fgd file
+
+        : return: Fgd formated string.
+        : rtype: str
+        """
         return 'output ' + self._name + '(' + self._output_type + ')' + \
             ' : "' + str(self.description) + '"'
 
 
-class FGD_property_option():
+class FgdEntityPropertyOption():
     # An Option within an Entity Property
     def __init__(self, tupple):
         self._value = tupple[0]
@@ -433,6 +546,13 @@ class FGD_property_option():
         return self._default_value
 
     def fgd_str(self):
+        """A string representation of the entity property option
+        formated as in the a .fgd file
+
+        : return: Fgd formated string.
+        : rtype: str
+        """
+
         fgd_str = ''
         if isinstance(self._value, int):
             fgd_str += str(self._value)
