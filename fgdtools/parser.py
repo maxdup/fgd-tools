@@ -29,7 +29,7 @@ def FgdParse(file):
     """
     reader = open(file, "r", encoding="iso-8859-1")
 
-    game_data = FGD()
+    game_data = Fgd()
 
     # Search for @includes
     while True:
@@ -228,7 +228,7 @@ def editor_data_parse(meta_str, prop_str):
                 d = data.strip('" \n\t')
                 if d:
                     d_data.append(d.strip())
-    data = FGD_editor_data(d_type, d_name, d_data)
+    data = FgdEditorData(d_type, d_name, d_data)
     return data
 
 
@@ -265,18 +265,18 @@ def entity_parse(meta_str, prop_str):
         description = ''
 
     for property_ in properties_parse(prop_str):
-        if (isinstance(property_, FGD_input)):
+        if (isinstance(property_, FgdEntityInput)):
             inputs.append(property_)
-        elif (isinstance(property_, FGD_output)):
+        elif (isinstance(property_, FgdEntityOutput)):
             outputs.append(property_)
-        elif (isinstance(property_, FGD_property)):
+        elif (isinstance(property_, FgdEntityProperty)):
             properties.append(property_)
 
     if not e_type or not name:
         return None
 
-    entity = FGD_entity(e_type, definitions, name, description,
-                        properties, inputs, outputs)
+    entity = FgdEntity(e_type, definitions, name, description,
+                       properties, inputs, outputs)
 
     return entity
 
@@ -330,18 +330,18 @@ def property_parse(property_str):
             if 'display_name' in p_data:
                 p_data['description'] = p_data.pop('display_name')
             p_data['output_type'] = p_data.pop('property_type')
-            entity_property = FGD_output(**p_data)
+            entity_property = FgdEntityOutput(**p_data)
 
         elif (p_definition_str.startswith('input ')):
             p_data = property_definition_parse(p_definition_str[6:])
             if 'display_name' in p_data:
                 p_data['description'] = p_data.pop('display_name')
             p_data['input_type'] = p_data.pop('property_type')
-            entity_property = FGD_input(**p_data)
+            entity_property = FgdEntityInput(**p_data)
 
         else:
             p_data = property_definition_parse(p_definition_str)
-            entity_property = FGD_property(**p_data)
+            entity_property = FgdEntityProperty(**p_data)
 
     elif len(property_parts) > 2:
 
@@ -349,7 +349,7 @@ def property_parse(property_str):
         p_options = property_options_parse(property_parts[2].strip())
         p_data = property_definition_parse(p_definition_str)
         p_data['options'] = p_options
-        entity_property = FGD_property(**p_data)
+        entity_property = FgdEntityProperty(**p_data)
 
     return entity_property
 
@@ -422,11 +422,11 @@ def property_option_parse(p_option_str):
             option_default = int(default_str)
         except:
             option_default = default_str.strip("\'\" \n\t")
-        option = FGD_property_option((option_val,
-                                      option_desc,
-                                      option_default))
+        option = FgdEntityPropertyOption((option_val,
+                                          option_desc,
+                                          option_default))
     else:
-        option = FGD_property_option((option_val,
-                                      option_desc))
+        option = FgdEntityPropertyOption((option_val,
+                                          option_desc))
 
     return option
