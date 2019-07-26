@@ -97,7 +97,7 @@ class FgdEditorData():
     :type data: tuple or list or dict
     """
 
-    def __init__(self, class_type, name, data=None):
+    def __init__(self, class_type, name, data):
         self._class_type = class_type
         self._name = name
         self._data = data
@@ -506,7 +506,17 @@ class FgdEntityProperty():
 
 
 class FgdEntityInput():
-    """An entity input"""
+    """An entity input, as reprented in FGD file.
+
+    :param name: The input's name.
+    :type name: str
+
+    :param input_type: The input's type.
+    :type input_type: str
+
+    :param description: The input's description.
+    :type description: str
+    """
 
     def __init__(self, name, input_type, description=''):
         self._name = name
@@ -515,22 +525,34 @@ class FgdEntityInput():
 
     @property
     def name(self):
+        """The input's name.
+
+        :rtype: str"""
+
         return self._name
 
     @property
     def input_type(self):
+        """The input's type.
+
+        :rtype: str"""
+
         return self._input_type
 
     @property
     def description(self):
+        """The input's description.
+
+        :rtype: str"""
+
         return self._description
 
     def fgd_str(self):
         """A string representation of the entity input
         formated as in the a .fgd file
 
-        : return: Fgd formated string.
-        : rtype: str
+        :return: Fgd formated string.
+        :rtype: str
         """
 
         return 'input ' + self._name + '(' + self._input_type + ')' + \
@@ -538,6 +560,18 @@ class FgdEntityInput():
 
 
 class FgdEntityOutput():
+    """An entity output, as reprented in FGD file.
+
+    :param name: The output's name.
+    :type name: str
+
+    :param output_type: The output's type.
+    :type output_type: str
+
+    :param description: The output's description.
+    :type description: str
+    """
+
     # An Output in an Entity
     def __init__(self, name, output_type, description=''):
         self._name = name
@@ -546,29 +580,41 @@ class FgdEntityOutput():
 
     @property
     def name(self):
+        """The output's name.
+
+        :rtype: str"""
         return self._name
 
     @property
     def output_type(self):
+        """The output's type.
+
+        :rtype: str"""
+
         return self._output_type
 
     @property
     def description(self):
+        """The output's description.
+
+        :rtype: str"""
+
         return self._description
 
     def fgd_str(self):
         """A string representation of the entity output
         formated as in the a .fgd file
 
-        : return: Fgd formated string.
-        : rtype: str
+        :return: Fgd formated string.
+        :rtype: str
         """
+
         return 'output ' + self._name + '(' + self._output_type + ')' + \
             ' : "' + str(self.description) + '"'
 
 
 class FgdEntityPropertyOption():
-    """A property option, as found in properties of type "choices" or "flags".
+    """A property option, as found in entity properties of type "choices" or "flags".
 
     :param value: The entity's value.
     :type value: str
