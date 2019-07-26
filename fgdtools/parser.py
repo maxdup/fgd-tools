@@ -422,11 +422,8 @@ def property_option_parse(p_option_str):
             option_default = int(default_str)
         except:
             option_default = default_str.strip("\'\" \n\t")
-        option = FgdEntityPropertyOption((option_val,
-                                          option_desc,
-                                          option_default))
-    else:
-        option = FgdEntityPropertyOption((option_val,
-                                          option_desc))
+    option = FgdEntityPropertyOption(option_val,
+                                     option_desc,
+                                     option_default)
 
     return option

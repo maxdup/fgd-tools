@@ -10,11 +10,13 @@ class Fgd():
     @property
     def entities(self):
         """A list containing all :class:`fgdtools.FgdEntity`"""
+
         return self._entities
 
     @property
     def editor_data(self):
         """A list containing all :class:`fgdtools.FgdEditorData`"""
+
         return self._editor_data
 
     def add_entity(self, fgd_entity):
@@ -24,6 +26,7 @@ class Fgd():
                            to this Fgd instance.
         :type fgd_entity: FgdEntity
         """
+
         if not fgd_entity:
             return
 
@@ -45,19 +48,21 @@ class Fgd():
                                 to this Fgd instance.
         :type fgd_editor_data: FgdEditorData
         """
+
         if not fgd_editor_data:
             return
 
         self._editor_data.append(fgd_editor_data)
 
     def entity_by_name(self, entity_name):
-        """Finds an entity by its entity name
+        """Finds an entity by its name
 
-        :param entity_name:
-        :type fgd_editor_data: FgdEditorData
-        :return: returns an entity with matching name
+        :param entity_name: The entity name to look for.
+        :type entity_name: str
+        :return: An entity with matching name
         :rtype: FgdEntity
         """
+
         results = (c for c in self._entities if isinstance(
             c, FgdEntity) and c.name == entity_name)
         return next(results, None)
@@ -99,14 +104,26 @@ class FgdEditorData():
 
     @property
     def class_type(self):
+        """The editor_data's type.
+
+        :rtype: str"""
+
         return self._class_type
 
     @property
     def name(self):
+        """The editor_data's name.
+
+        :rtype: str"""
+
         return self._name
 
     @property
     def data(self):
+        """The editor_data's data.
+
+        :rtype: tuple or list or dict"""
+
         return self._data
 
     def fgd_str(self):
@@ -203,6 +220,7 @@ class FgdEntity():
         """The entity's parent entities, as defined in the entity's base(definition).
 
         :rtype: list[FgdEntity]"""
+
         return self._parents
 
     @property
@@ -210,6 +228,7 @@ class FgdEntity():
         """The entity's type.
 
         :rtype: str"""
+
         return self._name
 
     @property
@@ -217,6 +236,7 @@ class FgdEntity():
         """The entity's description.
 
         :rtype: str"""
+
         if not self._description:
             for parent in self._parents:
                 if parent._description:
@@ -287,14 +307,38 @@ class FgdEntity():
         return self._outputs
 
     def property_by_name(self, prop_name):
+        """Finds an entity property by its name
+
+        :param prop_name: The entity property name to look for.
+        :type prop_name: str
+        :return: An entity property with matching name
+        :rtype: FgdEntityProperty
+        """
+
         results = (p for p in self.properties if p.name == prop_name)
         return next(results, None)
 
     def input_by_name(self, input_name):
+        """Finds an entity input by its name
+
+        :param input_name: The entity input name to look for.
+        :type input_name: str
+        :return: An entity input with matching name
+        :rtype: FgdEntityInput
+        """
+
         results = (i for i in self.inputs if i.name == input_name)
         return next(results, None)
 
     def output_by_name(self, output_name):
+        """Finds an entity output by its name
+
+        :param output_name: The entity output name to look for.
+        :type output_name: str
+        :return: An entity output with matching name
+        :rtype: FgdEntityOutput
+        """
+
         results = (o for o in self.outputs if o.name == output_name)
         return next(results, None)
 
@@ -524,33 +568,53 @@ class FgdEntityOutput():
 
 
 class FgdEntityPropertyOption():
-    # An Option within an Entity Property
-    def __init__(self, tupple):
-        self._value = tupple[0]
-        self._display_name = tupple[1]
-        if len(tupple) > 2:
-            self._default_value = tupple[2]
-        else:
-            self._default_value = None
+    """A property option, as found in properties of type "choices" or "flags".
+
+    :param value: The entity's value.
+    :type value: str
+
+    :param display_name: The entity's display_name.
+    :type display_name: str
+
+    :param default_value: The entity's default_value.
+    :type default_value: str, optional
+    """
+
+    def __init__(self, value, display_name, default_value=None):
+        self._value = value
+        self._display_name = display_name
+        self._default_value = default_value
 
     @property
     def value(self):
+        """The option's value.
+
+        :rtype: str"""
+
         return self._value
 
     @property
     def display_name(self):
+        """The option's display name.
+
+        :rtype: str"""
+
         return self._display_name
 
     @property
     def default_value(self):
+        """The option's default value.
+
+        :rtype: int"""
+
         return self._default_value
 
     def fgd_str(self):
-        """A string representation of the entity property option
+        """A string representation of the property option
         formated as in the a .fgd file
 
-        : return: Fgd formated string.
-        : rtype: str
+        :return: Fgd formated string.
+        :rtype: str
         """
 
         fgd_str = ''
