@@ -1,6 +1,8 @@
 # Fgd-tools
 
-A python library to parse FGD files
+A python library to parse FGD files for the source engine.
+
+Full documentation: https://maxdup.github.io/fgd-tools/
 
 ## Installation
 
