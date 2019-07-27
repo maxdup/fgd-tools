@@ -190,7 +190,7 @@ class FgdEntity():
     def __init__(self, class_type, definitions, name, description=None,
                  properties=[], inputs=[], outputs=[]):
         self._class_type = class_type
-        self._definitions = definitions or {}
+        self._definitions = definitions or []
         self._name = name
         self._description = description
         self._properties = properties
@@ -266,14 +266,6 @@ class FgdEntity():
         return self._class_type
 
     @property
-    def definitions(self):
-        """The entity's definitions.
-
-        :rtype: dict"""
-
-        return self._definitions
-
-    @property
     def parents(self):
         """The entity's parent entities, as defined in the entity's base(definition).
 
@@ -303,6 +295,18 @@ class FgdEntity():
         return self._description
 
     @property
+    def definitions(self):
+        """The entity's definitions, including inherited definitions.
+
+        :rtype: list[dict]"""
+
+        definitions = []
+        for t in self._parents:
+            definitions += t.definitions
+        definitions += self._definitions
+        return definitions
+
+    @property
     def properties(self):
         """The entity's properties, including inherited inputs.
 
@@ -310,9 +314,8 @@ class FgdEntity():
 
         properties = {}
         for t in self._parents:
-            if isinstance(t, FgdEntity):
-                for p in t.properties:
-                    properties[p.name] = p
+            for p in t.properties:
+                properties[p.name] = p
         for p in self._properties:
             properties[p.name] = p
 
@@ -330,9 +333,8 @@ class FgdEntity():
 
         inputs = {}
         for t in self._parents:
-            if isinstance(t, FgdEntity):
-                for p in t.inputs:
-                    inputs[p.name] = p
+            for p in t.inputs:
+                inputs[p.name] = p
         for p in self._inputs:
             inputs[p.name] = p
 
@@ -350,9 +352,8 @@ class FgdEntity():
 
         outputs = {}
         for t in self._parents:
-            if isinstance(t, FgdEntity):
-                for p in t.outputs:
-                    outputs[p.name] = p
+            for p in t.outputs:
+                outputs[p.name] = p
         for p in self._outputs:
             outputs[p.name] = p
 
@@ -408,9 +409,9 @@ class FgdEntity():
         """
 
         fgd_str = '@' + self.class_type
-        for k, v in self._definitions.items():
-            fgd_str += ' ' + k + "("
-            for arg in v:
+        for d in self._definitions:
+            fgd_str += ' ' + d['name'] + "("
+            for arg in d['args']:
                 fgd_str += arg + ', '
             fgd_str = fgd_str.strip(', ')
             fgd_str += ")"

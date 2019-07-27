@@ -240,7 +240,7 @@ def entity_parse(meta_str, prop_str):
     e_type = meta_str.split(' ', 1)[0].split('(')[0]
     meta_str = meta_str[len(e_type):]
 
-    definitions = {}
+    definitions = []
     entity_args = []
     fgd_data = None
 
@@ -256,7 +256,7 @@ def entity_parse(meta_str, prop_str):
     definitions_strs = re.findall(re_function_like, definitions_str)
     if definitions_strs:
         for d in definitions_strs:
-            definitions.update(definition_parse(d))
+            definitions.append(definition_parse(d))
 
     name = entity_args[0].strip()
     if len(entity_args) == 2:
@@ -284,14 +284,14 @@ def entity_parse(meta_str, prop_str):
 def definition_parse(definition_str):
     definition = {}
     definition_parts = definition_str.split('(')
-    definition_name = definition_parts[0].strip()
+    definition['name'] = definition_parts[0].strip()
     definition_params = definition_parts[1].strip().strip(')').strip()
 
     if (definition_params):
-        definition[definition_name] = re.split(
+        definition['args'] = re.split(
             '[\t\n ]*\,[\t\n ]*', definition_params)
     else:
-        definition[definition_name] = []
+        definition['args'] = []
 
     return definition
 
