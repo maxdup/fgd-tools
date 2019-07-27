@@ -222,7 +222,11 @@ class FgdEntity():
         :rtype: dict
         """
 
-        schema_obj = {'classname': 'string', 'id': 'integer'}
+        schema_obj = {'classname': {'default_value': self._name,
+                                    'type': 'string',
+                                    'readonly': True},
+                      'id': {'type': 'integer',
+                             'readonly': True}}
         for p in self.properties:
             schema_obj[p.name] = p.schema
         return schema_obj

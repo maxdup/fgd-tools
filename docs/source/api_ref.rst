@@ -1,6 +1,9 @@
 Api Reference
 =============
 
+If you are looking for information on a specific function, c
+lass or method, this part of the documentation is for you.
+
 .. toctree::
 
    api/fgd
