@@ -81,21 +81,16 @@ Here are some color coded chart for the terminology used in this library for fgd
 
 FgdEntity
 ~~~~~~~~~
-.. class:: fgdtools.FgdEntity
 .. image:: /_static/fgdentity.jpg
 
 FgdEntityProperty
-~~~~~~~~~
-.. class:: fgdtools.FgdEntityProperty
+~~~~~~~~~~~~~~~~~
 .. image:: /_static/fgdentityproperty.jpg
 
 FgdEntityPropertyOption
-~~~~~~~~~
-.. class:: fgdtools.FgdEntityPropertyOption
+~~~~~~~~~~~~~~~~~~~~~~~
 .. image:: /_static/fgdentitypropertyoption.jpg
 
 FgdEntityInput/Output
 ~~~~~~~~~~~~~~~~~~~~~
-.. class:: fgdtools.FgdEntityInput
-.. class:: fgdtools.FgdEntityOutput
 .. image:: /_static/fgdentityio.jpg
