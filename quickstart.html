@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quickstart &#8212; Fgd-tools 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Api Reference" href="api_ref.html" />
+    <link rel="prev" title="Welcome to Fgd-tools’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Get yourself up in running quickly.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pypi">
+<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">¶</a></h3>
+<p>Fgd-tools is available on the Python Package Index. This makes installing it with pip as easy as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install fgdtools
+</pre></div>
+</div>
+</div>
+<div class="section" id="git">
+<h3>Git<a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h3>
+<p>If you want the latest code or even feel like contributing, the code is available on GitHub.</p>
+<p>You can easily clone the code with git:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git://github.com/maxdup/fgd-tools.git
+</pre></div>
+</div>
+<p>and install it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 setup.py install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a few example usage of fgd-tools</p>
+<div class="section" id="parsing">
+<h3>Parsing<a class="headerlink" href="#parsing" title="Permalink to this headline">¶</a></h3>
+<p>You can get a Fgd object by parsing an .fgd file using FgdParse</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">fgdtools</span> <span class="kn">import</span> <span class="n">FgdParse</span>
+
+<span class="o">&gt;</span> <span class="n">fgd</span> <span class="o">=</span> <span class="n">FgdParse</span><span class="p">(</span><span class="s1">&#39;C:/Program Files (x86)/Steam/steamapps/common/Team Fortress 2/bin/tf.fgd&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="writing">
+<h3>Writing<a class="headerlink" href="#writing" title="Permalink to this headline">¶</a></h3>
+<p>You can write an .fgd file from a Fgd object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Parsing/writing is destructive. Comments will be ignored. Include statements will be removed and have everything merged in the same fgd. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">fgdtools</span> <span class="kn">import</span> <span class="n">FgdWrite</span>
+
+<span class="o">&gt;</span> <span class="n">FgdWrite</span><span class="p">(</span><span class="n">fgd</span><span class="p">,</span> <span class="s1">&#39;tf-clone.fgd&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-entity-schemas">
+<h3>Getting entity schemas<a class="headerlink" href="#getting-entity-schemas" title="Permalink to this headline">¶</a></h3>
+<p>You can get entity schematics from an Fgd object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">env_fire</span> <span class="o">=</span> <span class="n">fgd</span><span class="o">.</span><span class="n">entity_by_name</span><span class="p">(</span><span class="s1">&#39;env_fire&#39;</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">env_fire</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+<span class="p">{</span><span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;targetname&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;The name...&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">},</span>
+<span class="s1">&#39;inputs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;StartFire&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;void&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Start the fire&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">},</span>
+<span class="s1">&#39;outputs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;onIgnited&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;void&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span><span class="s1">&#39;Fires when...&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+<p>Here are some color coded charts for the terminology used in this library for fgd files.</p>
+<div class="section" id="fgdentity">
+<h3>FgdEntity<a class="headerlink" href="#fgdentity" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentity.jpg" src="_images/fgdentity.jpg" />
+</div>
+<div class="section" id="fgdentityproperty">
+<h3>FgdEntityProperty<a class="headerlink" href="#fgdentityproperty" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentityproperty.jpg" src="_images/fgdentityproperty.jpg" />
+</div>
+<div class="section" id="fgdentitypropertyoption">
+<h3>FgdEntityPropertyOption<a class="headerlink" href="#fgdentitypropertyoption" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentitypropertyoption.jpg" src="_images/fgdentitypropertyoption.jpg" />
+</div>
+<div class="section" id="fgdentityinput-output">
+<h3>FgdEntityInput/Output<a class="headerlink" href="#fgdentityinput-output" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentityio.jpg" src="_images/fgdentityio.jpg" />
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Fgd-tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_ref.html">Api Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Fgd-tools’s documentation!</a></li>
+      <li>Next: <a href="api_ref.html" title="next chapter">Api Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Maxime Dupuis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

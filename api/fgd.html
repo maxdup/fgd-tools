@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fgd &#8212; Fgd-tools 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FgdEntity" href="fgd_entity.html" />
+    <link rel="prev" title="Api Reference" href="../api_ref.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="fgd">
+<h1>Fgd<a class="headerlink" href="#fgd" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="fgdtools.Fgd">
+<em class="property">class </em><code class="sig-prename descclassname">fgdtools.</code><code class="sig-name descname">Fgd</code><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all the data from an Fgd file such as
+entities and other editor informations.</p>
+<dl class="method">
+<dt id="fgdtools.Fgd.entities">
+<em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#fgdtools.Fgd.entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list containing all <a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEntity</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.editor_data">
+<em class="property">property </em><code class="sig-name descname">editor_data</code><a class="headerlink" href="#fgdtools.Fgd.editor_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list containing all <a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEditorData</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.add_entity">
+<code class="sig-name descname">add_entity</code><span class="sig-paren">(</span><em class="sig-param">fgd_entity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an entity to the Fgd</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fgd_entity</strong> (<a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><em>FgdEntity</em></a>) – a FgdEntity object to be added
+to this Fgd instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.add_editor_data">
+<code class="sig-name descname">add_editor_data</code><span class="sig-paren">(</span><em class="sig-param">fgd_editor_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_editor_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_editor_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds editor data to the Fgd</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fgd_editor_data</strong> (<a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><em>FgdEditorData</em></a>) – a FgdEditorData object to be added
+to this Fgd instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.entity_by_name">
+<code class="sig-name descname">entity_by_name</code><span class="sig-paren">(</span><em class="sig-param">entity_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.entity_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.entity_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds an entity by its name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The entity name to look for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An entity with matching name, None if not found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity">FgdEntity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.fgd_str">
+<code class="sig-name descname">fgd_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.fgd_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.fgd_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation of the Fgd formated as in the a .fgd file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Fgd formated string.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Fgd-tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api_ref.html">Api Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fgd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity.html">FgdEntity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property.html">FgdEntityProperty</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_input.html">FgdEntityInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_output.html">FgdEntityOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_editor_data.html">FgdEditorData</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_ref.html">Api Reference</a><ul>
+      <li>Previous: <a href="../api_ref.html" title="previous chapter">Api Reference</a></li>
+      <li>Next: <a href="fgd_entity.html" title="next chapter">FgdEntity</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Maxime Dupuis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/fgd.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

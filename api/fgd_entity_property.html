@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>FgdEntityProperty &#8212; Fgd-tools 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FgdEntityPropertyOption" href="fgd_entity_property_option.html" />
+    <link rel="prev" title="FgdEntity" href="fgd_entity.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="fgdentityproperty">
+<h1>FgdEntityProperty<a class="headerlink" href="#fgdentityproperty" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="fgdtools.FgdEntityProperty">
+<em class="property">class </em><code class="sig-prename descclassname">fgdtools.</code><code class="sig-name descname">FgdEntityProperty</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">value_type</em>, <em class="sig-param">readonly=False</em>, <em class="sig-param">display_name=None</em>, <em class="sig-param">default_value=None</em>, <em class="sig-param">description=None</em>, <em class="sig-param">options=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntityProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntityProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>An entity property, as reprented in a FGD file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – The property’s name.</p></li>
+<li><p><strong>value_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The property’s value type
+ex: ‘integer’, ‘float’, ‘choices’, etc…</p></li>
+<li><p><strong>name</strong> – The property’s readonly status.</p></li>
+<li><p><strong>display_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s display name.</p></li>
+<li><p><strong>default_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s unparsed default value.</p></li>
+<li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s description.</p></li>
+<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption"><em>FgdEntityPropertyOption</em></a><em>]</em><em>, </em><em>optional</em>) – The property’s options. (applicable only to types “choices” and “flags”)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.schema">
+<em class="property">property </em><code class="sig-name descname">schema</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>A schematic view of this entity property’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.value_type">
+<em class="property">property </em><code class="sig-name descname">value_type</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.readonly">
+<em class="property">property </em><code class="sig-name descname">readonly</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.readonly" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s readonly status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.display_name">
+<em class="property">property </em><code class="sig-name descname">display_name</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.display_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s display_name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.default_value">
+<em class="property">property </em><code class="sig-name descname">default_value</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.default_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s unparsed default_value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.description">
+<em class="property">property </em><code class="sig-name descname">description</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.options">
+<em class="property">property </em><code class="sig-name descname">options</code><a class="headerlink" href="#fgdtools.FgdEntityProperty.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>The property’s options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption">FgdEntityPropertyOption</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.option_by_value">
+<code class="sig-name descname">option_by_value</code><span class="sig-paren">(</span><em class="sig-param">option_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntityProperty.option_by_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntityProperty.option_by_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a property option by its value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>option_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The property option value to look for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A property option with matching value, None if not found, None if option_value is not of type int</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption">FgdEntityPropertyOption</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntityProperty.fgd_str">
+<code class="sig-name descname">fgd_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntityProperty.fgd_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntityProperty.fgd_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation of the entity property
+formated as in the a .fgd file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Fgd formated string.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Fgd-tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api_ref.html">Api Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fgd.html">Fgd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity.html">FgdEntity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FgdEntityProperty</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_input.html">FgdEntityInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_output.html">FgdEntityOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_editor_data.html">FgdEditorData</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_ref.html">Api Reference</a><ul>
+      <li>Previous: <a href="fgd_entity.html" title="previous chapter">FgdEntity</a></li>
+      <li>Next: <a href="fgd_entity_property_option.html" title="next chapter">FgdEntityPropertyOption</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Maxime Dupuis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/fgd_entity_property.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
