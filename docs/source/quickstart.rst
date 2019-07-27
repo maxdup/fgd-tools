@@ -53,7 +53,7 @@ Writing
 You can write an .fgd file from a Fgd object.
 
 .. note::
-   Parsing/writing is destructive. Comments will be ignored. Include statements will be removed and have everything merged in the same fgd. The original structure of the file may be modified. The actual data about entities is untouched however.
+   Parsing/writing is destructive. Comments will be ignored. Include statements will be removed and have everything merged in the same fgd. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.
 
 .. code-block:: python
 
@@ -77,7 +77,7 @@ You can get entity schematics from an Fgd object.
 
 Terminology
 -----------
-Here are some color coded chart for the terminology used in this library for fgd files.
+Here are some color coded charts for the terminology used in this library for fgd files.
 
 FgdEntity
 ~~~~~~~~~
