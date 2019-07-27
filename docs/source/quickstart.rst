@@ -12,7 +12,7 @@ Fgd-tools is available on the Python Package Index. This makes installing it wit
 
 .. code-block:: bash
 
-   pip3 install fgd-tools
+   pip3 install fgdtools
 
 Git
 ~~~

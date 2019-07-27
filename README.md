@@ -9,7 +9,7 @@ A python library to parse FGD files
 Fgd-tools is available on the Python Package Index. This makes installing it with pip as easy as:
 
 ```bash
-pip3 install fgd-tools
+pip3 install fgdtools
 ```
 
 ### Git
