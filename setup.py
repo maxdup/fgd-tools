@@ -8,7 +8,7 @@ setup(
     author='Maxime Dupuis',
     author_email='mdupuis@hotmail.ca',
     url='https://github.com/maxdup/fgd-tools',
-    download_url='https://github.com/maxdup/fgd-tools/archive/0.1.0.tar.gz',
+    download_url='https://github.com/maxdup/fgd-tools/archive/v0.1.0.tar.gz',
     keywords=['fgd', 'source', 'hammer'],
     install_requires=[],
     classifiers=[
