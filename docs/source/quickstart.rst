@@ -1,7 +1,7 @@
 Quickstart
 ==========
 
-Get yourself up in running quickly.
+Get yourself up and running quickly.
 
 Installation
 ------------

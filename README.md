@@ -1,6 +1,6 @@
 # Fgd-tools
 
-A python library to parse FGD files for the source engine.
+Fgd-tools is a Python library for parsing .fgd files from the Source Engine. It provides entity schemas and other level editor configuration information.
 
 Full documentation: https://maxdup.github.io/fgd-tools/
 
