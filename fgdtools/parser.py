@@ -1,3 +1,4 @@
+from pyparsing import *
 from .fgd import *
 import re
 
@@ -382,48 +383,22 @@ def property_definition_parse(p_definition_str):
 
 
 def property_options_parse(p_options_str):
-    p_options = []
-    p_options_str = p_options_str.strip('[] \n\t')
+
+    p_options_str = p_options_str.strip('\n\t [ ]')
+
     if not p_options_str:
-        return p_options
-    p_options_strs = p_options_str.split('\n')
-
-    for p_option_str in p_options_strs:
-        p_option = property_option_parse(p_option_str)
-
-        if p_option:
-            p_options.append(p_option)
-
-    return p_options
-
-
-def property_option_parse(p_option_str):
-    p_option_str = p_option_str.strip()
-
-    if not p_option_str:
         return None
 
-    option = None
-    p_option_parts = re.findall(re_group_around_colon, p_option_str)
+    value = Word(nums+'-').setParseAction(tokenMap(int)).setResultsName('value') ^ \
+        QuotedString('"').setResultsName('value')
 
-    option_val = p_option_parts[0].strip()
-    try:
-        option_val = int(option_val)
-    except:
-        option_val = option_val.strip("\'\" \n\t")
+    option_format = \
+        OneOrMore(Group(value + ':' + QuotedString('"').setResultsName('display_name') +
+                        Optional(':' + Word(nums).setResultsName('default_value')
+                                 .setParseAction(tokenMap(int)))))
 
-    option_desc = p_option_parts[2].strip("\'\" \n\t")
+    p_options = []
+    for o in option_format.parseString(p_options_str):
+        p_options.append(FgdEntityPropertyOption(**o))
 
-    option_default = None
-    if len(p_option_parts) > 4:
-        default_str = p_option_parts[4].strip()
-
-        try:
-            option_default = int(default_str)
-        except:
-            option_default = default_str.strip("\'\" \n\t")
-    option = FgdEntityPropertyOption(option_val,
-                                     option_desc,
-                                     option_default)
-
-    return option
+    return p_options

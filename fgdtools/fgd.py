@@ -589,7 +589,7 @@ class FgdEntityProperty():
         result = next(
             (o for o in self._options if o.value == option_value), None)
         if not result:
-            raise InputNotFound
+            raise OptionNotFound
         return result
 
     def fgd_str(self):
@@ -787,7 +787,7 @@ class FgdEntityPropertyOption():
     :type default_value: str, optional
     """
 
-    def __init__(self, value, display_name, default_value=None):
+    def __init__(self, value='', display_name='---None---', default_value=None):
         self._value = value
         self._display_name = display_name
         self._default_value = default_value
