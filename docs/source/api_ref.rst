@@ -12,4 +12,5 @@ If you are looking for information on a specific function, class or method, this
    api/fgd_entity_input
    api/fgd_entity_output
    api/fgd_editor_data
+   api/exceptions
 

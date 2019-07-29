@@ -59,13 +59,17 @@ class Fgd():
 
         :param entity_name: The entity name to look for.
         :type entity_name: str
-        :return: An entity with matching name, None if not found.
+
+        :raises EntityNotFound: whenever an entity could not be found
+        :return: An entity with matching name
         :rtype: FgdEntity
         """
 
-        results = (c for c in self._entities if isinstance(
-            c, FgdEntity) and c.name == entity_name)
-        return next(results, None)
+        result = next((c for c in self._entities if isinstance(
+            c, FgdEntity) and c.name == entity_name), None)
+        if not result:
+            raise EntityNotFound
+        return result
 
     def fgd_str(self):
         """A string representation of the Fgd formated as in the a .fgd file
@@ -267,7 +271,8 @@ class FgdEntity():
 
     @property
     def parents(self):
-        """The entity's parent entities, as defined in the entity's base(definition).
+        """The entity's parent entities, as defined in the entity's \
+        base(definition).
 
         :rtype: list[FgdEntity]"""
 
@@ -370,36 +375,46 @@ class FgdEntity():
 
         :param prop_name: The entity property name to look for.
         :type prop_name: str
+        :raises PropertyNotFound: whenever an entity property could not be found
         :return: An entity property with matching name, None if not found.
         :rtype: FgdEntityProperty
         """
 
-        results = (p for p in self.properties if p.name == prop_name)
-        return next(results, None)
+        result = next(
+            (p for p in self.properties if p.name == prop_name), None)
+        if not result:
+            raise PropertyNotFound
+        return result
 
     def input_by_name(self, input_name):
         """Finds an entity input by its name
 
         :param input_name: The entity input name to look for.
         :type input_name: str
+        :raises InputNotFound: whenever an entity input could not be found
         :return: An entity input with matching name, None if not found.
         :rtype: FgdEntityInput
         """
 
-        results = (i for i in self.inputs if i.name == input_name)
-        return next(results, None)
+        result = next((i for i in self.inputs if i.name == input_name), None)
+        if not result:
+            raise InputNotFound
+        return result
 
     def output_by_name(self, output_name):
         """Finds an entity output by its name
 
         :param output_name: The entity output name to look for.
         :type output_name: str
+        :raises OutputNotFound: whenever an entity output could not be found
         :return: An entity output with matching name, None if not found.
         :rtype: FgdEntityOutput
         """
 
-        results = (o for o in self.outputs if o.name == output_name)
-        return next(results, None)
+        result = next((o for o in self.outputs if o.name == output_name), None)
+        if not result:
+            raise InputNotFound
+        return result
 
     def fgd_str(self):
         """A string representation of the FgdEntity formated as in the a .fgd file
@@ -420,9 +435,8 @@ class FgdEntity():
             fgd_str += ' = ' + self._name
         if self._description:
             fgd_str += ' : "' + self._description + '"'
-
         if self._properties or \
-           self._inputs or self._outputs:
+                self._inputs or self._outputs:
             fgd_str += "\n["
             for prop in self._properties:
                 fgd_str += "\n\t" + prop.fgd_str()
@@ -459,7 +473,8 @@ class FgdEntityProperty():
     :param description: The property's description.
     :type description: str, optional
 
-    :param options: The property's options. (applicable only to types "choices" and "flags")
+    :param options: The property's options. \
+    (applicable only to types "choices" and "flags")
     :type options: list[FgdEntityPropertyOption], optional
     """
 
@@ -566,15 +581,16 @@ class FgdEntityProperty():
 
         :param option_value: The property option value to look for.
         :type option_value: int
-        :return: A property option with matching value, None if not found, None if option_value is not of type int
+        :raises OptionNotFound: Whenever a property option could not be found.
+        :return: A property option with matching value
         :rtype: FgdEntityPropertyOption
         """
 
-        if not isinstance(option_value, int):
-            return None
-
-        results = (o for o in self._options if o.value == option_value)
-        return next(results, None)
+        result = next(
+            (o for o in self._options if o.value == option_value), None)
+        if not result:
+            raise InputNotFound
+        return result
 
     def fgd_str(self):
         """A string representation of the entity property
@@ -823,3 +839,28 @@ class FgdEntityPropertyOption():
                 fgd_str += '"' + self._default_value + '"'
 
         return fgd_str
+
+
+class EntityNotFound(Exception):
+    """Raised when an entity could not be found"""
+    pass
+
+
+class PropertyNotFound(Exception):
+    """Raised when an entity property could not be found"""
+    pass
+
+
+class InputNotFound(Exception):
+    """Raised when an property input could not be found"""
+    pass
+
+
+class OutputNotFound(Exception):
+    """Raised when an property output could not be found"""
+    pass
+
+
+class OptionNotFound(Exception):
+    """Raised when an property option could not be found"""
+    pass
