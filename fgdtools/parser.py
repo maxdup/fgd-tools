@@ -178,7 +178,7 @@ def make_class(game_data, meta_str, prop_str):
         if class_metadatas_str.startswith('MaterialExclusion') or \
            class_metadatas_str.startswith('AutoVisGroup') or \
            class_metadatas_str.startswith('mapsize'):
-            return
+
             editor_data = editor_data_parse(class_metadatas_str, prop_str)
             if editor_data:
                 game_data.add_editor_data(editor_data)
@@ -330,14 +330,12 @@ def property_parse(property_str):
             p_data = property_definition_parse(p_definition_str[7:])
             if 'display_name' in p_data:
                 p_data['description'] = p_data.pop('display_name')
-            p_data['output_type'] = p_data.pop('value_type')
             entity_property = FgdEntityOutput(**p_data)
 
         elif (p_definition_str.startswith('input ')):
             p_data = property_definition_parse(p_definition_str[6:])
             if 'display_name' in p_data:
                 p_data['description'] = p_data.pop('display_name')
-            p_data['input_type'] = p_data.pop('value_type')
             entity_property = FgdEntityInput(**p_data)
 
         else:

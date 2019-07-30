@@ -645,16 +645,16 @@ class FgdEntityInput():
     :param name: The input's name.
     :type name: str
 
-    :param input_type: The input's type.
-    :type input_type: str
+    :param value_type: The input's type.
+    :type value_type: str
 
     :param description: The input's description.
     :type description: str
     """
 
-    def __init__(self, name, input_type, description=''):
+    def __init__(self, name, value_type, description=''):
         self._name = name
-        self._input_type = input_type
+        self._value_type = value_type
         self._description = description
 
     @property
@@ -666,7 +666,7 @@ class FgdEntityInput():
         """
 
         schema_obj = {
-            'type': self._input_type,
+            'type': self._value_type,
             'description': self._description,
         }
         return schema_obj
@@ -680,12 +680,12 @@ class FgdEntityInput():
         return self._name
 
     @property
-    def input_type(self):
+    def value_type(self):
         """The input's type.
 
         :rtype: str"""
 
-        return self._input_type
+        return self._value_type
 
     @property
     def description(self):
@@ -703,7 +703,7 @@ class FgdEntityInput():
         :rtype: str
         """
 
-        return 'input ' + self._name + '(' + self._input_type + ')' + \
+        return 'input ' + self._name + '(' + self._value_type + ')' + \
             ' : "' + str(self.description) + '"'
 
 
@@ -713,16 +713,16 @@ class FgdEntityOutput():
     :param name: The output's name.
     :type name: str
 
-    :param output_type: The output's type.
-    :type output_type: str
+    :param value_type: The output's type.
+    :type value_type: str
 
     :param description: The output's description.
     :type description: str
     """
 
-    def __init__(self, name, output_type, description=''):
+    def __init__(self, name, value_type, description=''):
         self._name = name
-        self._output_type = output_type
+        self._value_type = value_type
         self._description = description
 
     @property
@@ -734,7 +734,7 @@ class FgdEntityOutput():
         """
 
         schema_obj = {
-            'type': self._output_type,
+            'type': self._value_type,
             'description': self._description,
         }
         return schema_obj
@@ -747,12 +747,12 @@ class FgdEntityOutput():
         return self._name
 
     @property
-    def output_type(self):
+    def value_type(self):
         """The output's type.
 
         :rtype: str"""
 
-        return self._output_type
+        return self._value_type
 
     @property
     def description(self):
@@ -770,7 +770,7 @@ class FgdEntityOutput():
         :rtype: str
         """
 
-        return 'output ' + self._name + '(' + self._output_type + ')' + \
+        return 'output ' + self._name + '(' + self._value_type + ')' + \
             ' : "' + str(self.description) + '"'
 
 
