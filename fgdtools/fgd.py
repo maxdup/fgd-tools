@@ -85,6 +85,18 @@ class Fgd():
             fgd_str += e.fgd_str() + '\n\n'
         return fgd_str
 
+    def __repr__(self):
+        entity_counts_by_type = {}
+        for entity in self.entities:
+            if entity.class_type in entity_counts_by_type:
+                entity_counts_by_type[entity.class_type] += 1
+            else:
+                entity_counts_by_type[entity.class_type] = 1
+        entitiy_count_strings = []
+        for class_type, count in entity_counts_by_type.items():
+            entity_count_strings.append(' '.join([str(count), class_type]))
+        return ', '.join(entity_count.strings)
+
 
 class FgdEditorData():
     """Editor data, as reprented in a FGD file, usually of type such as:
@@ -450,6 +462,9 @@ class FgdEntity():
 
         return fgd_str
 
+    def __repr__(self):
+        return ''.join([self.class_type, ": ", self.name])
+
 
 class FgdEntityProperty():
     """An entity property, as reprented in a FGD file.
@@ -637,6 +652,9 @@ class FgdEntityProperty():
             fgd_str += ' =\n\t[\n\t]'
 
         return fgd_str
+
+    def __repr__(self):
+        return self.display_name
 
 
 class FgdEntityInput():

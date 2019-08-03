@@ -33,14 +33,10 @@ def FgdParse(file):
     game_data = Fgd()
 
     # Search for @includes
-    while True:
-        current_line = reader.readline()
-        if not current_line:
-            break
-
-        elif current_line.startswith('@include'):
-            current_line = current_line.strip('@include').strip(' ').strip('"')
-            fgdName = current_line.split('"')[0]
+    for line in reader:
+        if line.startswith('@include'):
+            line = line.lstrip('@include').strip(' ').strip('"')
+            fgdName = line.split('"')[0]
             base_game_data = FgdParse(fgdName)
             game_data._entities.extend(list(base_game_data.entities))
             game_data._editor_data.extend(list(base_game_data.editor_data))
