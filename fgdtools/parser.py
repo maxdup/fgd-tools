@@ -13,7 +13,7 @@ pp_quoted = Combine(QuotedString(
     '"') + Optional(OneOrMore(Suppress('+') + QuotedString('"'))), adjacent=False)
 pp_comment = Literal('//') + SkipTo(lineEnd)
 
-pp_default_value = QuotedString('"') ^ pp_nums
+pp_default_value = QuotedString('"') | pp_nums
 
 # property options parsers
 
@@ -22,7 +22,7 @@ def make_EntityPropertyOption(data):
     return FgdEntityPropertyOption(**data)
 
 
-pp_EntityPropertyOptionValue = pp_nums.setParseAction(tokenMap(int)) ^ pp_quoted
+pp_EntityPropertyOptionValue = pp_nums.setParseAction(tokenMap(int)) | pp_quoted
 pp_EntityPropertyOption = pp_EntityPropertyOptionValue.setResultsName('value') + \
     ':' + QuotedString('"').setResultsName('display_name') + \
     Optional(
@@ -70,13 +70,13 @@ def make_EntityIO(io_data):
     return None
 
 
-pp_io_type = (Literal('output') ^ Literal('input')).setResultsName('io_type')
+pp_io_type = (Literal('output') | Literal('input')).setResultsName('io_type')
 
 pp_EntityIO = pp_io_type + pp_property_name + \
     '(' + pp_property_value_type + ')' + ':' + pp_description
 pp_EntityIO.setParseAction(make_EntityIO)
 
-pp_properties = Suppress(pp_comment) ^ pp_EntityIO ^ pp_EntityProperty
+pp_properties = Suppress(pp_comment) | pp_EntityIO | pp_EntityProperty
 pp_EntityProperties = Suppress('[') + \
     Optional(OneOrMore(pp_properties).setResultsName('properties')) + \
     Suppress(']')
@@ -100,7 +100,7 @@ pp_entity_class_type = pp_name.setResultsName('class_type')
 pp_entity_name = pp_name.setResultsName('name')
 pp_entity_description = Optional(':' + pp_description)
 
-pp_entity_definition_arg = pp_value ^ pp_name ^ QuotedString(
+pp_entity_definition_arg = pp_value | pp_name | QuotedString(
     '"', unquoteResults=False)
 pp_entity_definition_args = Optional(delimitedList(
     pp_entity_definition_arg))
@@ -184,8 +184,8 @@ pp_autovisgroup = Literal('@') + \
     Literal('=') + pp_quoted.setResultsName('name') + pp_autovisgroup_data
 pp_autovisgroup.setParseAction(make_editor_data)
 
-pp_fgd = OneOrMore(pp_mapsize ^ pp_include ^ pp_material_ex ^
-                   pp_autovisgroup ^ pp_entity).ignore(pp_comment)
+pp_fgd = OneOrMore(pp_mapsize | pp_include | pp_material_ex |
+                   pp_autovisgroup | pp_entity).ignore(pp_comment)
 
 
 def FgdParse(filename):
