@@ -101,7 +101,7 @@ class FgdEditorData():
     :type data: tuple or list or dict
     """
 
-    def __init__(self, class_type, name, data):
+    def __init__(self, class_type, name=None, data=None):
         self._class_type = class_type
         self._name = name
         self._data = data
@@ -140,16 +140,15 @@ class FgdEditorData():
         fgd_str = '@' + self._class_type
         if self._name:
             fgd_str += ' = "' + self.name + '"'
-        if self._data and isinstance(self._data, tuple):
-            fgd_str += '('
-            for t in self._data:
-                fgd_str += str(t) + ', '
-            fgd_str = fgd_str.strip(', ') + ')'
-        fgd_str += "\n"
-
         if self._data:
-            if isinstance(self._data, dict):
-                fgd_str += '['
+            if isinstance(self._data, tuple):
+                fgd_str += '('
+                for t in self._data:
+                    fgd_str += str(t) + ', '
+                fgd_str = fgd_str.strip(', ') + ')'
+
+            elif isinstance(self._data, dict):
+                fgd_str += '\n['
                 for k, v in self._data.items():
                     fgd_str += '\n\t"' + k + '"\n\t['
                     for i in v:
@@ -157,7 +156,7 @@ class FgdEditorData():
                     fgd_str += '\n\t]'
                 fgd_str += '\n]'
             elif isinstance(self._data, list):
-                fgd_str += '['
+                fgd_str += '\n['
                 for i in self._data:
                     fgd_str += '\n\t"' + i + '"'
                 fgd_str += '\n]'
@@ -425,11 +424,12 @@ class FgdEntity():
 
         fgd_str = '@' + self.class_type
         for d in self._definitions:
-            fgd_str += ' ' + d['name'] + "("
-            for arg in d['args']:
-                fgd_str += arg + ', '
-            fgd_str = fgd_str.strip(', ')
-            fgd_str += ")"
+            fgd_str += ' ' + d['name']
+            if 'args' in d:
+                fgd_str += "("
+                for arg in d['args']:
+                    fgd_str += arg + ', '
+                fgd_str = fgd_str.strip(', ') + ')'
 
         if self._name:
             fgd_str += ' = ' + self._name
@@ -617,7 +617,12 @@ class FgdEntityProperty():
 
         # default_value
         if self._default_value:
-            fgd_str += ' : ' + str(self._default_value)
+            fgd_str += ' : '
+            if isinstance(self._default_value, int):
+                fgd_str += str(self._default_value)
+            else:
+                fgd_str += '"' + str(self._default_value) + '"'
+
         elif self._description and \
                 not isinstance(self, FgdEntityInput) and \
                 not isinstance(self, FgdEntityOutput):

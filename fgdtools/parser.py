@@ -1,402 +1,221 @@
+import os
 from pyparsing import *
 from .fgd import *
-import re
-
-re_string_concat = re.compile(r'"[\t\n ]*\+[\t\n ]*"', re.IGNORECASE)
-re_property_concat = re.compile(r'\:[\t ]*\n[\t\n ]', re.IGNORECASE)
-re_space_normalize = re.compile(r'[\t\n ]+', re.IGNORECASE)
-re_space_normalize = re.compile(r'[\t ]+', re.IGNORECASE)
-re_function_like = re.compile(r'[^\( \n\t]*\([^\(]*\)', re.IGNORECASE)
-re_bracketless_return = re.compile(
-    r'(?:([^\n]*=[\n\t ]*\[[^\]]*\])+)|\n', re.IGNORECASE)
-
-re_quoteless_colon = re.compile(
-    r' *: *(?=([^"]*"[^"]*")*[^"]*$)', re.IGNORECASE)
-
-re_group_around_equal = re.compile(
-    r'(?:"[^"]*"|[^=])*[^=]*', re.IGNORECASE)
-re_group_around_colon = re.compile(
-    r'(?:"[^"]*"|[^:])*[^:]*', re.IGNORECASE)
-re_choice_definition = re.compile(r'=[\t\n ]*\[', re.IGNORECASE)
 
 
-def FgdParse(file):
-    """Parse a .fgd file and return a FGD object
+# Basic parsers
 
-    :param file: A path to the .fgd file to be parsed
-    :type file: string
-    :return: a FGD object
-    :rtype: FGD
-    """
-    reader = open(file, "r", encoding="iso-8859-1")
+pp_name = Word(alphanums+'_')
+pp_nums = Word(nums+'-.')
+pp_value = Word(nums+'-. ')  # maybe space delimited vertex
 
-    game_data = Fgd()
+pp_quoted = Combine(QuotedString(
+    '"') + Optional(OneOrMore(Suppress('+') + QuotedString('"'))), adjacent=False)
+pp_comment = Literal('//') + SkipTo(lineEnd)
 
-    # Search for @includes
-    while True:
-        current_line = reader.readline()
-        if not current_line:
-            break
+pp_default_value = QuotedString('"') ^ pp_nums
 
-        elif current_line.startswith('@include'):
-            current_line = current_line.strip('@include').strip(' ').strip('"')
-            fgdName = current_line.split('"')[0]
-            base_game_data = FgdParse(fgdName)
-            game_data._entities.extend(list(base_game_data.entities))
-            game_data._editor_data.extend(list(base_game_data.editor_data))
-
-    reader.seek(0)
-
-    class_definition_str = ''
-    class_properties_str = ''
-
-    step = 'definition'
-    square_depth = 0
-
-    while True:
-        current_line = reader.readline()
-
-        # file ended
-        if not current_line:
-            break
-        # skip comments
-        if current_line.startswith('//'):
-            continue
-        # remove comment
-        if '//' in current_line:
-            current_line = current_line.split('//')[0]
-            current_line += '\n'
-
-        while current_line.strip():
-            reject = True
-            if current_line and '@' in current_line:
-
-                splitted = current_line.split('@', 1)
-
-                # otherwise it's part of a string
-                if splitted[0].count('"') % 2 == 0:
-
-                    reject = False
-                    # before @
-                    if step == 'definition':
-                        class_definition_str += splitted[0]
-                    elif step == 'properties':
-                        class_properties_str += splitted[0]
-
-                    # after @
-                    if len(splitted) == 2:
-                        current_line = splitted[1]
-                    else:
-                        current_line = ''
-
-                    step = 'definition'
-                    make_class(game_data,
-                               class_definition_str,
-                               class_properties_str)
-                    class_definition_str = ''
-                    class_properties_str = ''
-
-            if current_line and '[' in current_line and square_depth == 0:
-
-                splitted = current_line.split('[', 1)
-
-                # otherwise it's part of a string
-                if splitted[0].count('"') % 2 == 0:
-
-                    square_depth += 1
-                    reject = False
-
-                    # before [
-                    if step == 'definition':
-                        class_definition_str += splitted[0]
-                    elif step == 'properties':
-                        class_properties_str += splitted[0]
-
-                    # after [
-                    if len(splitted) == 2:
-                        current_line = splitted[1]
-                    else:
-                        current_line = ''
-
-                    step = 'properties'
-
-            if current_line and ']' in current_line and square_depth == 1 and \
-               '[' not in current_line:
-                splitted = current_line.split(']', 1)
-
-                # otherwise it's part of a string
-                if splitted[0].count('"') % 2 == 0:
-
-                    square_depth = 0
-                    reject = False
-
-                    # before ]
-                    if step == 'definition':
-                        class_definition_str += splitted[0]
-                    elif step == 'properties':
-                        class_properties_str += splitted[0]
-
-                    # after ]
-                    if len(splitted) == 2:
-                        current_line = splitted[1]
-                    else:
-                        current_line = ''
-
-                    step = ''
-
-                    make_class(game_data,
-                               class_definition_str,
-                               class_properties_str)
-
-                    class_definition_str = ''
-                    class_properties_str = ''
-
-            if reject:
-                break
-
-        if current_line:
-            if step == 'definition':
-                class_definition_str += current_line
-
-            elif step == 'properties':
-                square_depth -= current_line.count('[')
-                square_depth += current_line.count(']')
-                class_properties_str += current_line
-
-    return game_data
+# property options parsers
 
 
-def make_class(game_data, meta_str, prop_str):
-    class_metadatas_str = meta_str.strip()
-    class_metadatas_str = class_metadatas_str.replace('\n', ' ')
-    class_metadatas_str = class_metadatas_str.replace('\t', ' ')
-    class_metadatas_str = re.sub(re_string_concat, "", class_metadatas_str)
-    class_metadatas_str = re.sub(re_space_normalize, " ", class_metadatas_str)
-    if class_metadatas_str:
-        if class_metadatas_str.startswith('include'):
-            return
-        if class_metadatas_str.startswith('MaterialExclusion') or \
-           class_metadatas_str.startswith('AutoVisGroup') or \
-           class_metadatas_str.startswith('mapsize'):
-
-            editor_data = editor_data_parse(class_metadatas_str, prop_str)
-            if editor_data:
-                game_data.add_editor_data(editor_data)
-        else:
-            entity = entity_parse(class_metadatas_str, prop_str)
-            if entity:
-                game_data.add_entity(entity)
+def make_EntityPropertyOption(data):
+    return FgdEntityPropertyOption(**data)
 
 
-def editor_data_parse(meta_str, prop_str):
-    d_type = ''
-    d_name = None
-    d_data = None
+pp_EntityPropertyOptionValue = pp_nums.setParseAction(tokenMap(int)) ^ pp_quoted
+pp_EntityPropertyOption = pp_EntityPropertyOptionValue.setResultsName('value') + \
+    ':' + QuotedString('"').setResultsName('display_name') + \
+    Optional(
+        ':' + pp_nums.setResultsName('default_value').setParseAction(tokenMap(int))) + Optional(Suppress(pp_comment))
+pp_EntityPropertyOption
 
-    d_type = re.split('[ =\(]', meta_str)[0]
-    meta_str = meta_str[len(d_type):].strip()
-    if meta_str.startswith('='):
-        meta_str = meta_str.lstrip('= "')
-        d_name = meta_str.split('"', 1)[0]
-        meta_str = meta_str[len(d_name):].lstrip('"\n\t ')
-    if meta_str.startswith('('):
-        d_data = ()
-        tups = meta_str.strip('()\n\t ').split(',')
-        for t in tups:
-            d_data = d_data + (t.strip(),)
-    elif prop_str.strip():
-        if '[' in prop_str:
-            d_data = {}
-            datas = prop_str.split(']')
-
-            for data in datas:
-                if not data.strip():
-                    continue
-                ds = data.strip().split('[', 1)
-
-                d_list = []
-                d_key = ds[0].strip('" \n\t')
-                dl = ds[1].split('\n')
-                for d in dl:
-                    d_val = d.strip('" \n\t')
-                    if d_val:
-                        d_list.append(d.strip('" \n\t'))
-                d_data[d_key] = d_list
-        else:
-            d_data = []
-            datas = prop_str.split('\n')
-            for data in datas:
-                d = data.strip('" \n\t')
-                if d:
-                    d_data.append(d.strip())
-    data = FgdEditorData(d_type, d_name, d_data)
-    return data
+pp_EntityPropertyOptions = Suppress('[') + \
+    Optional(OneOrMore(pp_EntityPropertyOption.setParseAction(
+        make_EntityPropertyOption)).setResultsName('options')) + \
+    Suppress(']')
 
 
-def entity_parse(meta_str, prop_str):
-    properties = []
-    inputs = []
-    outputs = []
+# Property parsers
 
-    e_type = meta_str.split(' ', 1)[0].split('(')[0]
-    meta_str = meta_str[len(e_type):]
+def make_EntityProperty(property_data):
+    prop = FgdEntityProperty(**property_data.asDict())
+    return prop
 
-    definitions = []
-    entity_args = []
-    fgd_data = None
 
-    if '=' in meta_str:
-        meta_str = meta_str.split('=', 1)
-        definitions_str = meta_str[0].strip()
-        entity_args = re.split('[\t\n ]*:[\t\n ]"',
-                               meta_str[1].strip())
+pp_description = Optional(pp_quoted.setResultsName('description'))
+pp_property_name = pp_name.setResultsName('name')
+pp_property_value_type = pp_name.setResultsName('value_type')
+pp_property_display_name = Optional(pp_quoted.setResultsName('display_name'))
+pp_property_default = Optional(pp_default_value.setResultsName('default_value'))
+pp_property_readonly = Literal('readonly').setParseAction(
+    bool).setResultsName('readonly')
 
-    else:
-        definitions_str = meta_str
 
-    definitions_strs = re.findall(re_function_like, definitions_str)
-    if definitions_strs:
-        for d in definitions_strs:
-            definitions.append(definition_parse(d))
+pp_EntityProperty = pp_property_name + '(' + pp_property_value_type + ')' + \
+    Optional(pp_property_readonly) + \
+    Optional(':' + pp_property_display_name) + \
+    Optional(':' + pp_property_default) + \
+    Optional(':' + pp_description) + \
+    Optional('=' + pp_EntityPropertyOptions)
+pp_EntityProperty.setParseAction(make_EntityProperty)
 
-    name = entity_args[0].strip()
-    if len(entity_args) == 2:
-        description = entity_args[1].strip('"').strip()
-    else:
-        description = ''
 
-    for property_ in properties_parse(prop_str):
-        if (isinstance(property_, FgdEntityInput)):
-            inputs.append(property_)
-        elif (isinstance(property_, FgdEntityOutput)):
-            outputs.append(property_)
-        elif (isinstance(property_, FgdEntityProperty)):
-            properties.append(property_)
+def make_EntityIO(io_data):
+    data = io_data.asDict()
+    io_type = data.pop('io_type')
+    if io_type == 'input':
+        return FgdEntityInput(**data)
+    elif io_type == 'output':
+        return FgdEntityOutput(**data)
+    return None
 
-    if not e_type or not name:
-        return None
 
-    entity = FgdEntity(e_type, definitions, name, description,
-                       properties, inputs, outputs)
+pp_io_type = (Literal('output') ^ Literal('input')).setResultsName('io_type')
 
+pp_EntityIO = pp_io_type + pp_property_name + \
+    '(' + pp_property_value_type + ')' + ':' + pp_description
+pp_EntityIO.setParseAction(make_EntityIO)
+
+pp_properties = Suppress(pp_comment) ^ pp_EntityIO ^ pp_EntityProperty
+pp_EntityProperties = Suppress('[') + \
+    Optional(OneOrMore(pp_properties).setResultsName('properties')) + \
+    Suppress(']')
+
+
+# Entity parsers
+
+def make_Entity(entity_data):
+    dataDict = entity_data.asDict()
+    if 'definitions' not in dataDict:
+        dataDict['definitions'] = []
+    entity = FgdEntity(**dataDict)
     return entity
 
 
-def definition_parse(definition_str):
-    definition = {}
-    definition_parts = definition_str.split('(')
-    definition['name'] = definition_parts[0].strip()
-    definition_params = definition_parts[1].strip().strip(')').strip()
-
-    if (definition_params):
-        definition['args'] = re.split(
-            '[\t\n ]*\,[\t\n ]*', definition_params)
-    else:
-        definition['args'] = []
-
-    return definition
+def make_Entity_definition(definition):
+    return definition.asDict()
 
 
-def properties_parse(properties_str):
-    properties = []
-    properties_str = re.sub(re_string_concat, "", properties_str)
-    properties_str = re.sub(re_property_concat, ": ", properties_str)
-    properties_str = re.sub(re_choice_definition, "= [", properties_str)
-    properties_str = properties_str.strip('\n\t ')
-    properties_strs = re.split(re_bracketless_return, properties_str)
-    for p_str in properties_strs:
-        if (p_str):
-            p_str = p_str.strip('\n\t ]')
-            p_str = re.sub(r'[\t ]+', " ", p_str)
-            p_str = re.sub(r'\n ', "\n", p_str)
-        if (p_str):
-            prop = property_parse(p_str)
-            properties.append(prop)
+pp_entity_class_type = pp_name.setResultsName('class_type')
+pp_entity_name = pp_name.setResultsName('name')
+pp_entity_description = Optional(':' + pp_description)
 
-    return properties
+pp_entity_definition_arg = pp_value ^ pp_name ^ QuotedString(
+    '"', unquoteResults=False)
+pp_entity_definition_args = Optional(delimitedList(
+    pp_entity_definition_arg))
+
+pp_entity_definition = pp_name.setResultsName('name') + \
+    Optional(Suppress('(') + pp_entity_definition_args +
+             Suppress(')')).setResultsName('args')
 
 
-def property_parse(property_str):
-    property_parts = re.findall(re_group_around_equal, property_str)
-    entity_property = None
+pp_entity_definitions = Optional(
+    OneOrMore(pp_entity_definition.setParseAction(make_Entity_definition))).setResultsName('definitions')
 
-    if not property_parts:
-        return
-
-    p_definition_str = property_parts[0].strip()
-
-    if len(property_parts) <= 2:
-        if (p_definition_str.startswith('output ')):
-            p_data = property_definition_parse(p_definition_str[7:])
-            if 'display_name' in p_data:
-                p_data['description'] = p_data.pop('display_name')
-            entity_property = FgdEntityOutput(**p_data)
-
-        elif (p_definition_str.startswith('input ')):
-            p_data = property_definition_parse(p_definition_str[6:])
-            if 'display_name' in p_data:
-                p_data['description'] = p_data.pop('display_name')
-            entity_property = FgdEntityInput(**p_data)
-
-        else:
-            p_data = property_definition_parse(p_definition_str)
-            entity_property = FgdEntityProperty(**p_data)
-
-    elif len(property_parts) > 2:
-
-        p_options_str = property_parts[2].strip()
-        p_options = property_options_parse(property_parts[2].strip())
-        p_data = property_definition_parse(p_definition_str)
-        p_data['options'] = p_options
-        entity_property = FgdEntityProperty(**p_data)
-
-    return entity_property
+pp_entity = Suppress('@') + pp_entity_class_type + \
+    pp_entity_definitions + '=' + pp_entity_name + \
+    pp_entity_description + pp_EntityProperties
+pp_entity.setParseAction(make_Entity)
 
 
-def property_definition_parse(p_definition_str):
-    p_definition_str = p_definition_str.strip()
-    args = re.split(
-        r'''[ ]*:[ ]*(?=(?:[^'"]|'[^']*'|"[^"]*")*$)+''', p_definition_str)
+# Editor data parsers
 
-    definition_args = args[0].split('(', 1)
-    p_name_str = definition_args[0].strip()
-
-    definition_args = definition_args[1].split(')', 1)
-    p_type_str = definition_args[0].strip()
-    p_readonly = bool(definition_args[1].strip() or False)
-
-    kargs = {
-        'name': p_name_str,
-        'value_type': p_type_str,
-    }
-    if p_readonly:
-        kargs['readonly'] = True
-    if (len(args) > 1):
-        kargs['display_name'] = args[1].strip('" \n\t')
-    if (len(args) > 2):
-        kargs['default_value'] = args[2].strip()
-    if (len(args) > 3):
-        kargs['description'] = args[3].strip('" \n\t')
-    return kargs
+def make_include(include):
+    return FgdEditorData(**include.asDict())
 
 
-def property_options_parse(p_options_str):
+pp_include = Literal('@') + Literal('include').setResultsName('class_type') + \
+    pp_quoted.setResultsName('data')
+pp_include.setParseAction(make_include)
 
-    p_options_str = p_options_str.strip('\n\t [ ]')
 
-    if not p_options_str:
+def make_editor_data(results):
+    try:
+        editor_data = FgdEditorData(**results.asDict())
+    except Exception as e:
+        print(e)
         return None
+    return editor_data
 
-    value = Word(nums+'-').setParseAction(tokenMap(int)).setResultsName('value') ^ \
-        QuotedString('"').setResultsName('value')
 
-    option_format = \
-        OneOrMore(Group(value + ':' + QuotedString('"').setResultsName('display_name') +
-                        Optional(':' + Word(nums).setResultsName('default_value')
-                                 .setParseAction(tokenMap(int)))))
+def make_mapsize(results):
+    res = results.asDict()
+    res['data'] = tuple(res['data'])
+    editor_data = FgdEditorData(**res)
+    return editor_data
 
-    p_options = []
-    for o in option_format.parseString(p_options_str):
-        p_options.append(FgdEntityPropertyOption(**o))
 
-    return p_options
+pp_mapsize_data = pp_nums + Suppress(',') + pp_nums
+pp_mapsize = Literal('@') + \
+    Literal('mapsize').setResultsName('class_type') + \
+    Suppress(
+        '(') + pp_mapsize_data.setResultsName('data') + Suppress(')')
+pp_mapsize.setParseAction(make_mapsize)
+
+pp_material_ex_data = OneOrMore(QuotedString('"'))
+pp_material_ex = Literal('@') + \
+    Literal('MaterialExclusion').setResultsName('class_type') + \
+    Suppress(
+    '[') + Optional(pp_material_ex_data).setResultsName('data') + Suppress(']')
+pp_material_ex.setParseAction(make_editor_data)
+
+
+def make_autovisgroup(results):
+    return {results['key']: results['value']}
+
+
+def make_autovisgroups(results):
+    data = {}
+    for r in results:
+        data.update(r)
+    return data
+
+
+pp_autovisgroup_data_list = QuotedString('"').setResultsName('key') + \
+    Suppress('[') + \
+    Optional(OneOrMore(QuotedString('"'))).setResultsName('value') + \
+    Suppress(']')
+pp_autovisgroup_data = Suppress('[') + \
+    Optional(OneOrMore(pp_autovisgroup_data_list.setParseAction(
+        make_autovisgroup))).setParseAction(make_autovisgroups).setResultsName('data') + Suppress(']')
+pp_autovisgroup = Literal('@') + \
+    Literal('AutoVisGroup').setResultsName('class_type') + \
+    Literal('=') + pp_quoted.setResultsName('name') + pp_autovisgroup_data
+pp_autovisgroup.setParseAction(make_editor_data)
+
+pp_fgd = OneOrMore(pp_mapsize ^ pp_include ^ pp_material_ex ^
+                   pp_autovisgroup ^ pp_entity).ignore(pp_comment)
+
+
+def FgdParse(filename):
+    """Parse a .fgd file and return a FGD object
+    :param filename: A path to the .fgd file to be parsed
+    :type filename: string
+    :return: a FGD object
+    :rtype: FGD
+    """
+    game_data = Fgd()
+
+    filepath = os.path.abspath(filename)
+    filedir = os.path.dirname(filepath)
+
+    try:
+        results = pp_fgd.parseFile(open(filename, "r", encoding="iso-8859-1"))
+    except Exception as e:
+        raise
+
+    for i in results:
+        if isinstance(i, FgdEditorData):
+            if i.class_type == 'include':
+                include_path = os.path.join(filedir, i.data)
+                base_game_data = FgdParse(include_path)
+                game_data._entities.extend(list(base_game_data.entities))
+                game_data._editor_data.extend(list(base_game_data.editor_data))
+            else:
+                game_data.add_editor_data(i)
+    for i in results:
+        if isinstance(i, FgdEntity):
+            game_data.add_entity(i)
+
+    return game_data
