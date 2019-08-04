@@ -4,8 +4,15 @@ class Fgd():
     """
 
     def __init__(self):
+        self._includes = []
         self._entities = []
         self._editor_data = []
+
+    @property
+    def includes(self):
+        """A list of included :class:`fgdtools.Fgd`"""
+
+        return self._includes
 
     @property
     def entities(self):
@@ -18,6 +25,13 @@ class Fgd():
         """A list containing all :class:`fgdtools.FgdEditorData`"""
 
         return self._editor_data
+
+    def add_include(self, parent_fgd):
+        """Adds a parent :class:`fgdtools.Fgd` to supplement this one"""
+
+        if not parent_fgd:
+            return
+        self._includes.append(parent_fgd)
 
     def add_entity(self, fgd_entity):
         """Adds an entity to the Fgd
@@ -32,13 +46,15 @@ class Fgd():
 
         # find parents
         if fgd_entity.definitions:
-            if 'base' in fgd_entity.definitions:
-                for p_entity in fgd_entity.definitions['base']:
-                    b = next(filter(
-                        lambda data: isinstance(data, FgdEntity) and
-                        data.name == p_entity, self._entities), None)
-                    if b:
-                        fgd_entity._parents.append(b)
+            for definition in fgd_entity.definitions:
+                if 'args' not in definition or \
+                   'name' not in definition or \
+                   definition['name'] != 'base':
+                    continue
+                for entity_name in definition['args']:
+                    parent = self.entity_by_name(entity_name)
+                    if parent:
+                        fgd_entity._parents.append(parent)
         self._entities.append(fgd_entity)
 
     def add_editor_data(self, fgd_editor_data):
@@ -67,19 +83,34 @@ class Fgd():
 
         result = next((c for c in self._entities if isinstance(
             c, FgdEntity) and c.name == entity_name), None)
+        if not result and self._includes:
+            for include in self._includes:
+                result = include.entity_by_name(entity_name)
+                if result:
+                    break
         if not result:
             raise EntityNotFound
         return result
 
-    def fgd_str(self):
+    def fgd_str(self, collapse=False):
         """A string representation of the Fgd formated as in the a .fgd file
 
+        :param collapse: If True, the content of included fgds will be included in
+                         the output and include statements will be removed.
+                         If False, Include statements will be in the output
+                         and the content of other Fgds will not be present.
+        :type collapse: bool
         :return: Fgd formated string.
         :rtype: str
         """
 
         fgd_str = ''
+        if collapse:
+            for include in self._includes:
+                fgd_str += include.fgd_str(collapse)
         for d in self.editor_data:
+            if collapse and d.class_type == 'include':
+                continue
             fgd_str += d.fgd_str() + '\n\n'
         for e in self.entities:
             fgd_str += e.fgd_str() + '\n\n'
@@ -141,6 +172,8 @@ class FgdEditorData():
         if self._name:
             fgd_str += ' = "' + self.name + '"'
         if self._data:
+            if isinstance(self._data, str):
+                fgd_str += ' "' + self._data + '"'
             if isinstance(self._data, tuple):
                 fgd_str += '('
                 for t in self._data:
@@ -171,7 +204,7 @@ class FgdEntity():
     :type class_type: str
 
     :param definitions: Information defining the entity within the editor.
-                       ex: 'base()', 'size()', 'line()', 'studioprop()' etc...
+                        ex: 'base()', 'size()', 'line()', 'studioprop()' etc...
     :type definitions: dict
 
     :param name: The entity's name.
@@ -458,8 +491,8 @@ class FgdEntityProperty():
     :type name: str
 
     :param value_type: The property's value type
-                    ex: 'integer', 'float', 'choices', etc...
-    :type value_type: str
+                       ex:'integer', 'float', 'choices', etc...
+    :type value_type:str
 
     :param name: The property's readonly status.
     :type name: bool, optional
@@ -478,17 +511,14 @@ class FgdEntityProperty():
     :type options: list[FgdEntityPropertyOption], optional
     """
 
-    def __init__(self, name, value_type, readonly=False,
-                 display_name=None, default_value=None, description=None,
-                 options=[]):
+    def __init__(self, name, value_type, readonly=False, display_name=None,
+                 default_value=None, description=None, options=[]):
         self._name = name
         self._value_type = value_type.lower()
         self._readonly = readonly
-
         self._display_name = display_name
         self._default_value = default_value
         self._description = description
-
         self._options = options
 
     @property
@@ -749,6 +779,7 @@ class FgdEntityOutput():
         """The output's name.
 
         :rtype: str"""
+
         return self._name
 
     @property
@@ -857,15 +888,15 @@ class PropertyNotFound(Exception):
 
 
 class InputNotFound(Exception):
-    """Raised when an property input could not be found"""
+    """Raised when a property input could not be found"""
     pass
 
 
 class OutputNotFound(Exception):
-    """Raised when an property output could not be found"""
+    """Raised when a property output could not be found"""
     pass
 
 
 class OptionNotFound(Exception):
-    """Raised when an property option could not be found"""
+    """Raised when a property option could not be found"""
     pass

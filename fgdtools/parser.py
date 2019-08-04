@@ -210,10 +210,8 @@ def FgdParse(filename):
             if i.class_type == 'include':
                 include_path = os.path.join(filedir, i.data)
                 base_game_data = FgdParse(include_path)
-                game_data._entities.extend(list(base_game_data.entities))
-                game_data._editor_data.extend(list(base_game_data.editor_data))
-            else:
-                game_data.add_editor_data(i)
+                game_data.add_include(base_game_data)
+            game_data.add_editor_data(i)
     for i in results:
         if isinstance(i, FgdEntity):
             game_data.add_entity(i)
