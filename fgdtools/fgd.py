@@ -492,7 +492,7 @@ class FgdEntityProperty():
 
     :param value_type: The property's value type
                        ex:'integer', 'float', 'choices', etc...
-    :type value_type:str
+    :type value_type: str
 
     :param name: The property's readonly status.
     :type name: bool, optional
@@ -506,8 +506,8 @@ class FgdEntityProperty():
     :param description: The property's description.
     :type description: str, optional
 
-    :param options: The property's options. \
-    (applicable only to types "choices" and "flags")
+    :param options: The property's options.
+                    (applicable only to types "choices" and "flags")
     :type options: list[FgdEntityPropertyOption], optional
     """
 

@@ -23,3 +23,13 @@ If you are looking for information on a specific function, class or method, this
 
    api_ref
 
+
+Contributing
+============
+
+Few things to know before diving in the code.
+
+.. toctree::
+   :maxdepth: 2
+
+   contributing
