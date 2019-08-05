@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Api Reference &#8212; Fgd-tools 0.1.0 documentation</title>
+    <title>Contributing &#8212; Fgd-tools 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,8 +15,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Fgd" href="api/fgd.html" />
-    <link rel="prev" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="Exceptions" href="api/exceptions.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -33,20 +32,30 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="api-reference">
-<h1>Api Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
-<p>If you are looking for information on a specific function, class or method, this part of the documentation is for you.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd.html">Fgd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_entity.html">FgdEntity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_entity_property.html">FgdEntityProperty</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_entity_input.html">FgdEntityInput</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_entity_output.html">FgdEntityOutput</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/fgd_editor_data.html">FgdEditorData</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/exceptions.html">Exceptions</a></li>
-</ul>
+  <div class="section" id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>Few things to know before diving in the code.</p>
+<div class="section" id="project-guidelines">
+<h2>Project Guidelines<a class="headerlink" href="#project-guidelines" title="Permalink to this headline">¶</a></h2>
+<p>Be pythonic and document your code, that’s all.</p>
+</div>
+<div class="section" id="dev-environment">
+<h2>Dev Environment<a class="headerlink" href="#dev-environment" title="Permalink to this headline">¶</a></h2>
+<p>To tinker with the code, it’s recommended that you install the library from the cloned folder with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --editable .
+</pre></div>
+</div>
+<p>This will allow you to import the library normally and mess with the code directly from the git folder.</p>
+</div>
+<div class="section" id="documenting">
+<h2>Documenting<a class="headerlink" href="#documenting" title="Permalink to this headline">¶</a></h2>
+<p>The documentation is done with <a class="reference external" href="http://www.sphinx-doc.org/en/master/">Sphinx</a>.
+To build the Sphinx documentation, you need:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -U sphinx
+pip install sphinx-autobuild
+</pre></div>
+</div>
+<p>Then you can run sphinx-autobuild.sh in the docs/ directory. The documentation pages will be served on <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> by default.</p>
 </div>
 </div>
 
@@ -73,29 +82,23 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_ref.html">Api Reference</a></li>
+</ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Api Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd.html">Fgd</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_entity.html">FgdEntity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_entity_property.html">FgdEntityProperty</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_entity_input.html">FgdEntityInput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_entity_output.html">FgdEntityOutput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/fgd_editor_data.html">FgdEditorData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#project-guidelines">Project Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dev-environment">Dev Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documenting">Documenting</a></li>
 </ul>
 </li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart</a></li>
-      <li>Next: <a href="api/fgd.html" title="next chapter">Fgd</a></li>
+      <li>Previous: <a href="api/exceptions.html" title="previous chapter">Exceptions</a></li>
   </ul></li>
 </ul>
 </div>
@@ -129,7 +132,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/api_ref.rst.txt"
+      <a href="_sources/contributing.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

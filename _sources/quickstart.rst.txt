@@ -1,7 +1,7 @@
 Quickstart
 ==========
 
-Get yourself up in running quickly.
+Get yourself up and running quickly.
 
 Installation
 ------------
@@ -50,16 +50,18 @@ You can get a Fgd object by parsing an .fgd file using FgdParse
 Writing
 ~~~~~~~
 
-You can write an .fgd file from a Fgd object.
+You can write an .fgd file from a Fgd object. It will write the fgd as it was parsed. The content of included Fgds will not be written unless you use the 'collapse' option.
 
 .. note::
-   Parsing/writing is destructive. Comments will be ignored. Include statements will be removed and have everything merged in the same fgd. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.
+   Parsing/writing is destructive. Comments will be lost. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.
 
 .. code-block:: python
 
    > from fgdtools import FgdWrite
 
    > FgdWrite(fgd, 'tf-clone.fgd')
+   > FgdWrite(fgd, 'tf-clone.fgd', collapse=True)
+
 
 Getting entity schemas
 ~~~~~~~~~~~~~~~~~~~~~~

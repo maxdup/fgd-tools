@@ -12,6 +12,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="FgdEntityPropertyOption" href="fgd_entity_property_option.html" />
@@ -43,12 +44,13 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – The property’s name.</p></li>
 <li><p><strong>value_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The property’s value type
-ex: ‘integer’, ‘float’, ‘choices’, etc…</p></li>
+ex:’integer’, ‘float’, ‘choices’, etc…</p></li>
 <li><p><strong>name</strong> – The property’s readonly status.</p></li>
 <li><p><strong>display_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s display name.</p></li>
 <li><p><strong>default_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s unparsed default value.</p></li>
 <li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The property’s description.</p></li>
-<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption"><em>FgdEntityPropertyOption</em></a><em>]</em><em>, </em><em>optional</em>) – The property’s options. (applicable only to types “choices” and “flags”)</p></li>
+<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption"><em>FgdEntityPropertyOption</em></a><em>]</em><em>, </em><em>optional</em>) – The property’s options.
+(applicable only to types “choices” and “flags”)</p></li>
 </ul>
 </dd>
 </dl>
@@ -151,11 +153,14 @@ ex: ‘integer’, ‘float’, ‘choices’, etc…</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>option_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The property option value to look for.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A property option with matching value, None if not found, None if option_value is not of type int</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.OptionNotFound" title="fgdtools.OptionNotFound"><strong>OptionNotFound</strong></a> – Whenever a property option could not be found.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption">FgdEntityPropertyOption</a></p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A property option with matching value</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption" title="fgdtools.FgdEntityPropertyOption">FgdEntityPropertyOption</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -186,6 +191,9 @@ formated as in the a .fgd file</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/obsolete.png" alt="Logo"/>
+            </a></p>
 <h1 class="logo"><a href="../index.html">Fgd-tools</a></h1>
 
 
@@ -208,8 +216,12 @@ formated as in the a .fgd file</p>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_input.html">FgdEntityInput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_output.html">FgdEntityOutput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_editor_data.html">FgdEditorData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
 <div class="relations">

@@ -1,8 +1,7 @@
 Api Reference
 =============
 
-If you are looking for information on a specific function, c
-lass or method, this part of the documentation is for you.
+If you are looking for information on a specific function, class or method, this part of the documentation is for you.
 
 .. toctree::
 
@@ -13,4 +12,5 @@ lass or method, this part of the documentation is for you.
    api/fgd_entity_input
    api/fgd_entity_output
    api/fgd_editor_data
+   api/exceptions
 

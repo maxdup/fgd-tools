@@ -12,6 +12,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -37,8 +38,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_editor_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of included :class:`fgdtools.Fgd`&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -51,6 +59,13 @@
         <span class="sd">&quot;&quot;&quot;A list containing all :class:`fgdtools.FgdEditorData`&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_editor_data</span>
+
+<div class="viewcode-block" id="Fgd.add_include"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd.add_include">[docs]</a>    <span class="k">def</span> <span class="nf">add_include</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_fgd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a parent :class:`fgdtools.Fgd` to supplement this one&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_fgd</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent_fgd</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Fgd.add_entity"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd.add_entity">[docs]</a>    <span class="k">def</span> <span class="nf">add_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fgd_entity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds an entity to the Fgd</span>
@@ -65,13 +80,15 @@
 
         <span class="c1"># find parents</span>
         <span class="k">if</span> <span class="n">fgd_entity</span><span class="o">.</span><span class="n">definitions</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;base&#39;</span> <span class="ow">in</span> <span class="n">fgd_entity</span><span class="o">.</span><span class="n">definitions</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">p_entity</span> <span class="ow">in</span> <span class="n">fgd_entity</span><span class="o">.</span><span class="n">definitions</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]:</span>
-                    <span class="n">b</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span>
-                        <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">FgdEntity</span><span class="p">)</span> <span class="ow">and</span>
-                        <span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">p_entity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">b</span><span class="p">:</span>
-                        <span class="n">fgd_entity</span><span class="o">.</span><span class="n">_parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">fgd_entity</span><span class="o">.</span><span class="n">definitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;args&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">definition</span> <span class="ow">or</span> \
+                   <span class="s1">&#39;name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">definition</span> <span class="ow">or</span> \
+                   <span class="n">definition</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;base&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">entity_name</span> <span class="ow">in</span> <span class="n">definition</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]:</span>
+                    <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_by_name</span><span class="p">(</span><span class="n">entity_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+                        <span class="n">fgd_entity</span><span class="o">.</span><span class="n">_parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fgd_entity</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Fgd.add_editor_data"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd.add_editor_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_editor_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fgd_editor_data</span><span class="p">):</span>
@@ -92,23 +109,42 @@
 
 <span class="sd">        :param entity_name: The entity name to look for.</span>
 <span class="sd">        :type entity_name: str</span>
-<span class="sd">        :return: An entity with matching name, None if not found.</span>
+
+<span class="sd">        :raises EntityNotFound: whenever an entity could not be found</span>
+<span class="sd">        :return: An entity with matching name</span>
 <span class="sd">        :rtype: FgdEntity</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">c</span><span class="p">,</span> <span class="n">FgdEntity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">entity_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">FgdEntity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">entity_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">include</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">include</span><span class="o">.</span><span class="n">entity_by_name</span><span class="p">(</span><span class="n">entity_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EntityNotFound</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Fgd.fgd_str"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd.fgd_str">[docs]</a>    <span class="k">def</span> <span class="nf">fgd_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Fgd.fgd_str"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd.fgd_str">[docs]</a>    <span class="k">def</span> <span class="nf">fgd_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A string representation of the Fgd formated as in the a .fgd file</span>
 
+<span class="sd">        :param collapse: If True, the content of included fgds will be included in</span>
+<span class="sd">                         the output and include statements will be removed.</span>
+<span class="sd">                         If False, Include statements will be in the output</span>
+<span class="sd">                         and the content of other Fgds will not be present.</span>
+<span class="sd">        :type collapse: bool</span>
 <span class="sd">        :return: Fgd formated string.</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">fgd_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">collapse</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">include</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_includes</span><span class="p">:</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="n">include</span><span class="o">.</span><span class="n">fgd_str</span><span class="p">(</span><span class="n">collapse</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">editor_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">collapse</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">class_type</span> <span class="o">==</span> <span class="s1">&#39;include&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="n">d</span><span class="o">.</span><span class="n">fgd_str</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">:</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">fgd_str</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
@@ -130,7 +166,7 @@
 <span class="sd">    :type data: tuple or list or dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_class_type</span> <span class="o">=</span> <span class="n">class_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
@@ -169,16 +205,17 @@
         <span class="n">fgd_str</span> <span class="o">=</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_type</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; = &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;(&#39;</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
-                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
-            <span class="n">fgd_str</span> <span class="o">=</span> <span class="n">fgd_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
-        <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;[&#39;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;(&#39;</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+                    <span class="n">fgd_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+                <span class="n">fgd_str</span> <span class="o">=</span> <span class="n">fgd_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[&#39;</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;&quot;</span><span class="se">\n\t</span><span class="s1">[&#39;</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
@@ -186,7 +223,7 @@
                     <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">]&#39;</span>
                 <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">]&#39;</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;[&#39;</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[&#39;</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
                     <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;&#39;</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
                 <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">]&#39;</span>
@@ -201,7 +238,7 @@
 <span class="sd">    :type class_type: str</span>
 
 <span class="sd">    :param definitions: Information defining the entity within the editor.</span>
-<span class="sd">                       ex: &#39;base()&#39;, &#39;size()&#39;, &#39;line()&#39;, &#39;studioprop()&#39; etc...</span>
+<span class="sd">                        ex: &#39;base()&#39;, &#39;size()&#39;, &#39;line()&#39;, &#39;studioprop()&#39; etc...</span>
 <span class="sd">    :type definitions: dict</span>
 
 <span class="sd">    :param name: The entity&#39;s name.</span>
@@ -300,7 +337,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The entity&#39;s parent entities, as defined in the entity&#39;s base(definition).</span>
+        <span class="sd">&quot;&quot;&quot;The entity&#39;s parent entities, as defined in the entity&#39;s \</span>
+<span class="sd">        base(definition).</span>
 
 <span class="sd">        :rtype: list[FgdEntity]&quot;&quot;&quot;</span>
 
@@ -403,36 +441,46 @@
 
 <span class="sd">        :param prop_name: The entity property name to look for.</span>
 <span class="sd">        :type prop_name: str</span>
+<span class="sd">        :raises PropertyNotFound: whenever an entity property could not be found</span>
 <span class="sd">        :return: An entity property with matching name, None if not found.</span>
 <span class="sd">        :rtype: FgdEntityProperty</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">prop_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">prop_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PropertyNotFound</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="FgdEntity.input_by_name"><a class="viewcode-back" href="../../api/fgd_entity.html#fgdtools.FgdEntity.input_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">input_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Finds an entity input by its name</span>
 
 <span class="sd">        :param input_name: The entity input name to look for.</span>
 <span class="sd">        :type input_name: str</span>
+<span class="sd">        :raises InputNotFound: whenever an entity input could not be found</span>
 <span class="sd">        :return: An entity input with matching name, None if not found.</span>
 <span class="sd">        :rtype: FgdEntityInput</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">input_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">input_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputNotFound</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="FgdEntity.output_by_name"><a class="viewcode-back" href="../../api/fgd_entity.html#fgdtools.FgdEntity.output_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">output_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Finds an entity output by its name</span>
 
 <span class="sd">        :param output_name: The entity output name to look for.</span>
 <span class="sd">        :type output_name: str</span>
+<span class="sd">        :raises OutputNotFound: whenever an entity output could not be found</span>
 <span class="sd">        :return: An entity output with matching name, None if not found.</span>
 <span class="sd">        :rtype: FgdEntityOutput</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">output_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">output_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputNotFound</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="FgdEntity.fgd_str"><a class="viewcode-back" href="../../api/fgd_entity.html#fgdtools.FgdEntity.fgd_str">[docs]</a>    <span class="k">def</span> <span class="nf">fgd_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A string representation of the FgdEntity formated as in the a .fgd file</span>
@@ -443,19 +491,19 @@
 
         <span class="n">fgd_str</span> <span class="o">=</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_type</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definitions</span><span class="p">:</span>
-            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span>
-            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]:</span>
-                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="n">arg</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
-            <span class="n">fgd_str</span> <span class="o">=</span> <span class="n">fgd_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
-            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s2">&quot;)&quot;</span>
+            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s2">&quot;(&quot;</span>
+                <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]:</span>
+                    <span class="n">fgd_str</span> <span class="o">+=</span> <span class="n">arg</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+                <span class="n">fgd_str</span> <span class="o">=</span> <span class="n">fgd_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; = &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span><span class="p">:</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; : &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span> <span class="ow">or</span> \
-           <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">:</span>
             <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[&quot;</span>
             <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">:</span>
                 <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">prop</span><span class="o">.</span><span class="n">fgd_str</span><span class="p">()</span>
@@ -477,7 +525,7 @@
 <span class="sd">    :type name: str</span>
 
 <span class="sd">    :param value_type: The property&#39;s value type</span>
-<span class="sd">                    ex: &#39;integer&#39;, &#39;float&#39;, &#39;choices&#39;, etc...</span>
+<span class="sd">                       ex:&#39;integer&#39;, &#39;float&#39;, &#39;choices&#39;, etc...</span>
 <span class="sd">    :type value_type: str</span>
 
 <span class="sd">    :param name: The property&#39;s readonly status.</span>
@@ -492,21 +540,19 @@
 <span class="sd">    :param description: The property&#39;s description.</span>
 <span class="sd">    :type description: str, optional</span>
 
-<span class="sd">    :param options: The property&#39;s options. (applicable only to types &quot;choices&quot; and &quot;flags&quot;)</span>
+<span class="sd">    :param options: The property&#39;s options.</span>
+<span class="sd">                    (applicable only to types &quot;choices&quot; and &quot;flags&quot;)</span>
 <span class="sd">    :type options: list[FgdEntityPropertyOption], optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">display_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">options</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">=</span> <span class="n">value_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_readonly</span> <span class="o">=</span> <span class="n">readonly</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="n">display_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span> <span class="o">=</span> <span class="n">default_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">description</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">options</span>
 
     <span class="nd">@property</span>
@@ -599,15 +645,16 @@
 
 <span class="sd">        :param option_value: The property option value to look for.</span>
 <span class="sd">        :type option_value: int</span>
-<span class="sd">        :return: A property option with matching value, None if not found, None if option_value is not of type int</span>
+<span class="sd">        :raises OptionNotFound: Whenever a property option could not be found.</span>
+<span class="sd">        :return: A property option with matching value</span>
 <span class="sd">        :rtype: FgdEntityPropertyOption</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option_value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">option_value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">option_value</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OptionNotFound</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="FgdEntityProperty.fgd_str"><a class="viewcode-back" href="../../api/fgd_entity_property.html#fgdtools.FgdEntityProperty.fgd_str">[docs]</a>    <span class="k">def</span> <span class="nf">fgd_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A string representation of the entity property</span>
@@ -634,7 +681,12 @@
 
         <span class="c1"># default_value</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span><span class="p">:</span>
-            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span><span class="p">)</span>
+            <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39; : &#39;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="ow">and</span> \
                 <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FgdEntityInput</span><span class="p">)</span> <span class="ow">and</span> \
                 <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FgdEntityOutput</span><span class="p">):</span>
@@ -662,16 +714,16 @@
 <span class="sd">    :param name: The input&#39;s name.</span>
 <span class="sd">    :type name: str</span>
 
-<span class="sd">    :param input_type: The input&#39;s type.</span>
-<span class="sd">    :type input_type: str</span>
+<span class="sd">    :param value_type: The input&#39;s type.</span>
+<span class="sd">    :type value_type: str</span>
 
 <span class="sd">    :param description: The input&#39;s description.</span>
 <span class="sd">    :type description: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">=</span> <span class="n">input_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">=</span> <span class="n">value_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">description</span>
 
     <span class="nd">@property</span>
@@ -683,7 +735,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">schema_obj</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">,</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">schema_obj</span>
@@ -697,12 +749,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The input&#39;s type.</span>
 
 <span class="sd">        :rtype: str&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -720,7 +772,7 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="s1">&#39;input &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span> <span class="o">+</span> \
+        <span class="k">return</span> <span class="s1">&#39;input &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span> <span class="o">+</span> \
             <span class="s1">&#39; : &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span></div></div>
 
 
@@ -730,16 +782,16 @@
 <span class="sd">    :param name: The output&#39;s name.</span>
 <span class="sd">    :type name: str</span>
 
-<span class="sd">    :param output_type: The output&#39;s type.</span>
-<span class="sd">    :type output_type: str</span>
+<span class="sd">    :param value_type: The output&#39;s type.</span>
+<span class="sd">    :type value_type: str</span>
 
 <span class="sd">    :param description: The output&#39;s description.</span>
 <span class="sd">    :type description: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output_type</span> <span class="o">=</span> <span class="n">output_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">=</span> <span class="n">value_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">description</span>
 
     <span class="nd">@property</span>
@@ -751,7 +803,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">schema_obj</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_type</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">,</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">schema_obj</span>
@@ -761,15 +813,16 @@
         <span class="sd">&quot;&quot;&quot;The output&#39;s name.</span>
 
 <span class="sd">        :rtype: str&quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The output&#39;s type.</span>
 
 <span class="sd">        :rtype: str&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_type</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -787,7 +840,7 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="s1">&#39;output &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_type</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span> <span class="o">+</span> \
+        <span class="k">return</span> <span class="s1">&#39;output &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span> <span class="o">+</span> \
             <span class="s1">&#39; : &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span></div></div>
 
 
@@ -804,7 +857,7 @@
 <span class="sd">    :type default_value: str, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;---None---&#39;</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="n">display_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span> <span class="o">=</span> <span class="n">default_value</span>
@@ -856,6 +909,31 @@
                 <span class="n">fgd_str</span> <span class="o">+=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_value</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
 
         <span class="k">return</span> <span class="n">fgd_str</span></div></div>
+
+
+<div class="viewcode-block" id="EntityNotFound"><a class="viewcode-back" href="../../api/exceptions.html#fgdtools.EntityNotFound">[docs]</a><span class="k">class</span> <span class="nc">EntityNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when an entity could not be found&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PropertyNotFound"><a class="viewcode-back" href="../../api/exceptions.html#fgdtools.PropertyNotFound">[docs]</a><span class="k">class</span> <span class="nc">PropertyNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when an entity property could not be found&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InputNotFound"><a class="viewcode-back" href="../../api/exceptions.html#fgdtools.InputNotFound">[docs]</a><span class="k">class</span> <span class="nc">InputNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a property input could not be found&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="OutputNotFound"><a class="viewcode-back" href="../../api/exceptions.html#fgdtools.OutputNotFound">[docs]</a><span class="k">class</span> <span class="nc">OutputNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a property output could not be found&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="OptionNotFound"><a class="viewcode-back" href="../../api/exceptions.html#fgdtools.OptionNotFound">[docs]</a><span class="k">class</span> <span class="nc">OptionNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a property option could not be found&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 </pre></div>
 
           </div>
@@ -864,6 +942,9 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/obsolete.png" alt="Logo"/>
+            </a></p>
 <h1 class="logo"><a href="../../index.html">Fgd-tools</a></h1>
 
 
@@ -879,6 +960,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api_ref.html">Api Reference</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 </ul>
 
 <div class="relations">

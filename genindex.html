@@ -13,6 +13,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -57,6 +58,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd.html#fgdtools.Fgd.add_entity">add_entity() (fgdtools.Fgd method)</a>
+</li>
+      <li><a href="api/fgd.html#fgdtools.Fgd.add_include">add_include() (fgdtools.Fgd method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -112,11 +115,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd.html#fgdtools.Fgd.editor_data">editor_data() (fgdtools.Fgd property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd.html#fgdtools.Fgd.entities">entities() (fgdtools.Fgd property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd.html#fgdtools.Fgd.entity_by_name">entity_by_name() (fgdtools.Fgd method)</a>
+</li>
+      <li><a href="api/exceptions.html#fgdtools.EntityNotFound">EntityNotFound (class in fgdtools)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -162,13 +167,15 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.input_by_name">input_by_name() (fgdtools.FgdEntity method)</a>
+      <li><a href="api/fgd.html#fgdtools.Fgd.includes">includes() (fgdtools.Fgd property)</a>
 </li>
-      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.input_schema">input_schema() (fgdtools.FgdEntity property)</a>
+      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.input_by_name">input_by_name() (fgdtools.FgdEntity method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/fgd_entity_input.html#fgdtools.FgdEntityInput.input_type">input_type() (fgdtools.FgdEntityInput property)</a>
+      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.input_schema">input_schema() (fgdtools.FgdEntity property)</a>
+</li>
+      <li><a href="api/exceptions.html#fgdtools.InputNotFound">InputNotFound (class in fgdtools)</a>
 </li>
       <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.inputs">inputs() (fgdtools.FgdEntity property)</a>
 </li>
@@ -198,15 +205,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd_entity_property.html#fgdtools.FgdEntityProperty.option_by_value">option_by_value() (fgdtools.FgdEntityProperty method)</a>
 </li>
-      <li><a href="api/fgd_entity_property.html#fgdtools.FgdEntityProperty.options">options() (fgdtools.FgdEntityProperty property)</a>
+      <li><a href="api/exceptions.html#fgdtools.OptionNotFound">OptionNotFound (class in fgdtools)</a>
 </li>
-      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.output_by_name">output_by_name() (fgdtools.FgdEntity method)</a>
+      <li><a href="api/fgd_entity_property.html#fgdtools.FgdEntityProperty.options">options() (fgdtools.FgdEntityProperty property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.output_by_name">output_by_name() (fgdtools.FgdEntity method)</a>
+</li>
       <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.output_schema">output_schema() (fgdtools.FgdEntity property)</a>
 </li>
-      <li><a href="api/fgd_entity_output.html#fgdtools.FgdEntityOutput.output_type">output_type() (fgdtools.FgdEntityOutput property)</a>
+      <li><a href="api/exceptions.html#fgdtools.OutputNotFound">OutputNotFound (class in fgdtools)</a>
 </li>
       <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.outputs">outputs() (fgdtools.FgdEntity property)</a>
 </li>
@@ -225,6 +234,8 @@
       <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.property_by_name">property_by_name() (fgdtools.FgdEntity method)</a>
 </li>
       <li><a href="api/fgd_entity.html#fgdtools.FgdEntity.property_schema">property_schema() (fgdtools.FgdEntity property)</a>
+</li>
+      <li><a href="api/exceptions.html#fgdtools.PropertyNotFound">PropertyNotFound (class in fgdtools)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -258,10 +269,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fgd_entity_property_option.html#fgdtools.FgdEntityPropertyOption.value">value() (fgdtools.FgdEntityPropertyOption property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/fgd_entity_property.html#fgdtools.FgdEntityProperty.value_type">value_type() (fgdtools.FgdEntityProperty property)</a>
+      <li><a href="api/fgd_entity_input.html#fgdtools.FgdEntityInput.value_type">value_type() (fgdtools.FgdEntityInput property)</a>
+
+      <ul>
+        <li><a href="api/fgd_entity_output.html#fgdtools.FgdEntityOutput.value_type">(fgdtools.FgdEntityOutput property)</a>
 </li>
+        <li><a href="api/fgd_entity_property.html#fgdtools.FgdEntityProperty.value_type">(fgdtools.FgdEntityProperty property)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -273,6 +288,9 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/obsolete.png" alt="Logo"/>
+            </a></p>
 <h1 class="logo"><a href="index.html">Fgd-tools</a></h1>
 
 
@@ -288,6 +306,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_ref.html">Api Reference</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
 <div class="relations">
