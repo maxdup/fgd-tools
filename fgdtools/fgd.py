@@ -16,15 +16,25 @@ class Fgd():
 
     @property
     def entities(self):
-        """A list containing all :class:`fgdtools.FgdEntity`"""
+        """A list containing all :class:`fgdtools.FgdEntity`,
+        including entities from @includes"""
 
-        return self._entities
+        entities = []
+        for include in self._includes:
+            entities += include.entities
+        entities += self._entities
+        return entities
 
     @property
     def editor_data(self):
-        """A list containing all :class:`fgdtools.FgdEditorData`"""
+        """A list containing all :class:`fgdtools.FgdEditorData`,
+        including data from @includes"""
 
-        return self._editor_data
+        editor_data = []
+        for include in self._includes:
+            editor_data += include.editor_data
+        editor_data += self._editor_data
+        return editor_data
 
     def add_include(self, parent_fgd):
         """Adds a parent :class:`fgdtools.Fgd` to supplement this one"""
@@ -106,14 +116,17 @@ class Fgd():
 
         fgd_str = ''
         if collapse:
-            for include in self._includes:
-                fgd_str += include.fgd_str(collapse)
-        for d in self.editor_data:
-            if collapse and d.class_type == 'include':
-                continue
-            fgd_str += d.fgd_str() + '\n\n'
-        for e in self.entities:
-            fgd_str += e.fgd_str() + '\n\n'
+            for d in self.editor_data:
+                if d.class_type == 'include':
+                    continue
+                fgd_str += d.fgd_str() + '\n\n'
+            for e in self.entities:
+                fgd_str += e.fgd_str() + '\n\n'
+        else:
+            for d in self._editor_data:
+                fgd_str += d.fgd_str() + '\n\n'
+            for e in self._entities:
+                fgd_str += e.fgd_str() + '\n\n'
         return fgd_str
 
 
