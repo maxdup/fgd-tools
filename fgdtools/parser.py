@@ -78,7 +78,7 @@ pp_EntityIO.setParseAction(make_EntityIO)
 
 pp_properties = Suppress(pp_comment) | pp_EntityIO | pp_EntityProperty
 pp_EntityProperties = Suppress('[') + \
-    Optional(OneOrMore(pp_properties).setResultsName('properties')) + \
+    Optional(OneOrMore(pp_properties).setResultsName('properties_and_io')) + \
     Suppress(']')
 
 
@@ -88,6 +88,17 @@ def make_Entity(entity_data):
     dataDict = entity_data.asDict()
     if 'definitions' not in dataDict:
         dataDict['definitions'] = []
+    if 'properties_and_io' in dataDict:
+        dataDict['inputs'] = []
+        dataDict['outputs'] = []
+        dataDict['properties'] = []
+        for pio in dataDict.pop('properties_and_io'):
+            if isinstance(pio, FgdEntityInput):
+                dataDict['inputs'].append(pio)
+            if isinstance(pio, FgdEntityOutput):
+                dataDict['outputs'].append(pio)
+            if isinstance(pio, FgdEntityProperty):
+                dataDict['properties'].append(pio)
     entity = FgdEntity(**dataDict)
     return entity
 
