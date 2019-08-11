@@ -63,7 +63,7 @@ class Fgd():
                     continue
                 for entity_name in definition['args']:
                     parent = self.entity_by_name(entity_name)
-                    if parent:
+                    if parent and parent.name != fgd_entity.name:
                         fgd_entity._parents.append(parent)
         self._entities.append(fgd_entity)
 
