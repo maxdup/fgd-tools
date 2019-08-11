@@ -379,6 +379,9 @@ class FgdEntity():
     def inputs(self):
         """The entity's inputs, including inherited inputs.
 
+        Note: As in the way Hammer behaves, inputs cannot be overridden.
+        All duplicate inputs are ignored, only the oldest is returned.
+
         :rtype: list[FgdEntityInput]"""
 
         inputs = {}
@@ -386,7 +389,8 @@ class FgdEntity():
             for p in t.inputs:
                 inputs[p.name] = p
         for p in self._inputs:
-            inputs[p.name] = p
+            if p.name not in inputs:
+                inputs[p.name] = p
 
         inputs_array = []
         for k, v in inputs.items():
@@ -398,22 +402,16 @@ class FgdEntity():
     def outputs(self):
         """The entity's outputs, including inherited outputs.
 
+        Note: As in the way Hammer behaves, outputs cannot be overridden.
+        All duplicate outputs are returned.
+
         :rtype: list[FgdEntityOutput]"""
 
-        outputs = {}
+        outputs = self._outputs or []
         for t in self._parents:
-            for p in t.outputs:
-                outputs[p.name] = p
-        for p in self._outputs:
-            outputs[p.name] = p
+            outputs = outputs + t.outputs
 
-        outputs_array = []
-        for k, v in outputs.items():
-            outputs_array.append(v)
-
-        return outputs_array
-
-        return self._outputs
+        return outputs
 
     def property_by_name(self, prop_name):
         """Finds an entity property by its name
