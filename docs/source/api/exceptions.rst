@@ -9,4 +9,4 @@ Exceptions
 
 .. autoclass:: fgdtools.OutputNotFound
 
-.. autoclass:: fgdtools.OptionNotFound
+.. autoclass:: fgdtools.ChoiceNotFound

@@ -15,40 +15,58 @@ pp_comment = Literal('//') + SkipTo(lineEnd)
 
 pp_default_value = QuotedString('"') | pp_nums
 
-# property options parsers
+
+# property choices parsers
+def make_boolean(data):
+    return bool(int(data[0].strip('"')))
 
 
-def make_EntityPropertyOption(data):
-    return FgdEntityPropertyOption(**data)
+def make_EntityPropertyChoice(data):
+    return FgdEntityPropertyChoice(**data)
 
 
-pp_EntityPropertyOptionValue = pp_nums.setParseAction(tokenMap(int)) | pp_quoted
-pp_EntityPropertyOption = pp_EntityPropertyOptionValue.setResultsName('value') + \
+pp_EntityPropertyChoiceValue = pp_nums.setParseAction(tokenMap(int)) | pp_quoted
+
+pp_EntityPropertyChoice = pp_EntityPropertyChoiceValue.setResultsName('value') + \
     ':' + QuotedString('"').setResultsName('display_name') + \
-    Optional(
-        ':' + pp_nums.setResultsName('default_value').setParseAction(tokenMap(int))) + Optional(Suppress(pp_comment))
-pp_EntityPropertyOption
+    Optional(Suppress(pp_comment))
 
-pp_EntityPropertyOptions = Suppress('[') + \
-    Optional(OneOrMore(pp_EntityPropertyOption.setParseAction(
-        make_EntityPropertyOption)).setResultsName('options')) + \
+pp_EntityPropertyChoices = Suppress('[') + \
+    Optional(OneOrMore(pp_EntityPropertyChoice.setParseAction(
+        make_EntityPropertyChoice)).setResultsName('choices')) + \
     Suppress(']')
 
 
+def make_EntitySpawnflag(data):
+    return FgdEntitySpawnflag(**data)
+
+
+pp_EntitySpawnflag = pp_nums.setResultsName('value').setParseAction(tokenMap(int)) + \
+    ':' + QuotedString('"').setResultsName('display_name') + \
+    ':' + pp_nums.setResultsName('default_value').setParseAction(make_boolean) + \
+    Optional(Suppress(pp_comment))
+pp_EntitySpawnflag.setParseAction(make_EntitySpawnflag)
+
+pp_EntitySpawnflags = Suppress(CaselessLiteral('spawnflags') + '(' +
+                               CaselessLiteral('flags') + ')' + '=' + '[') + \
+    Optional(OneOrMore(pp_EntitySpawnflag).setResultsName('spawnflags')) + \
+    Suppress(']')
+
 # Property parsers
+
 
 def make_EntityProperty(property_data):
     prop = FgdEntityProperty(**property_data.asDict())
     return prop
 
 
-pp_description = Optional(pp_quoted.setResultsName('description'))
 pp_property_name = pp_name.setResultsName('name')
 pp_property_value_type = pp_name.setResultsName('value_type')
-pp_property_display_name = Optional(pp_quoted.setResultsName('display_name'))
-pp_property_default = Optional(pp_default_value.setResultsName('default_value'))
 pp_property_readonly = Literal('readonly').setParseAction(
     bool).setResultsName('readonly')
+pp_property_display_name = Optional(pp_quoted.setResultsName('display_name'))
+pp_property_default = Optional(pp_default_value.setResultsName('default_value'))
+pp_description = Optional(pp_quoted.setResultsName('description'))
 
 
 pp_EntityProperty = pp_property_name + '(' + pp_property_value_type + ')' + \
@@ -56,7 +74,7 @@ pp_EntityProperty = pp_property_name + '(' + pp_property_value_type + ')' + \
     Optional(':' + pp_property_display_name) + \
     Optional(':' + pp_property_default) + \
     Optional(':' + pp_description) + \
-    Optional('=' + pp_EntityPropertyOptions)
+    Optional('=' + pp_EntityPropertyChoices)
 pp_EntityProperty.setParseAction(make_EntityProperty)
 
 
@@ -76,7 +94,9 @@ pp_EntityIO = pp_io_type + pp_property_name + \
     '(' + pp_property_value_type + ')' + ':' + pp_description
 pp_EntityIO.setParseAction(make_EntityIO)
 
-pp_properties = Suppress(pp_comment) | pp_EntityIO | pp_EntityProperty
+pp_properties = Suppress(pp_comment) | \
+    pp_EntityIO | pp_EntitySpawnflags | pp_EntityProperty
+
 pp_EntityProperties = Suppress('[') + \
     Optional(OneOrMore(pp_properties).setResultsName('properties_and_io')) + \
     Suppress(']')
