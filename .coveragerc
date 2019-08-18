@@ -1,0 +1,3 @@
+[run]
+source = fgdtools/
+omit = fgdtools/__init__.py
