@@ -62,9 +62,12 @@ class Fgd():
                    definition['name'] != 'base':
                     continue
                 for entity_name in definition['args']:
-                    parent = self.entity_by_name(entity_name)
-                    if parent and parent.name != fgd_entity.name:
-                        fgd_entity._parents.append(parent)
+                    try:
+                        parent = self.entity_by_name(entity_name)
+                        if parent and parent.name != fgd_entity.name:
+                            fgd_entity._parents.append(parent)
+                    except EntityNotFound:
+                        pass
         self._entities.append(fgd_entity)
 
     def add_editor_data(self, fgd_editor_data):
@@ -95,9 +98,11 @@ class Fgd():
             c, FgdEntity) and c.name == entity_name), None)
         if not result and self._includes:
             for include in self._includes:
-                result = include.entity_by_name(entity_name)
-                if result:
+                try:
+                    result = include.entity_by_name(entity_name)
                     break
+                except EntityNotFound:
+                    pass
         if not result:
             raise EntityNotFound
         return result
@@ -105,8 +110,8 @@ class Fgd():
     def fgd_str(self, collapse=False):
         """A string representation of the Fgd formated as in the a .fgd file
 
-        :param collapse: If True, the content of included fgds will be included in
-                         the output and include statements will be removed.
+        :param collapse: If True, the content of included fgds will be included
+                         in the output and @include statements will be removed.
                          If False, Include statements will be in the output
                          and the content of other Fgds will not be present.
         :type collapse: bool
@@ -131,7 +136,7 @@ class Fgd():
 
 
 class FgdEditorData():
-    """Editor data, as reprented in a FGD file, usually of type such as:
+    """Editor data, as represented in a FGD file, usually of type such as:
     @mapsize, @MaterialExclusion or @AutoVisGroup
 
     :param class_type: The editor_data's type
@@ -210,7 +215,7 @@ class FgdEditorData():
 
 
 class FgdEntity():
-    """An entity, as reprented in a FGD file.
+    """An entity, as represented in a FGD file.
 
     :param class_type: The entity's type
                        ex: 'BaseClass', 'SolidClass', 'PointClass' etc...
@@ -229,6 +234,9 @@ class FgdEntity():
     :param properties: The entity's properties.
     :type properties: list[FgdEntityProperty], optional
 
+    :param spawnflags: The entity's spawnflags.
+    :type spawnflags: list[FgdEntitySpawnflag], optional
+
     :param inputs: The entity's inputs.
     :type inputs: list[FgdEntityInput], optional
 
@@ -237,12 +245,13 @@ class FgdEntity():
     """
 
     def __init__(self, class_type, definitions, name, description=None,
-                 properties=[], inputs=[], outputs=[]):
+                 properties=[], spawnflags=[], inputs=[], outputs=[]):
         self._class_type = class_type
         self._definitions = definitions or []
         self._name = name
         self._description = description
         self._properties = properties
+        self._spawnflags = spawnflags
         self._inputs = inputs
         self._outputs = outputs
 
@@ -257,54 +266,59 @@ class FgdEntity():
         """
 
         schema_obj = {
-            'properties': self.property_schema,
-            'inputs': self.input_schema,
-            'outputs': self.output_schema
+            'properties': self.properties_schema,
+            'inputs': self.inputs_schema,
+            'outputs': self.outputs_schema,
+            'spawnflags': self.spawnflags_schema
         }
         return schema_obj
 
     @property
-    def property_schema(self):
+    def properties_schema(self):
         """A schematic view of this entity's properties.
 
-        :returns: A dictionary
-        :rtype: dict
+        :returns: A list of dictionaries
+        :rtype: list[dict]
         """
 
-        schema_obj = {'classname': {'default_value': self._name,
-                                    'type': 'string',
-                                    'readonly': True},
-                      'id': {'type': 'integer',
-                             'readonly': True}}
-        for p in self.properties:
-            schema_obj[p.name] = p.schema
-        return schema_obj
+        return [p.schema for p in self.properties] + \
+            [{'name': 'classname',
+              'default_value': self._name,
+              'type': 'string',
+              'readonly': True},
+             {'name': 'id',
+              'type': 'integer',
+              'readonly': True}]
 
     @property
-    def input_schema(self):
+    def inputs_schema(self):
         """A schematic view of this entity's inputs.
 
-        :returns: A dictionary
-        :rtype: dict
+        :returns: A list of dictionaries
+        :rtype: list[dict]
         """
 
-        schema_obj = {}
-        for i in self.inputs:
-            schema_obj[i.name] = i.schema
-        return schema_obj
+        return [i.schema for i in self.inputs]
 
     @property
-    def output_schema(self):
+    def outputs_schema(self):
         """A schematic view of this entity's outputs.
 
-        :returns: A dictionary
-        :rtype: dict
+        :returns: A list of dictionaries
+        :rtype: list[dict]
         """
 
-        schema_obj = {}
-        for o in self.outputs:
-            schema_obj[o.name] = o.schema
-        return schema_obj
+        return [o.schema for o in self.outputs]
+
+    @property
+    def spawnflags_schema(self):
+        """A schematic view of this entity's spanwnflags.
+
+        :returns: A list of dictionaries
+        :rtype: list[dict]
+        """
+
+        return [s.schema for s in self.spawnflags]
 
     @property
     def class_type(self):
@@ -360,7 +374,10 @@ class FgdEntity():
     def properties(self):
         """The entity's properties, including inherited inputs.
 
-        :rtype: list[FgdEntityOutput]"""
+        Note: As in the way Hammer behaves,
+        properties of the same name are overridden
+
+        :rtype: list[FgdEntityProperty]"""
 
         properties = {}
         for t in self._parents:
@@ -374,6 +391,28 @@ class FgdEntity():
             properties_array.append(v)
 
         return properties_array
+
+    @property
+    def spawnflags(self):
+        """The entity's spawnflags, including inherited spawnflags.
+
+        Note: As in the way Hammer behaves, spawnflags definition
+        will merge with inherited definitions only if there is no
+        collision between values. if there is a collision, only
+        the latest definition will be taken into account.
+
+        :rtype: list[FgdEntitySpawnflag]"""
+
+        spawnflags = [] + self._spawnflags
+        ineligible_parents = []
+        for p in self._parents:
+            for s in p.spawnflags:
+                if next((x for x in self._spawnflags if x.value == s.value), None):
+                    ineligible_parents.append(p)
+                    continue
+            if p not in ineligible_parents:
+                spawnflags += p.spawnflags
+        return spawnflags
 
     @property
     def inputs(self):
@@ -419,7 +458,7 @@ class FgdEntity():
         :param prop_name: The entity property name to look for.
         :type prop_name: str
         :raises PropertyNotFound: whenever an entity property could not be found
-        :return: An entity property with matching name, None if not found.
+        :return: An entity property with matching name.
         :rtype: FgdEntityProperty
         """
 
@@ -429,13 +468,29 @@ class FgdEntity():
             raise PropertyNotFound
         return result
 
+    def spawnflag_by_value(self, spawnflag_value):
+        """Finds a property choice by its value
+
+        :param spawnflag_value: The property spawnflag value to look for.
+        :type spawnflag_value: int
+        :raises SpawnflagNotFound: Whenever an entity spawnflag could not be found.
+        :return: An entity spawnflag with matching value.
+        :rtype: FgdEntitySpawnflag
+        """
+
+        result = next(
+            (o for o in self._spawnflags if o.value == spawnflag_value), None)
+        if not result:
+            raise SpawnflagNotFound
+        return result
+
     def input_by_name(self, input_name):
         """Finds an entity input by its name
 
         :param input_name: The entity input name to look for.
         :type input_name: str
         :raises InputNotFound: whenever an entity input could not be found
-        :return: An entity input with matching name, None if not found.
+        :return: An entity input with matching name.
         :rtype: FgdEntityInput
         """
 
@@ -450,7 +505,7 @@ class FgdEntity():
         :param output_name: The entity output name to look for.
         :type output_name: str
         :raises OutputNotFound: whenever an entity output could not be found
-        :return: An entity output with matching name, None if not found.
+        :return: An entity output with matching name.
         :rtype: FgdEntityOutput
         """
 
@@ -466,7 +521,7 @@ class FgdEntity():
         :rtype: str
         """
 
-        fgd_str = '@' + self.class_type
+        fgd_str = '@' + self._class_type
         for d in self._definitions:
             fgd_str += ' ' + d['name']
             if 'args' in d:
@@ -479,11 +534,16 @@ class FgdEntity():
             fgd_str += ' = ' + self._name
         if self._description:
             fgd_str += ' : "' + self._description + '"'
-        if self._properties or \
+        if self._properties or self._spawnflags or \
                 self._inputs or self._outputs:
             fgd_str += "\n["
             for prop in self._properties:
                 fgd_str += "\n\t" + prop.fgd_str()
+            if self._spawnflags:
+                fgd_str += "\n\tspawnflags(flags) =\n\t["
+                for flag in self._spawnflags:
+                    fgd_str += "\n\t\t" + flag.fgd_str()
+                fgd_str += "\n\t]"
             for input in self._inputs:
                 fgd_str += "\n\t" + input.fgd_str()
             for output in self._outputs:
@@ -496,7 +556,7 @@ class FgdEntity():
 
 
 class FgdEntityProperty():
-    """An entity property, as reprented in a FGD file.
+    """An entity property, as represented in a FGD file.
 
     :param name: The property's name.
     :type name: str
@@ -517,20 +577,20 @@ class FgdEntityProperty():
     :param description: The property's description.
     :type description: str, optional
 
-    :param options: The property's options.
+    :param choices: The property's choices.
                     (applicable only to types "choices" and "flags")
-    :type options: list[FgdEntityPropertyOption], optional
+    :type choices: list[FgdEntityPropertyChoice], optional
     """
 
     def __init__(self, name, value_type, readonly=False, display_name=None,
-                 default_value=None, description=None, options=[]):
+                 default_value=None, description=None, choices=[]):
         self._name = name
         self._value_type = value_type.lower()
         self._readonly = readonly
         self._display_name = display_name
         self._default_value = default_value
         self._description = description
-        self._options = options
+        self._choices = choices
 
     @property
     def schema(self):
@@ -541,21 +601,22 @@ class FgdEntityProperty():
         """
 
         schema_obj = {
-            'display_name': self._value_type,
+            'name': self._name,
+            'display_name': self._display_name,
             'description': self._description,
             'readonly': self._readonly,
             'type': self._value_type,
             'default_value': self._default_value,
         }
-        if self._options:
-            options = []
-            for option in self._options:
-                o = {'value': option.value,
-                     'display_name': option.display_name}
+        if self._choices:
+            choices = []
+            for choice in self._choices:
+                o = {'value': choice.value,
+                     'display_name': choice.display_name}
                 if self.value_type.lower() == 'flags':
-                    o['default_value'] = option.default_value
-                options.append(o)
-            schema_obj['options'] = options
+                    o['default_value'] = choice.default_value
+                choices.append(o)
+            schema_obj['choices'] = choices
         return schema_obj
 
     @property
@@ -607,30 +668,30 @@ class FgdEntityProperty():
         return self._description
 
     @property
-    def options(self):
-        """The property's options.
+    def choices(self):
+        """The property's choices.
 
-        :rtype: list[FgdEntityPropertyOption]"""
+        :rtype: list[FgdEntityPropertyChoice]"""
 
         if self._value_type.lower() in ['choices', 'flags']:
-            return self._options
+            return self._choices
         else:
             return None
 
-    def option_by_value(self, option_value):
-        """Finds a property option by its value
+    def choice_by_value(self, choice_value):
+        """Finds a property choice by its value
 
-        :param option_value: The property option value to look for.
-        :type option_value: int
-        :raises OptionNotFound: Whenever a property option could not be found.
-        :return: A property option with matching value
-        :rtype: FgdEntityPropertyOption
+        :param choice_value: The property choice value to look for.
+        :type choice_value: int
+        :raises ChoiceNotFound: Whenever a property choice could not be found.
+        :return: A property choice with matching value
+        :rtype: FgdEntityPropertyChoice
         """
 
         result = next(
-            (o for o in self._options if o.value == option_value), None)
+            (o for o in self._choices if o.value == choice_value), None)
         if not result:
-            raise OptionNotFound
+            raise ChoiceNotFound
         return result
 
     def fgd_str(self):
@@ -673,11 +734,11 @@ class FgdEntityProperty():
         if self._description:
             fgd_str += ' : "' + self._description + '"'
 
-        # options
-        if self.options:
+        # choices
+        if self.choices:
             fgd_str += ' =\n\t[\n'
-            for option in self._options:
-                fgd_str += '\t\t' + option.fgd_str() + '\n'
+            for choice in self._choices:
+                fgd_str += '\t\t' + choice.fgd_str() + '\n'
             fgd_str += '\t]'
         elif self._value_type.lower() in ['choices', 'flags']:
             fgd_str += ' =\n\t[\n\t]'
@@ -686,7 +747,7 @@ class FgdEntityProperty():
 
 
 class FgdEntityInput():
-    """An entity input, as reprented in FGD file.
+    """An entity input, as represented in FGD file.
 
     :param name: The input's name.
     :type name: str
@@ -712,6 +773,7 @@ class FgdEntityInput():
         """
 
         schema_obj = {
+            'name': self._name,
             'type': self._value_type,
             'description': self._description,
         }
@@ -754,7 +816,7 @@ class FgdEntityInput():
 
 
 class FgdEntityOutput():
-    """An entity output, as reprented in FGD file.
+    """An entity output, as represented in FGD file.
 
     :param name: The output's name.
     :type name: str
@@ -780,6 +842,7 @@ class FgdEntityOutput():
         """
 
         schema_obj = {
+            'name': self._name,
             'type': self._value_type,
             'description': self._description,
         }
@@ -821,27 +884,23 @@ class FgdEntityOutput():
             ' : "' + str(self.description) + '"'
 
 
-class FgdEntityPropertyOption():
-    """A property option, as found in entity properties of type "choices" or "flags".
+class FgdEntityPropertyChoice():
+    """A property choice, as found in entity properties of type "choices".
 
-    :param value: The entity's value.
+    :param value: The choice's value.
     :type value: str
 
-    :param display_name: The entity's display_name.
+    :param display_name: The choice's display_name.
     :type display_name: str
-
-    :param default_value: The entity's default_value.
-    :type default_value: str, optional
     """
 
-    def __init__(self, value='', display_name='---None---', default_value=None):
+    def __init__(self, value='', display_name='---None---'):
         self._value = value
         self._display_name = display_name
-        self._default_value = default_value
 
     @property
     def value(self):
-        """The option's value.
+        """The choice's value.
 
         :rtype: str"""
 
@@ -849,22 +908,14 @@ class FgdEntityPropertyOption():
 
     @property
     def display_name(self):
-        """The option's display name.
+        """The choice's display name.
 
         :rtype: str"""
 
         return self._display_name
 
-    @property
-    def default_value(self):
-        """The option's default value.
-
-        :rtype: int"""
-
-        return self._default_value
-
     def fgd_str(self):
-        """A string representation of the property option
+        """A string representation of the property choice
         formated as in the a .fgd file
 
         :return: Fgd formated string.
@@ -878,12 +929,77 @@ class FgdEntityPropertyOption():
             fgd_str += '"' + self._value + '"'
         fgd_str += ' : "' + self._display_name + '"'
 
-        if self._default_value != None:
-            fgd_str += ' : '
-            if isinstance(self._default_value, int):
-                fgd_str += str(self._default_value)
-            else:
-                fgd_str += '"' + self._default_value + '"'
+        return fgd_str
+
+
+class FgdEntitySpawnflag():
+    """An entity Spawnflag.
+
+    :param value: The spawnflag's value.
+    :type value: int
+
+    :param display_name: The spawnflag's display_name.
+    :type display_name: str
+
+    :param default_value: The spawnflag's default_value.
+    :type default_value: bool
+    """
+
+    def __init__(self, value='', display_name='', default_value=None):
+        self._value = value
+        self._display_name = display_name
+        self._default_value = default_value
+
+    @property
+    def value(self):
+        """The spawnflag's value.
+
+        :rtype: int"""
+
+        return self._value
+
+    @property
+    def display_name(self):
+        """The spawnflag's display name.
+
+        :rtype: str"""
+
+        return self._display_name
+
+    @property
+    def default_value(self):
+        """The spawnflag's default value.
+
+        :rtype: int"""
+
+        return self._default_value
+
+    @property
+    def schema(self):
+        """A schematic view of this Spawnflag.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'value': self._value,
+            'display_name': self._display_name,
+            'default_value': self._default_value
+        }
+        return schema_obj
+
+    def fgd_str(self):
+        """A string representation of the spawnflag
+        formated as in the a .fgd file
+
+        :return: Fgd formated string.
+        :rtype: str
+        """
+
+        fgd_str = str(self._value) + ' : "'
+        fgd_str += self._display_name + '" : '
+        fgd_str += str(int(self.default_value))
 
         return fgd_str
 
@@ -899,15 +1015,20 @@ class PropertyNotFound(Exception):
 
 
 class InputNotFound(Exception):
-    """Raised when a property input could not be found"""
+    """Raised when an entity input could not be found"""
     pass
 
 
 class OutputNotFound(Exception):
-    """Raised when a property output could not be found"""
+    """Raised when an entity output could not be found"""
     pass
 
 
-class OptionNotFound(Exception):
-    """Raised when a property option could not be found"""
+class SpawnflagNotFound(Exception):
+    """Raised when an entity Spawnflag could not be found"""
+    pass
+
+
+class ChoiceNotFound(Exception):
+    """Raised when a property choice could not be found"""
     pass
