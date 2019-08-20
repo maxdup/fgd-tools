@@ -304,6 +304,10 @@ class FgdEntity():
         """
 
         schema_obj = {
+            'name': self._name,
+            'description': self._description,
+            'class_type': self._class_type,
+            'definitions': self._definitions,
             'properties': self.properties_schema,
             'inputs': self.inputs_schema,
             'outputs': self.outputs_schema,
@@ -389,11 +393,6 @@ class FgdEntity():
 
         :rtype: str"""
 
-        if not self._description:
-            for parent in self._parents:
-                if parent._description:
-                    return parent._description
-
         return self._description
 
     @property
@@ -402,11 +401,7 @@ class FgdEntity():
 
         :rtype: list[dict]"""
 
-        definitions = []
-        for t in self._parents:
-            definitions += t.definitions
-        definitions += self._definitions
-        return definitions
+        return self._definitions
 
     @property
     def properties(self):
@@ -424,11 +419,7 @@ class FgdEntity():
         for p in self._properties:
             properties[p.name] = p
 
-        properties_array = []
-        for k, v in properties.items():
-            properties_array.append(v)
-
-        return properties_array
+        return properties.values()
 
     @property
     def spawnflags(self):
@@ -464,16 +455,13 @@ class FgdEntity():
         inputs = {}
         for t in self._parents:
             for p in t.inputs:
-                inputs[p.name] = p
+                if p.name not in inputs:
+                    inputs[p.name] = p
         for p in self._inputs:
             if p.name not in inputs:
                 inputs[p.name] = p
 
-        inputs_array = []
-        for k, v in inputs.items():
-            inputs_array.append(v)
-
-        return inputs_array
+        return inputs.values()
 
     @property
     def outputs(self):
@@ -661,14 +649,7 @@ class FgdEntityProperty():
             'default_value': self._default_value,
         }
         if self._choices:
-            choices = []
-            for choice in self._choices:
-                o = {'value': choice.value,
-                     'display_name': choice.display_name}
-                if self.value_type.lower() == 'flags':
-                    o['default_value'] = choice.default_value
-                choices.append(o)
-            schema_obj['choices'] = choices
+            schema_obj['choices'] = [c.schema for c in self._choices]
         return schema_obj
 
     @property
@@ -725,7 +706,7 @@ class FgdEntityProperty():
 
         :rtype: list[FgdEntityPropertyChoice]"""
 
-        if self._value_type.lower() in ['choices', 'flags']:
+        if self._value_type.lower() == 'choices':
             return self._choices
         else:
             return None
@@ -764,9 +745,7 @@ class FgdEntityProperty():
         # display name
         if self._display_name:
             fgd_str += ' : "' + self._display_name + '"'
-        elif self._description or self._default_value and \
-                not isinstance(self, FgdEntityInput) and \
-                not isinstance(self, FgdEntityOutput):
+        elif self._description or self._default_value:
             fgd_str += ' :'
 
         # default_value
@@ -777,9 +756,7 @@ class FgdEntityProperty():
             else:
                 fgd_str += '"' + str(self._default_value) + '"'
 
-        elif self._description and \
-                not isinstance(self, FgdEntityInput) and \
-                not isinstance(self, FgdEntityOutput):
+        elif self._description:
             fgd_str += ' :'
 
         # description
@@ -994,6 +971,20 @@ class FgdEntityPropertyChoice():
             "'display_name': " + repr(self._display_name) + "}>"
 
     @property
+    def schema(self):
+        """A schematic view of this property choice.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'value': self._value,
+            'display_name': self._display_name,
+        }
+        return schema_obj
+
+    @property
     def value(self):
         """The choice's value.
 
@@ -1060,6 +1051,21 @@ class FgdEntitySpawnflag():
             "'default_value': " + str(self._default_value) + "}>"
 
     @property
+    def schema(self):
+        """A schematic view of this Spawnflag.
+
+        :returns: A dictionary
+        :rtype: dict
+        """
+
+        schema_obj = {
+            'value': self._value,
+            'display_name': self._display_name,
+            'default_value': self._default_value
+        }
+        return schema_obj
+
+    @property
     def value(self):
         """The spawnflag's value.
 
@@ -1082,21 +1088,6 @@ class FgdEntitySpawnflag():
         :rtype: int"""
 
         return self._default_value
-
-    @property
-    def schema(self):
-        """A schematic view of this Spawnflag.
-
-        :returns: A dictionary
-        :rtype: dict
-        """
-
-        schema_obj = {
-            'value': self._value,
-            'display_name': self._display_name,
-            'default_value': self._default_value
-        }
-        return schema_obj
 
     def fgd_str(self):
         """A string representation of the spawnflag
