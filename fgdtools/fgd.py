@@ -1,3 +1,6 @@
+import textwrap
+
+
 class Fgd():
     """Contains all the data from an Fgd file such as
     entities and other editor informations.
@@ -8,13 +11,24 @@ class Fgd():
         self._entities = []
         self._editor_data = []
 
+    def __repr__(self):
+        """A partial, printable summary of an Fgd.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return "<Fgd {'includes': [" + str(len(self._includes)) + '],' + \
+            "'entities': [" + str(len(self._entities)) + '],' + \
+            "'editor_data': [" + str(len(self._editor_data)) + ']}>'
+
     @property
     def includes(self):
         """A list of included :class:`fgdtools.Fgd`,
         including inherited includes from @includes"""
 
         parent_includes = [i.includes for i in self._includes]
-        parent_includes = [e for i in parent_includes for e in i]
+        parent_includes = [f for i in parent_includes for f in i]
         return parent_includes + self._includes
 
     @property
@@ -107,7 +121,7 @@ class Fgd():
         return result
 
     def fgd_str(self, collapse=False):
-        """A string representation of the Fgd formated as in the a .fgd file
+        """A string representation of the Fgd formated as in the a .fgd file.
 
         :param collapse: If True, the content of included fgds will be included
                          in the output and @include statements will be removed.
@@ -133,22 +147,10 @@ class Fgd():
                 fgd_str += e.fgd_str() + '\n\n'
         return fgd_str
 
-    def __repr__(self):
-        entity_counts_by_type = {}
-        for entity in self.entities:
-            if entity.class_type in entity_counts_by_type:
-                entity_counts_by_type[entity.class_type] += 1
-            else:
-                entity_counts_by_type[entity.class_type] = 1
-        entitiy_count_strings = []
-        for class_type, count in entity_counts_by_type.items():
-            entity_count_strings.append(' '.join([str(count), class_type]))
-        return ', '.join(entity_count.strings)
-
 
 class FgdEditorData():
     """Editor data, as represented in a FGD file, usually of type such as:
-    @mapsize, @MaterialExclusion or @AutoVisGroup
+    @mapsize, @MaterialExclusion or @AutoVisGroup.
 
     :param class_type: The editor_data's type
                        ex: 'mapsize', 'MaterialExclusion', 'AutoVisGroup' etc...
@@ -165,6 +167,16 @@ class FgdEditorData():
         self._class_type = class_type
         self._name = name
         self._data = data
+
+    def __repr__(self):
+        """A partial, printable summary of an FgdEditorData.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return '<FgdEditorData of type ' + repr(self._class_type) + \
+            (' named ' + repr(self._name) if self._name else '') + ', [...]}>'
 
     @property
     def class_type(self):
@@ -267,6 +279,18 @@ class FgdEntity():
         self._outputs = outputs
 
         self._parents = []
+
+    def __repr__(self):
+        """A partial, printable summary of an FgdEntity.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return "<FgdEntity {'type': " + repr(self._class_type) + \
+            ", 'name': " + repr(self._name) + \
+            (", 'description': " + repr(textwrap.shorten(self._description, width=50))
+             if self._description else '') + ', [...]}>'
 
     @property
     def schema(self):
@@ -565,9 +589,6 @@ class FgdEntity():
 
         return fgd_str
 
-    def __repr__(self):
-        return ''.join([self.class_type, ": ", self.name])
-
 
 class FgdEntityProperty():
     """An entity property, as represented in a FGD file.
@@ -605,6 +626,18 @@ class FgdEntityProperty():
         self._default_value = default_value
         self._description = description
         self._choices = choices
+
+    def __repr__(self):
+        """A partial, printable summary of an FgdEntityProperty.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+        return '<FgdEntityProperty {' + \
+            "'name': " + repr(self._name) + \
+            ", 'value_type': " + str(self._value_type) + \
+            (", 'description': " + repr(textwrap.shorten(self._description, width=50))
+             if self._description else '') + ', [...]}>'
 
     @property
     def schema(self):
@@ -759,9 +792,6 @@ class FgdEntityProperty():
 
         return fgd_str
 
-    def __repr__(self):
-        return self.display_name
-
 
 class FgdEntityInput():
     """An entity input, as represented in FGD file.
@@ -780,6 +810,19 @@ class FgdEntityInput():
         self._name = name
         self._value_type = value_type
         self._description = description
+
+    def __repr__(self):
+        """A partial, printable summary of an FgdEntityInput.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return '<FgdEntityInput {' + \
+            "'name': " + repr(self._name) + ", " + \
+            "'value_type': " + str(self._value_type) + ", " + \
+            "'description': " + \
+            repr(textwrap.shorten(self._description, width=50)) + "}>"
 
     @property
     def schema(self):
@@ -850,6 +893,19 @@ class FgdEntityOutput():
         self._value_type = value_type
         self._description = description
 
+    def __repr__(self):
+        """A partial, printable summary of an FgdEntityOutput.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return '<FgdEntityOutput {' + \
+            "'name': " + repr(self._name) + ", " + \
+            "'value_type': " + str(self._value_type) + ", " + \
+            "'description': " + \
+            repr(textwrap.shorten(self._description, width=50)) + "}>"
+
     @property
     def schema(self):
         """A schematic view of this entity output's attributes.
@@ -915,6 +971,17 @@ class FgdEntityPropertyChoice():
         self._value = value
         self._display_name = display_name
 
+    def __repr__(self):
+        """A full, printable representation of an FgdEntityPropertyChoice.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return '<FgdEntityPropertyChoice {' + \
+            "'value': " + str(self._value) + ", " + \
+            "'display_name': " + repr(self._display_name) + "}>"
+
     @property
     def value(self):
         """The choice's value.
@@ -966,6 +1033,18 @@ class FgdEntitySpawnflag():
         self._value = value
         self._display_name = display_name
         self._default_value = default_value
+
+    def __repr__(self):
+        """A full, printable representation of an FgdEntitySpawnflag.
+
+        :returns: A python formated string.
+        :rtype: str
+        """
+
+        return '<FgdEntitySpawnflag {' + \
+            "'value': " + str(self._value) + ", " + \
+            "'display_name': " + repr(self._display_name) + ", " + \
+            "'default_value': " + str(self._default_value) + "}>"
 
     @property
     def value(self):
