@@ -2,9 +2,8 @@ import textwrap
 
 
 class Fgd():
-    """Contains all the data from an Fgd file such as
-    entities and other editor informations.
-    """
+    """Contains all the data from a Fgd file such as
+    entities and other editor informations."""
 
     def __init__(self):
         self._includes = []
@@ -12,9 +11,9 @@ class Fgd():
         self._editor_data = []
 
     def __repr__(self):
-        """A partial, printable summary of an Fgd.
+        """A partial, printable summary of a Fgd.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -25,7 +24,7 @@ class Fgd():
     @property
     def includes(self):
         """A list of included :class:`fgdtools.Fgd`,
-        including inherited includes from @includes"""
+        including inherited includes from @includes."""
 
         parent_includes = [i.includes for i in self._includes]
         parent_includes = [f for i in parent_includes for f in i]
@@ -34,7 +33,7 @@ class Fgd():
     @property
     def entities(self):
         """A list containing all :class:`fgdtools.FgdEntity`,
-        including inherited entities from @includes"""
+        including inherited entities from @includes."""
 
         parent_entities = [i.entities for i in self._includes]
         parent_entities = [e for i in parent_entities for e in i]
@@ -43,21 +42,21 @@ class Fgd():
     @property
     def editor_data(self):
         """A list containing all :class:`fgdtools.FgdEditorData`,
-        including inherited data from @includes"""
+        including inherited data from @includes."""
 
         parent_data = [i.editor_data for i in self._includes]
         parent_data = [d for i in parent_data for d in i]
         return parent_data + self._editor_data
 
     def add_include(self, parent_fgd):
-        """Adds a parent :class:`fgdtools.Fgd` to supplement this one"""
+        """Adds a parent :class:`fgdtools.Fgd` to supplement this one."""
 
         if not parent_fgd:
             return
         self._includes.append(parent_fgd)
 
     def add_entity(self, fgd_entity):
-        """Adds an entity to the Fgd
+        """Adds an entity to the Fgd.
 
         :param fgd_entity: a FgdEntity object to be added
                            to this Fgd instance.
@@ -84,7 +83,7 @@ class Fgd():
         self._entities.append(fgd_entity)
 
     def add_editor_data(self, fgd_editor_data):
-        """Adds editor data to the Fgd
+        """Adds editor data to the Fgd.
 
         :param fgd_editor_data: a FgdEditorData object to be added
                                 to this Fgd instance.
@@ -97,13 +96,13 @@ class Fgd():
         self._editor_data.append(fgd_editor_data)
 
     def entity_by_name(self, entity_name):
-        """Finds an entity by its name
+        """Finds an entity by its name.
 
         :param entity_name: The entity name to look for.
         :type entity_name: str
 
-        :raises EntityNotFound: whenever an entity could not be found
-        :return: An entity with matching name
+        :raises EntityNotFound: whenever an entity could not be found.
+        :return: An entity with matching name.
         :rtype: FgdEntity
         """
 
@@ -149,29 +148,31 @@ class Fgd():
 
 
 class FgdEditorData():
-    """Editor data, as represented in a FGD file, usually of type such as:
+    """Editor data, as represented in a Fgd file, usually of type such as:
     @mapsize, @MaterialExclusion or @AutoVisGroup.
-
-    :param class_type: The editor_data's type
-                       ex: 'mapsize', 'MaterialExclusion', 'AutoVisGroup' etc...
-    :type class_type: str
-
-    :param name: The editor_data's display name.
-    :type name: str
-
-    :param data: The editor_data's data.
-    :type data: tuple or list or dict
     """
 
     def __init__(self, class_type, name=None, data=None):
+        """Creates an instance of FgdEditorData.
+
+        :param class_type: The editor_data's type.
+                       Ex: 'mapsize', 'MaterialExclusion', 'AutoVisGroup', etc...
+        :type class_type: str
+
+        :param name: The editor_data's display name.
+        :type name: str
+
+        :param data: The editor_data's data.
+        :type data: tuple or list or dict
+        """
         self._class_type = class_type
         self._name = name
         self._data = data
 
     def __repr__(self):
-        """A partial, printable summary of an FgdEditorData.
+        """A partial, printable summary of a FgdEditorData.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -238,37 +239,39 @@ class FgdEditorData():
 
 
 class FgdEntity():
-    """An entity, as represented in a FGD file.
-
-    :param class_type: The entity's type
-                       ex: 'BaseClass', 'SolidClass', 'PointClass' etc...
-    :type class_type: str
-
-    :param definitions: Information defining the entity within the editor.
-                        ex: 'base()', 'size()', 'line()', 'studioprop()' etc...
-    :type definitions: dict
-
-    :param name: The entity's name.
-    :type name: str
-
-    :param description: The entity's description.
-    :type description: str, optional
-
-    :param properties: The entity's properties.
-    :type properties: list[FgdEntityProperty], optional
-
-    :param spawnflags: The entity's spawnflags.
-    :type spawnflags: list[FgdEntitySpawnflag], optional
-
-    :param inputs: The entity's inputs.
-    :type inputs: list[FgdEntityInput], optional
-
-    :param output: The entity's output.
-    :type output: list[FgdEntityOutput], optional
-    """
+    """An entity, as represented in a Fgd file."""
 
     def __init__(self, class_type, definitions, name, description=None,
                  properties=[], spawnflags=[], inputs=[], outputs=[]):
+        """Creates an instance of FgdEntity.
+
+        :param class_type: The entity's type.
+                       Ex: 'BaseClass', 'SolidClass', 'PointClass', etc...
+        :type class_type: str
+
+        :param definitions: Information defining the entity within the editor.
+                        Ex: 'base()', 'size()', 'line()', 'studioprop()', etc...
+        :type definitions: dict
+
+        :param name: The entity's name.
+        :type name: str
+
+        :param description: The entity's description.
+        :type description: str, optional
+
+        :param properties: The entity's properties.
+        :type properties: list[FgdEntityProperty], optional
+
+        :param spawnflags: The entity's spawnflags.
+        :type spawnflags: list[FgdEntitySpawnflag], optional
+
+        :param inputs: The entity's inputs.
+        :type inputs: list[FgdEntityInput], optional
+
+        :param output: The entity's output.
+        :type output: list[FgdEntityOutput], optional
+        """
+
         self._class_type = class_type
         self._definitions = definitions or []
         self._name = name
@@ -281,9 +284,9 @@ class FgdEntity():
         self._parents = []
 
     def __repr__(self):
-        """A partial, printable summary of an FgdEntity.
+        """A partial, printable summary of a FgdEntity.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -296,7 +299,7 @@ class FgdEntity():
     def schema(self):
         """A schematic view of this entity's attributes.
 
-        :returns: A dictionary
+        :returns: A dictionary.
         :rtype: dict
         """
 
@@ -312,7 +315,7 @@ class FgdEntity():
     def properties_schema(self):
         """A schematic view of this entity's properties.
 
-        :returns: A list of dictionaries
+        :returns: A list of dictionaries.
         :rtype: list[dict]
         """
 
@@ -329,7 +332,7 @@ class FgdEntity():
     def inputs_schema(self):
         """A schematic view of this entity's inputs.
 
-        :returns: A list of dictionaries
+        :returns: A list of dictionaries.
         :rtype: list[dict]
         """
 
@@ -339,7 +342,7 @@ class FgdEntity():
     def outputs_schema(self):
         """A schematic view of this entity's outputs.
 
-        :returns: A list of dictionaries
+        :returns: A list of dictionaries.
         :rtype: list[dict]
         """
 
@@ -349,7 +352,7 @@ class FgdEntity():
     def spawnflags_schema(self):
         """A schematic view of this entity's spanwnflags.
 
-        :returns: A list of dictionaries
+        :returns: A list of dictionaries.
         :rtype: list[dict]
         """
 
@@ -395,7 +398,7 @@ class FgdEntity():
 
     @property
     def definitions(self):
-        """The entity's definitions, including inherited definitions.
+        """The entity's definitions.
 
         :rtype: list[dict]"""
 
@@ -407,10 +410,10 @@ class FgdEntity():
 
     @property
     def properties(self):
-        """The entity's properties, including inherited inputs.
+        """The entity's properties, including inherited properties.
 
         Note: As in the way Hammer behaves,
-        properties of the same name are overridden
+        properties of the same name are overridden.
 
         :rtype: list[FgdEntityProperty]"""
 
@@ -433,7 +436,7 @@ class FgdEntity():
 
         Note: As in the way Hammer behaves, spawnflags definition
         will merge with inherited definitions only if there is no
-        collision between values. if there is a collision, only
+        collision between values. If there is a collision, only
         the latest definition will be taken into account.
 
         :rtype: list[FgdEntitySpawnflag]"""
@@ -488,11 +491,11 @@ class FgdEntity():
         return outputs
 
     def property_by_name(self, prop_name):
-        """Finds an entity property by its name
+        """Finds an entity property by its name.
 
         :param prop_name: The entity property name to look for.
         :type prop_name: str
-        :raises PropertyNotFound: whenever an entity property could not be found
+        :raises PropertyNotFound: whenever an entity property could not be found.
         :return: An entity property with matching name.
         :rtype: FgdEntityProperty
         """
@@ -504,7 +507,7 @@ class FgdEntity():
         return result
 
     def spawnflag_by_value(self, spawnflag_value):
-        """Finds a property choice by its value
+        """Finds a property choice by its value.
 
         :param spawnflag_value: The property spawnflag value to look for.
         :type spawnflag_value: int
@@ -520,11 +523,11 @@ class FgdEntity():
         return result
 
     def input_by_name(self, input_name):
-        """Finds an entity input by its name
+        """Finds an entity input by its name.
 
         :param input_name: The entity input name to look for.
         :type input_name: str
-        :raises InputNotFound: whenever an entity input could not be found
+        :raises InputNotFound: whenever an entity input could not be found.
         :return: An entity input with matching name.
         :rtype: FgdEntityInput
         """
@@ -535,11 +538,11 @@ class FgdEntity():
         return result
 
     def output_by_name(self, output_name):
-        """Finds an entity output by its name
+        """Finds an entity output by its name.
 
         :param output_name: The entity output name to look for.
         :type output_name: str
-        :raises OutputNotFound: whenever an entity output could not be found
+        :raises OutputNotFound: whenever an entity output could not be found.
         :return: An entity output with matching name.
         :rtype: FgdEntityOutput
         """
@@ -550,7 +553,7 @@ class FgdEntity():
         return result
 
     def fgd_str(self):
-        """A string representation of the FgdEntity formated as in the a .fgd file
+        """A string representation of the FgdEntity formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -591,34 +594,36 @@ class FgdEntity():
 
 
 class FgdEntityProperty():
-    """An entity property, as represented in a FGD file.
-
-    :param name: The property's name.
-    :type name: str
-
-    :param value_type: The property's value type
-                       ex:'integer', 'float', 'choices', etc...
-    :type value_type: str
-
-    :param name: The property's readonly status.
-    :type name: bool, optional
-
-    :param display_name: The property's display name.
-    :type display_name: str, optional
-
-    :param default_value: The property's unparsed default value.
-    :type default_value: str, optional
-
-    :param description: The property's description.
-    :type description: str, optional
-
-    :param choices: The property's choices.
-                    (applicable only to types "choices" and "flags")
-    :type choices: list[FgdEntityPropertyChoice], optional
-    """
+    """An entity property, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, readonly=False, display_name=None,
                  default_value=None, description=None, choices=[]):
+        """Creates an instance of FgdEntityProperty.
+
+        :param name: The property's name.
+        :type name: str
+
+        :param value_type: The property's value type.
+                       Ex:'integer', 'float', 'choices', etc...
+        :type value_type: str
+
+        :param name: The property's readonly status.
+        :type name: bool, optional
+
+        :param display_name: The property's display name.
+        :type display_name: str, optional
+
+        :param default_value: The property's unparsed default value.
+        :type default_value: str, optional
+
+        :param description: The property's description.
+        :type description: str, optional
+
+        :param choices: The property's choices.
+                    (applicable only to value_type "choices")
+        :type choices: list[FgdEntityPropertyChoice], optional
+        """
+
         self._name = name
         self._value_type = value_type.lower()
         self._readonly = readonly
@@ -628,9 +633,9 @@ class FgdEntityProperty():
         self._choices = choices
 
     def __repr__(self):
-        """A partial, printable summary of an FgdEntityProperty.
+        """A partial, printable summary of a FgdEntityProperty.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
         return '<FgdEntityProperty {' + \
@@ -726,12 +731,12 @@ class FgdEntityProperty():
             return None
 
     def choice_by_value(self, choice_value):
-        """Finds a property choice by its value
+        """Finds a property choice by its value/
 
         :param choice_value: The property choice value to look for.
         :type choice_value: int
         :raises ChoiceNotFound: Whenever a property choice could not be found.
-        :return: A property choice with matching value
+        :return: A property choice with matching value.
         :rtype: FgdEntityPropertyChoice
         """
 
@@ -743,7 +748,7 @@ class FgdEntityProperty():
 
     def fgd_str(self):
         """A string representation of the entity property
-        formated as in the a .fgd file
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -794,27 +799,29 @@ class FgdEntityProperty():
 
 
 class FgdEntityInput():
-    """An entity input, as represented in FGD file.
-
-    :param name: The input's name.
-    :type name: str
-
-    :param value_type: The input's type.
-    :type value_type: str
-
-    :param description: The input's description.
-    :type description: str
-    """
+    """An entity input, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, description=''):
+        """Creates an instance of FgdEntityInput.
+
+        :param name: The input's name.
+        :type name: str
+
+        :param value_type: The input's type.
+        :type value_type: str
+
+        :param description: The input's description.
+        :type description: str
+        """
+
         self._name = name
         self._value_type = value_type
         self._description = description
 
     def __repr__(self):
-        """A partial, printable summary of an FgdEntityInput.
+        """A partial, printable summary of a FgdEntityInput.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -828,7 +835,7 @@ class FgdEntityInput():
     def schema(self):
         """A schematic view of this entity input's attributes.
 
-        :returns: A dictionary
+        :returns: A dictionary.
         :rtype: dict
         """
 
@@ -865,7 +872,7 @@ class FgdEntityInput():
 
     def fgd_str(self):
         """A string representation of the entity input
-        formated as in the a .fgd file
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -876,27 +883,29 @@ class FgdEntityInput():
 
 
 class FgdEntityOutput():
-    """An entity output, as represented in FGD file.
-
-    :param name: The output's name.
-    :type name: str
-
-    :param value_type: The output's type.
-    :type value_type: str
-
-    :param description: The output's description.
-    :type description: str
-    """
+    """An entity output, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, description=''):
+        """Creates an instance of FgdEntityOutput.
+
+        :param name: The output's name.
+        :type name: str
+
+        :param value_type: The output's type.
+        :type value_type: str
+
+        :param description: The output's description.
+        :type description: str
+        """
+
         self._name = name
         self._value_type = value_type
         self._description = description
 
     def __repr__(self):
-        """A partial, printable summary of an FgdEntityOutput.
+        """A partial, printable summary of a FgdEntityOutput.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -910,7 +919,7 @@ class FgdEntityOutput():
     def schema(self):
         """A schematic view of this entity output's attributes.
 
-        :returns: A dictionary
+        :returns: A dictionary.
         :rtype: dict
         """
 
@@ -946,7 +955,7 @@ class FgdEntityOutput():
         return self._description
 
     def fgd_str(self):
-        """A string representation of the entity output
+        """A string representation of the entity output.
         formated as in the a .fgd file
 
         :return: Fgd formated string.
@@ -958,23 +967,25 @@ class FgdEntityOutput():
 
 
 class FgdEntityPropertyChoice():
-    """A property choice, as found in entity properties of type "choices".
+    """A property choice, as found in entity properties of type "choices"."""
 
-    :param value: The choice's value.
-    :type value: str
+    def __init__(self, value, display_name):
+        """Creates an instance of FgdEntityPropertyChoice.
 
-    :param display_name: The choice's display_name.
-    :type display_name: str
-    """
+        :param value: The choice's value.
+        :type value: str
 
-    def __init__(self, value='', display_name='---None---'):
+        :param display_name: The choice's display_name.
+        :type display_name: str
+        """
+
         self._value = value
         self._display_name = display_name
 
     def __repr__(self):
-        """A full, printable representation of an FgdEntityPropertyChoice.
+        """A full, printable representation of a FgdEntityPropertyChoice.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -1000,7 +1011,7 @@ class FgdEntityPropertyChoice():
 
     def fgd_str(self):
         """A string representation of the property choice
-        formated as in the a .fgd file
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -1017,27 +1028,29 @@ class FgdEntityPropertyChoice():
 
 
 class FgdEntitySpawnflag():
-    """An entity Spawnflag.
-
-    :param value: The spawnflag's value.
-    :type value: int
-
-    :param display_name: The spawnflag's display_name.
-    :type display_name: str
-
-    :param default_value: The spawnflag's default_value.
-    :type default_value: bool
-    """
+    """An entity Spawnflag, as represented in a Fgd file."""
 
     def __init__(self, value='', display_name='', default_value=None):
+        """Creates an instance of FgdEntitySpawnflag.
+
+        :param value: The spawnflag's value.
+        :type value: int
+
+        :param display_name: The spawnflag's display_name.
+        :type display_name: str
+
+        :param default_value: The spawnflag's default_value.
+        :type default_value: bool
+        """
+
         self._value = value
         self._display_name = display_name
         self._default_value = default_value
 
     def __repr__(self):
-        """A full, printable representation of an FgdEntitySpawnflag.
+        """A full, printable representation of a FgdEntitySpawnflag.
 
-        :returns: A python formated string.
+        :returns: A Python formated string.
         :rtype: str
         """
 
@@ -1087,7 +1100,7 @@ class FgdEntitySpawnflag():
 
     def fgd_str(self):
         """A string representation of the spawnflag
-        formated as in the a .fgd file
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -1101,30 +1114,30 @@ class FgdEntitySpawnflag():
 
 
 class EntityNotFound(Exception):
-    """Raised when an entity could not be found"""
+    """Raised when an entity could not be found."""
     pass
 
 
 class PropertyNotFound(Exception):
-    """Raised when an entity property could not be found"""
+    """Raised when an entity property could not be found."""
     pass
 
 
 class InputNotFound(Exception):
-    """Raised when an entity input could not be found"""
+    """Raised when an entity input could not be found."""
     pass
 
 
 class OutputNotFound(Exception):
-    """Raised when an entity output could not be found"""
+    """Raised when an entity output could not be found."""
     pass
 
 
 class SpawnflagNotFound(Exception):
-    """Raised when an entity Spawnflag could not be found"""
+    """Raised when an entity Spawnflag could not be found."""
     pass
 
 
 class ChoiceNotFound(Exception):
-    """Raised when a property choice could not be found"""
+    """Raised when a property choice could not be found."""
     pass

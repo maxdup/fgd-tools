@@ -191,7 +191,6 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {'https://docs.python.org/': None}
 
 autodoc_member_order = 'bysource'
-
-
+autoclass_content = 'class'
 html_logo = 'obsolete.png'
 html_favicon = 'favicon.ico'
