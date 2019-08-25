@@ -10,7 +10,7 @@ setup(
     url='https://maxdup.github.io/fgd-tools/',
     download_url='https://github.com/maxdup/fgd-tools/archive/v0.2.0.tar.gz',
     keywords=['fgd', 'source', 'hammer'],
-    install_requires=['pyparsing'],
+    install_requires=['pyparsing', 'future'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

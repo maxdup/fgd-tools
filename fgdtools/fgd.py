@@ -1,7 +1,17 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import int
+from builtins import next
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import textwrap
 
 
-class Fgd():
+class Fgd(object):
     """Contains all the data from a Fgd file such as
     entities and other editor informations."""
 
@@ -147,7 +157,7 @@ class Fgd():
         return fgd_str
 
 
-class FgdEditorData():
+class FgdEditorData(object):
     """Editor data, as represented in a Fgd file, usually of type such as:
     @mapsize, @MaterialExclusion or @AutoVisGroup.
     """
@@ -238,7 +248,7 @@ class FgdEditorData():
         return fgd_str
 
 
-class FgdEntity():
+class FgdEntity(object):
     """An entity, as represented in a Fgd file."""
 
     def __init__(self, class_type, definitions, name, description=None,
@@ -581,7 +591,7 @@ class FgdEntity():
         return fgd_str
 
 
-class FgdEntityProperty():
+class FgdEntityProperty(object):
     """An entity property, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, readonly=False, display_name=None,
@@ -775,7 +785,7 @@ class FgdEntityProperty():
         return fgd_str
 
 
-class FgdEntityInput():
+class FgdEntityInput(object):
     """An entity input, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, description=''):
@@ -859,7 +869,7 @@ class FgdEntityInput():
             ' : "' + str(self.description) + '"'
 
 
-class FgdEntityOutput():
+class FgdEntityOutput(object):
     """An entity output, as represented in a Fgd file."""
 
     def __init__(self, name, value_type, description=''):
@@ -943,7 +953,7 @@ class FgdEntityOutput():
             ' : "' + str(self.description) + '"'
 
 
-class FgdEntityPropertyChoice():
+class FgdEntityPropertyChoice(object):
     """A property choice, as found in entity properties of type "choices"."""
 
     def __init__(self, value, display_name):
@@ -1018,7 +1028,7 @@ class FgdEntityPropertyChoice():
         return fgd_str
 
 
-class FgdEntitySpawnflag():
+class FgdEntitySpawnflag(object):
     """An entity Spawnflag, as represented in a Fgd file."""
 
     def __init__(self, value='', display_name='', default_value=None):
