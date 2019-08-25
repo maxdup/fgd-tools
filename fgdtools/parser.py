@@ -232,7 +232,9 @@ def FgdParse(filename):
     filedir = os.path.dirname(filepath)
 
     try:
-        results = pp_fgd.parseFile(open(filename, "r", encoding="iso-8859-1"))
+        f = open(filename, "r", encoding="iso-8859-1")
+        results = pp_fgd.parseFile(f)
+        f.close()
     except Exception as e:
         raise
 
