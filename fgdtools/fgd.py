@@ -7,8 +7,9 @@ from builtins import next
 from builtins import str
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-import textwrap
+
+from builtins import object  # NOQA: E402
+import textwrap  # NOQA: E402
 
 
 class Fgd(object):
@@ -175,6 +176,7 @@ class FgdEditorData(object):
         :param data: The editor_data's data.
         :type data: tuple or list or dict
         """
+
         self._class_type = class_type
         self._name = name
         self._data = data
@@ -471,7 +473,7 @@ class FgdEntity(object):
             if p.name not in inputs:
                 inputs[p.name] = p
 
-        return inputs.values()
+        return list(inputs.values())
 
     @property
     def outputs(self):

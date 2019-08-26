@@ -2,13 +2,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
+from builtins import dict
 from builtins import open
 from builtins import int
 from future import standard_library
 standard_library.install_aliases()
-import os
-from pyparsing import *
-from .fgd import *
+
+import os  # NOQA: E402
+from pyparsing import *  # NOQA: E402
+from .fgd import *  # NOQA: E402
 
 
 # Basic parsers
@@ -17,43 +19,31 @@ pp_name = Word(alphanums+'_')
 pp_nums = Word(nums+'-.')
 pp_value = Word(nums+'-. ')  # maybe space delimited vertex
 
-pp_quoted = Combine(QuotedString(
-    '"') + Optional(OneOrMore(Suppress('+') + QuotedString('"'))), adjacent=False)
+pp_quoted = Combine(QuotedString('"') + Optional(OneOrMore(
+    Suppress('+') + QuotedString('"'))), adjacent=False)
 pp_comment = Literal('//') + SkipTo(lineEnd)
 
 pp_default_value = QuotedString('"') | pp_nums
 
-
-# property choices parsers
-def make_boolean(data):
-    return bool(int(data[0].strip('"')))
-
-
-def make_EntityPropertyChoice(data):
-    return FgdEntityPropertyChoice(**data)
-
-
 pp_EntityPropertyChoiceValue = pp_nums.setParseAction(tokenMap(int)) | pp_quoted
 
-pp_EntityPropertyChoice = pp_EntityPropertyChoiceValue.setResultsName('value') + \
-    ':' + QuotedString('"').setResultsName('display_name') + \
-    Optional(Suppress(pp_comment))
+pp_EntityPropertyChoice = pp_EntityPropertyChoiceValue\
+    .setResultsName('value') + ':' + QuotedString('"')\
+    .setResultsName('display_name') + Optional(Suppress(pp_comment))
 
 pp_EntityPropertyChoices = Suppress('[') + \
-    Optional(OneOrMore(pp_EntityPropertyChoice.setParseAction(
-        make_EntityPropertyChoice)).setResultsName('choices')) + \
-    Suppress(']')
+    Optional(OneOrMore(
+        pp_EntityPropertyChoice
+        .setParseAction(lambda toks: FgdEntityPropertyChoice(**toks)))
+    .setResultsName('choices')) + Suppress(']')
 
-
-def make_EntitySpawnflag(data):
-    return FgdEntitySpawnflag(**data)
-
-
-pp_EntitySpawnflag = pp_nums.setResultsName('value').setParseAction(tokenMap(int)) + \
+pp_EntitySpawnflag = pp_nums.setResultsName('value')\
+                            .setParseAction(tokenMap(int)) + \
     ':' + QuotedString('"').setResultsName('display_name') + \
-    ':' + pp_nums.setResultsName('default_value').setParseAction(make_boolean) + \
+    ':' + pp_nums.setResultsName('default_value')\
+                 .setParseAction(lambda toks: bool(int(toks[0].strip('"')))) + \
     Optional(Suppress(pp_comment))
-pp_EntitySpawnflag.setParseAction(make_EntitySpawnflag)
+pp_EntitySpawnflag.setParseAction(lambda toks: FgdEntitySpawnflag(**toks))
 
 pp_EntitySpawnflags = Suppress(CaselessLiteral('spawnflags') + '(' +
                                CaselessLiteral('flags') + ')' + '=' + '[') + \
@@ -61,13 +51,6 @@ pp_EntitySpawnflags = Suppress(CaselessLiteral('spawnflags') + '(' +
     Suppress(']')
 
 # Property parsers
-
-
-def make_EntityProperty(property_data):
-    prop = FgdEntityProperty(**property_data.asDict())
-    return prop
-
-
 pp_property_name = pp_name.setResultsName('name')
 pp_property_value_type = pp_name.setResultsName('value_type')
 pp_property_readonly = Literal('readonly').setParseAction(
@@ -83,27 +66,20 @@ pp_EntityProperty = pp_property_name + '(' + pp_property_value_type + ')' + \
     Optional(':' + pp_property_default) + \
     Optional(':' + pp_description) + \
     Optional('=' + pp_EntityPropertyChoices)
-pp_EntityProperty.setParseAction(make_EntityProperty)
+pp_EntityProperty.setParseAction(
+    lambda toks: FgdEntityProperty(**toks.asDict()))
 
 
-def make_EntityIO(io_data):
-    data = io_data.asDict()
-    io_type = data.pop('io_type')
-    if io_type == 'input':
-        return FgdEntityInput(**data)
-    elif io_type == 'output':
-        return FgdEntityOutput(**data)
-    return None
-
-
-pp_io_type = (Literal('output') | Literal('input')).setResultsName('io_type')
-
-pp_EntityIO = pp_io_type + pp_property_name + \
+pp_EntityInput = Literal('input') + pp_property_name + \
     '(' + pp_property_value_type + ')' + ':' + pp_description
-pp_EntityIO.setParseAction(make_EntityIO)
+pp_EntityInput.setParseAction(lambda toks: FgdEntityInput(**toks))
+
+pp_EntityOutput = Literal('output') + pp_property_name + \
+    '(' + pp_property_value_type + ')' + ':' + pp_description
+pp_EntityOutput.setParseAction(lambda toks: FgdEntityOutput(**toks))
 
 pp_properties = Suppress(pp_comment) | \
-    pp_EntityIO | pp_EntitySpawnflags | pp_EntityProperty
+    pp_EntityInput | pp_EntityOutput | pp_EntitySpawnflags | pp_EntityProperty
 
 pp_EntityProperties = Suppress('[') + \
     Optional(OneOrMore(pp_properties).setResultsName('properties_and_io')) + \
@@ -131,10 +107,6 @@ def make_Entity(entity_data):
     return entity
 
 
-def make_Entity_definition(definition):
-    return definition.asDict()
-
-
 pp_entity_class_type = pp_name.setResultsName('class_type')
 pp_entity_name = pp_name.setResultsName('name')
 pp_entity_description = Optional(':' + pp_description)
@@ -148,9 +120,9 @@ pp_entity_definition = pp_name.setResultsName('name') + \
     Optional(Suppress('(') + pp_entity_definition_args +
              Suppress(')')).setResultsName('args')
 
-
 pp_entity_definitions = Optional(
-    OneOrMore(pp_entity_definition.setParseAction(make_Entity_definition))).setResultsName('definitions')
+    OneOrMore(pp_entity_definition.setParseAction(lambda toks: dict(**toks))))\
+    .setResultsName('definitions')
 
 pp_entity = Suppress('@') + pp_entity_class_type + \
     pp_entity_definitions + '=' + pp_entity_name + \
@@ -159,69 +131,40 @@ pp_entity.setParseAction(make_Entity)
 
 
 # Editor data parsers
-
-def make_include(include):
-    return FgdEditorData(**include.asDict())
-
-
 pp_include = Literal('@') + Literal('include').setResultsName('class_type') + \
     pp_quoted.setResultsName('data')
-pp_include.setParseAction(make_include)
+pp_include.setParseAction(lambda toks: FgdEditorData(**toks))
 
+pp_mapsize_data = (pp_nums + Suppress(',') + pp_nums)\
+    .setParseAction(lambda s, l, toks: tuple(toks.asList()))
 
-def make_editor_data(results):
-    try:
-        editor_data = FgdEditorData(**results.asDict())
-    except Exception as e:
-        print(e)
-        return None
-    return editor_data
-
-
-def make_mapsize(results):
-    res = results.asDict()
-    res['data'] = tuple(res['data'])
-    editor_data = FgdEditorData(**res)
-    return editor_data
-
-
-pp_mapsize_data = pp_nums + Suppress(',') + pp_nums
 pp_mapsize = Literal('@') + \
     Literal('mapsize').setResultsName('class_type') + \
-    Suppress(
-        '(') + pp_mapsize_data.setResultsName('data') + Suppress(')')
-pp_mapsize.setParseAction(make_mapsize)
+    (Suppress('(') + pp_mapsize_data + Suppress(')'))\
+    .setParseAction(lambda toks: tuple(toks)).setResultsName('data')
+pp_mapsize.setParseAction(lambda toks: FgdEditorData(**toks))
 
 pp_material_ex_data = OneOrMore(QuotedString('"'))
 pp_material_ex = Literal('@') + \
     Literal('MaterialExclusion').setResultsName('class_type') + \
     Suppress(
     '[') + Optional(pp_material_ex_data).setResultsName('data') + Suppress(']')
-pp_material_ex.setParseAction(make_editor_data)
-
-
-def make_autovisgroup(results):
-    return {results['key']: results['value']}
-
-
-def make_autovisgroups(results):
-    data = {}
-    for r in results:
-        data.update(r)
-    return data
-
+pp_material_ex.setParseAction(lambda toks: FgdEditorData(**toks.asDict()))
 
 pp_autovisgroup_data_list = QuotedString('"').setResultsName('key') + \
     Suppress('[') + \
     Optional(OneOrMore(QuotedString('"'))).setResultsName('value') + \
     Suppress(']')
-pp_autovisgroup_data = Suppress('[') + \
-    Optional(OneOrMore(pp_autovisgroup_data_list.setParseAction(
-        make_autovisgroup))).setParseAction(make_autovisgroups).setResultsName('data') + Suppress(']')
+
+pp_autovisgroup_data = Suppress('[') + Optional(OneOrMore(
+    pp_autovisgroup_data_list
+    .setParseAction(lambda toks: (toks['key'], toks['value'].asList()))))\
+    .setParseAction(lambda toks: dict(toks.asList()))\
+    .setResultsName('data') + Suppress(']')
 pp_autovisgroup = Literal('@') + \
     Literal('AutoVisGroup').setResultsName('class_type') + \
     Literal('=') + pp_quoted.setResultsName('name') + pp_autovisgroup_data
-pp_autovisgroup.setParseAction(make_editor_data)
+pp_autovisgroup.setParseAction(lambda toks: FgdEditorData(**toks.asDict()))
 
 pp_fgd = OneOrMore(pp_mapsize | pp_include | pp_material_ex |
                    pp_autovisgroup | pp_entity).ignore(pp_comment)
@@ -234,6 +177,7 @@ def FgdParse(filename):
     :return: a FGD object
     :rtype: FGD
     """
+
     game_data = Fgd()
 
     filepath = os.path.abspath(filename)

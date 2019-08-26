@@ -114,3 +114,7 @@ class ParseTestCase(unittest.TestCase):
     def test_tfc(self):
         fgd = FgdParse('tests/fgds/tfc/tf15f.fgd')
         self.assertTrue(fgd)
+
+    def test_notfound(self):
+        self.assertRaises(IOError, FgdParse,
+                          'tests/fgds/not_a_file.fgd')
