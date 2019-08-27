@@ -14,6 +14,13 @@ from .fgd import *  # NOQA: E402
 
 
 # Basic parsers
+def protectUnescapedCharacters(quoted_string):
+    result = quoted_string.pop()
+    if result:
+        result = result.replace('\\r', '\r')
+        result = result.replace('\r', '\\r')
+    return result
+
 
 pp_name = Word(alphanums+'_')
 pp_nums = Word(nums+'-.')
@@ -21,6 +28,8 @@ pp_value = Word(nums+'-. ')  # maybe space delimited vertex
 
 pp_quoted = Combine(QuotedString('"') + Optional(OneOrMore(
     Suppress('+') + QuotedString('"'))), adjacent=False)
+
+pp_quoted.setParseAction(protectUnescapedCharacters)
 pp_comment = Literal('//') + SkipTo(lineEnd)
 
 pp_default_value = QuotedString('"') | pp_nums
