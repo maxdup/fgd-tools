@@ -1,3 +1,8 @@
+[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/maxdup/fgd-tools/blob/master/LICENSE.txt)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/fgdtools.svg)](https://pypi.python.org/pypi/fgdtools/)
+[![PyPI version fury.io](https://badge.fury.io/py/fgdtools.svg)](https://pypi.python.org/pypi/fgdtools/)
+[![alt text](https://github.com/maxdup/fgd-tools/blob/master/docs/source/coverage.svg "coverage")]()
+
 # Fgd-tools
 
 Fgd-tools is a Python library for parsing .fgd files from the Source Engine. It provides entity schemas and other level editor configuration information.
