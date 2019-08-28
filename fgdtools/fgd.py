@@ -5,10 +5,10 @@ from __future__ import absolute_import
 from builtins import int
 from builtins import next
 from builtins import str
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
 
-from builtins import object  # NOQA: E402
 import textwrap  # NOQA: E402
 
 
