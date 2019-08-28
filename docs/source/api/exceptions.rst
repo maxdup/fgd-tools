@@ -5,6 +5,8 @@ Exceptions
 
 .. autoclass:: fgdtools.PropertyNotFound
 
+.. autoclass:: fgdtools.SpawnflagNotFound
+
 .. autoclass:: fgdtools.InputNotFound
 
 .. autoclass:: fgdtools.OutputNotFound

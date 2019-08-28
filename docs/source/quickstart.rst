@@ -53,7 +53,7 @@ Writing
 You can write an .fgd file from a Fgd object. It will write the fgd as it was parsed. The content of included Fgds will not be written unless you use the 'collapse' option.
 
 .. note::
-   Parsing/writing is destructive. Comments will be lost. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.
+   Parsing/writing is destructive. Comments will be lost. The original structure of the file may be altered. The actual data about entities and the inheritance hierarchy is untouched however.
 
 .. code-block:: python
 

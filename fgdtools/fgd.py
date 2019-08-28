@@ -17,6 +17,8 @@ class Fgd(object):
     entities and other editor informations."""
 
     def __init__(self):
+        """Creates an empty instance of Fgd."""
+
         self._includes = []
         self._entities = []
         self._editor_data = []
@@ -60,7 +62,11 @@ class Fgd(object):
         return parent_data + self._editor_data
 
     def add_include(self, parent_fgd):
-        """Adds a parent :class:`fgdtools.Fgd` to supplement this one."""
+        """Adds a parent :class:`fgdtools.Fgd` to supplement this one.
+
+        :param parent_fgd: The Fgd object to be added as a parent.
+        :type parent_fgd: Fgd
+        """
 
         if not parent_fgd:
             return
@@ -69,7 +75,7 @@ class Fgd(object):
     def add_entity(self, fgd_entity):
         """Adds an entity to the Fgd.
 
-        :param fgd_entity: a FgdEntity object to be added
+        :param fgd_entity: The FgdEntity object to be added
                            to this Fgd instance.
         :type fgd_entity: FgdEntity
         """
@@ -96,7 +102,7 @@ class Fgd(object):
     def add_editor_data(self, fgd_editor_data):
         """Adds editor data to the Fgd.
 
-        :param fgd_editor_data: a FgdEditorData object to be added
+        :param fgd_editor_data: The FgdEditorData object to be added
                                 to this Fgd instance.
         :type fgd_editor_data: FgdEditorData
         """
@@ -112,7 +118,7 @@ class Fgd(object):
         :param entity_name: The entity name to look for.
         :type entity_name: str
 
-        :raises EntityNotFound: whenever an entity could not be found.
+        :raises EntityNotFound: Whenever an entity could not be found.
         :return: An entity with matching name.
         :rtype: FgdEntity
         """
@@ -159,15 +165,16 @@ class Fgd(object):
 
 
 class FgdEditorData(object):
-    """Editor data, as represented in a Fgd file, usually of type such as:
-    @mapsize, @MaterialExclusion or @AutoVisGroup.
+    """Editor data, as represented in a Fgd file. Usually of types such as:
+    @include, @mapsize, @MaterialExclusion or @AutoVisGroup.
     """
 
     def __init__(self, class_type, name=None, data=None):
         """Creates an instance of FgdEditorData.
 
         :param class_type: The editor_data's type.
-                       Ex: 'mapsize', 'MaterialExclusion', 'AutoVisGroup', etc...
+                           Ex: 'mapsize', 'MaterialExclusion',
+                           'AutoVisGroup', etc...
         :type class_type: str
 
         :param name: The editor_data's display name.
@@ -209,14 +216,15 @@ class FgdEditorData(object):
 
     @property
     def data(self):
-        """The editor_data's data.
+        """The editor_data's data, in the type that best matches class_type.
 
         :rtype: tuple or list or dict"""
 
         return self._data
 
     def fgd_str(self):
-        """A string representation of FgdEditorData formated as in the a .fgd file.
+        """A string representation of FgdEditorData
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -280,7 +288,7 @@ class FgdEntity(object):
         :param inputs: The entity's inputs.
         :type inputs: list[FgdEntityInput], optional
 
-        :param output: The entity's output.
+        :param output: The entity's outputs.
         :type output: list[FgdEntityOutput], optional
         """
 
@@ -304,7 +312,8 @@ class FgdEntity(object):
 
         return "<FgdEntity {'type': " + repr(self._class_type) + \
             ", 'name': " + repr(self._name) + \
-            (", 'description': " + repr(textwrap.shorten(self._description, width=50))
+            (", 'description': " +
+             repr(textwrap.shorten(self._description, width=50))
              if self._description else '') + ', [...]}>'
 
     @property
@@ -437,7 +446,7 @@ class FgdEntity(object):
     def spawnflags(self):
         """The entity's spawnflags, including inherited spawnflags.
 
-        Note: As in the way Hammer behaves, spawnflags definition
+        Note: As in the way Hammer behaves, the spawnflags definition
         will merge with inherited definitions only if there is no
         collision between values. If there is a collision, only
         the latest definition will be taken into account.
@@ -448,7 +457,8 @@ class FgdEntity(object):
         ineligible_parents = []
         for p in self._parents:
             for s in p.spawnflags:
-                if next((x for x in self._spawnflags if x.value == s.value), None):
+                found = (x for x in self._spawnflags if x.value == s.value)
+                if next(found, None):
                     ineligible_parents.append(p)
                     continue
             if p not in ineligible_parents:
@@ -495,7 +505,8 @@ class FgdEntity(object):
 
         :param prop_name: The entity property name to look for.
         :type prop_name: str
-        :raises PropertyNotFound: whenever an entity property could not be found.
+        :raises PropertyNotFound: Whenever an entity property
+                                  could not be found.
         :return: An entity property with matching name.
         :rtype: FgdEntityProperty
         """
@@ -511,7 +522,8 @@ class FgdEntity(object):
 
         :param spawnflag_value: The property spawnflag value to look for.
         :type spawnflag_value: int
-        :raises SpawnflagNotFound: Whenever an entity spawnflag could not be found.
+        :raises SpawnflagNotFound: Whenever an entity spawnflag
+                                   could not be found.
         :return: An entity spawnflag with matching value.
         :rtype: FgdEntitySpawnflag
         """
@@ -527,7 +539,7 @@ class FgdEntity(object):
 
         :param input_name: The entity input name to look for.
         :type input_name: str
-        :raises InputNotFound: whenever an entity input could not be found.
+        :raises InputNotFound: Whenever an entity input could not be found.
         :return: An entity input with matching name.
         :rtype: FgdEntityInput
         """
@@ -542,7 +554,7 @@ class FgdEntity(object):
 
         :param output_name: The entity output name to look for.
         :type output_name: str
-        :raises OutputNotFound: whenever an entity output could not be found.
+        :raises OutputNotFound: Whenever an entity output could not be found.
         :return: An entity output with matching name.
         :rtype: FgdEntityOutput
         """
@@ -553,7 +565,8 @@ class FgdEntity(object):
         return result
 
     def fgd_str(self):
-        """A string representation of the FgdEntity formated as in the a .fgd file.
+        """A string representation of the FgdEntity
+        formated as in the a .fgd file.
 
         :return: Fgd formated string.
         :rtype: str
@@ -641,7 +654,8 @@ class FgdEntityProperty(object):
         return '<FgdEntityProperty {' + \
             "'name': " + repr(self._name) + \
             ", 'value_type': " + str(self._value_type) + \
-            (", 'description': " + repr(textwrap.shorten(self._description, width=50))
+            (", 'description': " +
+             repr(textwrap.shorten(self._description, width=50))
              if self._description else '') + ', [...]}>'
 
     @property

@@ -5,7 +5,7 @@
 
 # Fgd-tools
 
-Fgd-tools is a Python library for parsing .fgd files from the Source Engine. It provides entity schemas and other level editor configuration information.
+Fgd-tools is a Python library for parsing .fgd files for the Source Engine level editor Hammer. It provides entity schemas and other level editor configuration information.
 
 Full documentation: https://maxdup.github.io/fgd-tools/
 
@@ -53,7 +53,7 @@ You can get a Fgd object by parsing an .fgd file using FgdParse
 You can write an .fgd file from a Fgd object.
 
 
-> Parsing/writing is destructive. Comments will be ignored. Include statements will be removed and have everything merged in the same fgd. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.
+> Parsing/writing is destructive. Comments will be lost. The original structure of the file may be altered. The actual data about entities and the inheritance hierarchy is untouched however.
 
 ```python
 >>> from fgdtools import FgdWrite
@@ -87,4 +87,3 @@ Here are some color coded charts for the terminology used in this library for fg
 
 ### FgdEntityInput/Output
 ![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityio.jpg "FgdEntity terminology")
-

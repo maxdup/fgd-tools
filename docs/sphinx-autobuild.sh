@@ -1,8 +1,8 @@
 sphinx-autobuild \
     -z ../fgdtools \
     --ignore "*~" \
-    --ignore "#*" \
-    --ignore ".#*" \
+    --ignore "*/#*#*" \
+    --ignore "*.#*" \
     --ignore "*.swp" \
     --ignore "*.pdf" \
     --ignore "*.log" \
