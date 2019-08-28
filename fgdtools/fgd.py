@@ -169,7 +169,7 @@ class FgdEditorData(object):
     @include, @mapsize, @MaterialExclusion or @AutoVisGroup.
     """
 
-    def __init__(self, class_type, name=None, data=None):
+    def __init__(self, class_type, data=None, name=None):
         """Creates an instance of FgdEditorData.
 
         :param class_type: The editor_data's type.
@@ -181,7 +181,7 @@ class FgdEditorData(object):
         :type name: str
 
         :param data: The editor_data's data.
-        :type data: tuple or list or dict
+        :type data: str or tuple or list or dict
         """
 
         self._class_type = class_type
@@ -196,7 +196,7 @@ class FgdEditorData(object):
         """
 
         return '<FgdEditorData of type ' + repr(self._class_type) + \
-            (' named ' + repr(self._name) if self._name else '') + ', [...]}>'
+            (' named ' + repr(self._name) if self._name else '') + ', [...]>'
 
     @property
     def class_type(self):
@@ -218,7 +218,7 @@ class FgdEditorData(object):
     def data(self):
         """The editor_data's data, in the type that best matches class_type.
 
-        :rtype: tuple or list or dict"""
+        :rtype: str or tuple or list or dict"""
 
         return self._data
 
@@ -830,7 +830,7 @@ class FgdEntityInput(object):
 
         return '<FgdEntityInput {' + \
             "'name': " + repr(self._name) + ", " + \
-            "'value_type': " + str(self._value_type) + ", " + \
+            "'value_type': " + repr(self._value_type) + ", " + \
             "'description': " + \
             repr(textwrap.shorten(self._description, width=50)) + "}>"
 
@@ -914,7 +914,7 @@ class FgdEntityOutput(object):
 
         return '<FgdEntityOutput {' + \
             "'name': " + repr(self._name) + ", " + \
-            "'value_type': " + str(self._value_type) + ", " + \
+            "'value_type': " + repr(self._value_type) + ", " + \
             "'description': " + \
             repr(textwrap.shorten(self._description, width=50)) + "}>"
 
