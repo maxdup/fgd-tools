@@ -653,7 +653,7 @@ class FgdEntityProperty(object):
         """
         return '<FgdEntityProperty {' + \
             "'name': " + repr(self._name) + \
-            ", 'value_type': " + str(self._value_type) + \
+            ", 'value_type': " + repr(self._value_type) + \
             (", 'description': " +
              repr(textwrap.shorten(self._description, width=50))
              if self._description else '') + ', [...]}>'
@@ -674,8 +674,8 @@ class FgdEntityProperty(object):
             'type': self._value_type,
             'default_value': self._default_value,
         }
-        if self._choices:
-            schema_obj['choices'] = [c.schema for c in self._choices]
+        if self.choices:
+            schema_obj['choices'] = [c.schema for c in self.choices]
         return schema_obj
 
     @property
@@ -732,7 +732,7 @@ class FgdEntityProperty(object):
 
         :rtype: list[FgdEntityPropertyChoice]"""
 
-        if self._value_type.lower() == 'choices':
+        if self._value_type == 'choices':
             return self._choices
         else:
             return None
@@ -746,9 +746,10 @@ class FgdEntityProperty(object):
         :return: A property choice with matching value.
         :rtype: FgdEntityPropertyChoice
         """
-
+        if not self.choices:
+            raise ChoiceNotFound
         result = next(
-            (o for o in self._choices if o.value == choice_value), None)
+            (o for o in self.choices if o.value == choice_value), None)
         if not result:
             raise ChoiceNotFound
         return result
@@ -792,11 +793,9 @@ class FgdEntityProperty(object):
         # choices
         if self.choices:
             fgd_str += ' =\n\t[\n'
-            for choice in self._choices:
+            for choice in self.choices:
                 fgd_str += '\t\t' + choice.fgd_str() + '\n'
             fgd_str += '\t]'
-        elif self._value_type.lower() in ['choices', 'flags']:
-            fgd_str += ' =\n\t[\n\t]'
 
         return fgd_str
 
