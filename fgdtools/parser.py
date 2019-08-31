@@ -130,7 +130,8 @@ pp_entity_definition = pp_name.setResultsName('name') + \
              Suppress(')')).setResultsName('args')
 
 pp_entity_definitions = Optional(
-    OneOrMore(pp_entity_definition.setParseAction(lambda toks: dict(**toks))))\
+    OneOrMore(pp_entity_definition)
+    .setParseAction(lambda toks: dict(**toks.asDict())))\
     .setResultsName('definitions')
 
 pp_entity = Suppress('@') + pp_entity_class_type + \

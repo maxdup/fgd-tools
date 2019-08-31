@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from fgdtools import FgdParse
+from fgdtools import *
 
 
 class ParseTestCase(unittest.TestCase):
@@ -118,3 +118,72 @@ class ParseTestCase(unittest.TestCase):
     def test_notfound(self):
         self.assertRaises(IOError, FgdParse,
                           'tests/fgds/not_a_file.fgd')
+
+    def test_parseTypes(self):
+        fgd = FgdParse('tests/fgds/tf/tf.fgd')
+
+        for ent in fgd.entities:
+            self.assertTrue(isinstance(ent, FgdEntity))
+
+            self.assertTrue(isinstance(ent.class_type, str))
+            self.assertTrue(isinstance(ent.definitions, list))
+            self.assertTrue(isinstance(ent.name, str))
+            self.assertTrue(isinstance(ent.description, str) or
+                            ent.description == None)
+
+            for d in ent.definitions:
+                self.assertTrue(isinstance(d, dict))
+                self.assertTrue(isinstance(d['name'], str))
+                self.assertTrue(isinstance(d['args'], list))
+                for a in d['args']:
+                    self.assertTrue(isinstance(a, str))
+            for p in ent.parents:
+                self.assertTrue(isinstance(p, FgdEntity))
+            for p in ent.properties:
+                self.assertTrue(isinstance(p, FgdEntityProperty))
+
+                self.assertTrue(isinstance(p.name, str))
+                self.assertTrue(isinstance(p.value_type, str))
+                self.assertTrue(isinstance(p.readonly, bool))
+                self.assertTrue(isinstance(p.display_name, str) or
+                                p.display_name == None)
+                self.assertTrue(isinstance(p.default_value, str) or
+                                isinstance(p.default_value, int) or
+                                p.default_value == None)
+                self.assertTrue(isinstance(p.description, str) or
+                                p.description == None)
+                if p.choices != None:
+                    for c in p.choices:
+                        self.assertTrue(isinstance(c, FgdEntityPropertyChoice))
+                        self.assertTrue(isinstance(c.value, int) or
+                                        isinstance(c.value, str))
+                        self.assertTrue(isinstance(c.display_name, str))
+            for i in ent.inputs:
+                self.assertTrue(isinstance(i, FgdEntityInput))
+                self.assertTrue(isinstance(i.name, str))
+                self.assertTrue(isinstance(i.value_type, str))
+                self.assertTrue(isinstance(i.description, str))
+            for o in ent.outputs:
+                self.assertTrue(isinstance(o, FgdEntityOutput))
+                self.assertTrue(isinstance(o.name, str))
+                self.assertTrue(isinstance(o.value_type, str))
+                self.assertTrue(isinstance(o.description, str))
+            for s in ent.spawnflags:
+                self.assertTrue(isinstance(s, FgdEntitySpawnflag))
+                self.assertTrue(isinstance(s.value, int))
+                self.assertTrue(isinstance(s.display_name, str))
+                self.assertTrue(isinstance(s.default_value, bool))
+
+        for editor_data in fgd.editor_data:
+            self.assertTrue(isinstance(editor_data, FgdEditorData))
+            self.assertTrue(isinstance(editor_data.class_type, str))
+            self.assertTrue(isinstance(editor_data.name, str) or
+                            editor_data.name == None)
+
+            self.assertTrue(isinstance(editor_data.data, str) or
+                            isinstance(editor_data.data, tuple) or
+                            isinstance(editor_data.data, list) or
+                            isinstance(editor_data.data, dict))
+
+        for include in fgd.includes:
+            self.assertTrue(isinstance(include, Fgd))
