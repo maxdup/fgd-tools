@@ -7,6 +7,7 @@ from builtins import next
 from builtins import str
 from builtins import object
 from future import standard_library
+from collections import OrderedDict
 standard_library.install_aliases()
 
 import textwrap  # NOQA: E402
@@ -30,9 +31,9 @@ class Fgd(object):
         :rtype: str
         """
 
-        return "<Fgd {'includes': [" + str(len(self._includes)) + '],' + \
-            "'entities': [" + str(len(self._entities)) + '],' + \
-            "'editor_data': [" + str(len(self._editor_data)) + ']}>'
+        return "<Fgd {'includes': [" + str(len(self.includes)) + '], ' + \
+            "'entities': [" + str(len(self.entities)) + '], ' + \
+            "'editor_data': [" + str(len(self.editor_data)) + ']}>'
 
     @property
     def includes(self):
@@ -70,6 +71,7 @@ class Fgd(object):
 
         if not parent_fgd:
             return
+
         self._includes.append(parent_fgd)
 
     def add_entity(self, fgd_entity):
@@ -123,17 +125,12 @@ class Fgd(object):
         :rtype: FgdEntity
         """
 
-        result = next((c for c in self._entities if isinstance(
+        result = next((c for c in self.entities if isinstance(
             c, FgdEntity) and c.name == entity_name), None)
-        if not result and self._includes:
-            for include in self._includes:
-                try:
-                    result = include.entity_by_name(entity_name)
-                    break
-                except EntityNotFound:
-                    pass
+
         if not result:
             raise EntityNotFound
+
         return result
 
     def fgd_str(self, collapse=False):
@@ -183,7 +180,6 @@ class FgdEditorData(object):
         :param data: The editor_data's data.
         :type data: str or tuple or list or dict
         """
-
         self._class_type = class_type
         self._name = name
         self._data = data
@@ -236,6 +232,7 @@ class FgdEditorData(object):
         if self._data:
             if isinstance(self._data, str):
                 fgd_str += ' "' + self._data + '"'
+
             if isinstance(self._data, tuple):
                 fgd_str += '('
                 for t in self._data:
@@ -250,6 +247,7 @@ class FgdEditorData(object):
                         fgd_str += '\n\t\t"' + i + '"'
                     fgd_str += '\n\t]'
                 fgd_str += '\n]'
+
             elif isinstance(self._data, list):
                 fgd_str += '\n['
                 for i in self._data:
@@ -271,7 +269,7 @@ class FgdEntity(object):
 
         :param definitions: Information defining the entity within the editor.
                         Ex: 'base()', 'size()', 'line()', 'studioprop()', etc...
-        :type definitions: dict
+        :type definitions: list[dict]
 
         :param name: The entity's name.
         :type name: str
@@ -313,7 +311,7 @@ class FgdEntity(object):
         return "<FgdEntity {'type': " + repr(self._class_type) + \
             ", 'name': " + repr(self._name) + \
             (", 'description': " +
-             repr(textwrap.shorten(self._description, width=50))
+             repr(shortentext(self._description, 50))
              if self._description else '') + ', [...]}>'
 
     @property
@@ -433,14 +431,12 @@ class FgdEntity(object):
 
         :rtype: list[FgdEntityProperty]"""
 
-        properties = {}
-        for t in self._parents:
-            for p in t.properties:
+        properties = OrderedDict()
+        for ent in self._parents + [self]:
+            for p in ent._properties:
                 properties[p.name] = p
-        for p in self._properties:
-            properties[p.name] = p
 
-        return properties.values()
+        return list(properties.values())
 
     @property
     def spawnflags(self):
@@ -457,7 +453,7 @@ class FgdEntity(object):
         ineligible_parents = []
         for p in self._parents:
             for s in p.spawnflags:
-                found = (x for x in self._spawnflags if x.value == s.value)
+                found = (x for x in spawnflags if x.value == s.value)
                 if next(found, None):
                     ineligible_parents.append(p)
                     continue
@@ -474,14 +470,11 @@ class FgdEntity(object):
 
         :rtype: list[FgdEntityInput]"""
 
-        inputs = {}
-        for t in self._parents:
-            for p in t.inputs:
-                if p.name not in inputs:
-                    inputs[p.name] = p
-        for p in self._inputs:
-            if p.name not in inputs:
-                inputs[p.name] = p
+        inputs = OrderedDict()
+        for p in self._parents + [self]:
+            for i in p._inputs:
+                if i.name not in inputs:
+                    inputs[i.name] = i
 
         return list(inputs.values())
 
@@ -494,9 +487,9 @@ class FgdEntity(object):
 
         :rtype: list[FgdEntityOutput]"""
 
-        outputs = self._outputs or []
-        for t in self._parents:
-            outputs = outputs + t.outputs
+        outputs = []
+        for t in [self] + self._parents:
+            outputs = outputs + t._outputs
 
         return outputs
 
@@ -529,7 +522,7 @@ class FgdEntity(object):
         """
 
         result = next(
-            (o for o in self._spawnflags if o.value == spawnflag_value), None)
+            (o for o in self.spawnflags if o.value == spawnflag_value), None)
         if not result:
             raise SpawnflagNotFound
         return result
@@ -561,7 +554,7 @@ class FgdEntity(object):
 
         result = next((o for o in self.outputs if o.name == output_name), None)
         if not result:
-            raise InputNotFound
+            raise OutputNotFound
         return result
 
     def fgd_str(self):
@@ -655,7 +648,7 @@ class FgdEntityProperty(object):
             "'name': " + repr(self._name) + \
             ", 'value_type': " + repr(self._value_type) + \
             (", 'description': " +
-             repr(textwrap.shorten(self._description, width=50))
+             repr(shortentext(self._description, 50))
              if self._description else '') + ', [...]}>'
 
     @property
@@ -831,7 +824,7 @@ class FgdEntityInput(object):
             "'name': " + repr(self._name) + ", " + \
             "'value_type': " + repr(self._value_type) + ", " + \
             "'description': " + \
-            repr(textwrap.shorten(self._description, width=50)) + "}>"
+            repr(shortentext(self._description, 50)) + "}>"
 
     @property
     def schema(self):
@@ -915,7 +908,7 @@ class FgdEntityOutput(object):
             "'name': " + repr(self._name) + ", " + \
             "'value_type': " + repr(self._value_type) + ", " + \
             "'description': " + \
-            repr(textwrap.shorten(self._description, width=50)) + "}>"
+            repr(shortentext(self._description, 50)) + "}>"
 
     @property
     def schema(self):
@@ -1157,3 +1150,7 @@ class SpawnflagNotFound(Exception):
 class ChoiceNotFound(Exception):
     """Raised when a property choice could not be found."""
     pass
+
+
+def shortentext(text, maxlen):
+    return (text[:maxlen] + '[...]') if len(text) > maxlen else text
