@@ -432,10 +432,11 @@ class FgdEntity(object):
         :rtype: list[FgdEntityProperty]"""
 
         properties = OrderedDict()
-        for ent in self._parents + [self]:
-            for p in ent._properties:
+        for parent in self._parents:
+            for p in parent.properties:
                 properties[p.name] = p
-
+        for p in self._properties:
+            properties[p.name] = p
         return list(properties.values())
 
     @property
@@ -471,11 +472,13 @@ class FgdEntity(object):
         :rtype: list[FgdEntityInput]"""
 
         inputs = OrderedDict()
-        for p in self._parents + [self]:
-            for i in p._inputs:
+        for p in self._parents:
+            for i in p.inputs:
                 if i.name not in inputs:
                     inputs[i.name] = i
-
+        for i in self._inputs:
+            if i.name not in inputs:
+                inputs[i.name] = i
         return list(inputs.values())
 
     @property
@@ -488,8 +491,9 @@ class FgdEntity(object):
         :rtype: list[FgdEntityOutput]"""
 
         outputs = []
-        for t in [self] + self._parents:
-            outputs = outputs + t._outputs
+        for t in self._parents:
+            outputs = outputs + t.outputs
+        outputs = outputs + self._outputs
 
         return outputs
 

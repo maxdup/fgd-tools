@@ -274,7 +274,7 @@ class FgdTestCase(unittest.TestCase):
 
         # vestigial
         vestigial = FgdEntity('PointClass', [], 'vestigial',
-                              'should be ignored, not recusrive')
+                              'should be included, it is recursive')
         vestigial._properties = [fake.FgdEntityProperty('0')]
         vestigial._inputs = [fake.FgdEntityInput('0')]
         vestigial._outputs = [fake.FgdEntityOutput('0')]
@@ -284,7 +284,7 @@ class FgdTestCase(unittest.TestCase):
         env = FgdEntity('PointClass',
                         [{'name': 'base', 'args': ['vestigial']}],
                         'env', "it's")
-        env._parent = [vestigial]
+        env._parents = [vestigial]
         env._properties = [fake.FgdEntityProperty('1'), fake.FgdEntityProperty('2'),
                            fake.FgdEntityProperty('3')]
         env._inputs = [fake.FgdEntityInput('1'), fake.FgdEntityInput('larry'),
@@ -297,7 +297,6 @@ class FgdTestCase(unittest.TestCase):
         fire = FgdEntity('PointClass',
                          [{'name': 'base', 'args': ['vestigial']}],
                          'fire', "hot")
-        fire._parent = [vestigial]
         fire._properties = [fake.FgdEntityProperty('1'),
                             fake.FgdEntityProperty('5')]
         fire._inputs = [fake.FgdEntityInput('3'), fake.FgdEntityInput('larry')]
@@ -318,7 +317,7 @@ class FgdTestCase(unittest.TestCase):
         env_fire._spawnflags = [fake.FgdEntitySpawnflag(10)]
 
         # properties
-        self.assertEqual(4, len(env_fire.properties))
+        self.assertEqual(5, len(env_fire.properties))
         for p in env_fire._properties:
             self.assertTrue(p in env_fire.properties)
         for p in env._properties:
@@ -326,9 +325,11 @@ class FgdTestCase(unittest.TestCase):
                 self.assertTrue(p in env_fire.properties)
         for p in fire._properties:
             self.assertTrue(p in env_fire.properties)
+        for p in vestigial._properties:
+            self.assertTrue(p in env_fire.properties)
 
         # inputs
-        self.assertEqual(7, len(env_fire.inputs))
+        self.assertEqual(8, len(env_fire.inputs))
         for i in env_fire._inputs:
             if i.name != 'garry':
                 self.assertTrue(i in env_fire.inputs)
@@ -337,9 +338,11 @@ class FgdTestCase(unittest.TestCase):
         for i in fire._inputs:
             if i.name != 'larry':
                 self.assertTrue(i in env_fire.inputs)
+        for i in vestigial._inputs:
+            self.assertTrue(i in env_fire.inputs)
 
         # outputs
-        self.assertEqual(6, len(env_fire.outputs))
+        self.assertEqual(7, len(env_fire.outputs))
         for o in env_fire._outputs:
             self.assertTrue(o in env_fire.outputs)
         for o in env.outputs:
@@ -348,13 +351,15 @@ class FgdTestCase(unittest.TestCase):
             self.assertTrue(o in env_fire.outputs)
 
         # spawnflags
-        self.assertEqual(3, len(env_fire.spawnflags))
+        self.assertEqual(4, len(env_fire.spawnflags))
         for sf in env_fire._spawnflags:
             self.assertTrue(sf in env_fire.spawnflags)
         for sf in env.spawnflags:
             self.assertTrue(sf in env_fire.spawnflags)
         for sf in fire.spawnflags:
             self.assertTrue(sf not in env_fire.spawnflags)
+        for sf in vestigial.spawnflags:
+            self.assertTrue(sf in env_fire.spawnflags)
 
     # FgdEntityProperty
 
