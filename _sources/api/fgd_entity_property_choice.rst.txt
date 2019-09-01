@@ -1,0 +1,6 @@
+FgdEntityPropertyChoice
+==========================
+
+.. autoclass:: fgdtools.FgdEntityPropertyChoice
+   :special-members:
+   :members:

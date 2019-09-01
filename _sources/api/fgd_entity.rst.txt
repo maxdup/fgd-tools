@@ -2,4 +2,6 @@ FgdEntity
 =========
 
 .. autoclass:: fgdtools.FgdEntity
+   :exclude-members: __weakref__
    :members:
+

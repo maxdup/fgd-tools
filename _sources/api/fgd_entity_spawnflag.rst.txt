@@ -1,0 +1,6 @@
+FgdEntitySpawnflag
+==================
+
+.. autoclass:: fgdtools.FgdEntitySpawnflag
+   :special-members:
+   :members:

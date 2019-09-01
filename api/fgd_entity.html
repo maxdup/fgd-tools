@@ -37,8 +37,9 @@
 <h1>FgdEntity<a class="headerlink" href="#fgdentity" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="fgdtools.FgdEntity">
-<em class="property">class </em><code class="sig-prename descclassname">fgdtools.</code><code class="sig-name descname">FgdEntity</code><span class="sig-paren">(</span><em class="sig-param">class_type</em>, <em class="sig-param">definitions</em>, <em class="sig-param">name</em>, <em class="sig-param">description=None</em>, <em class="sig-param">properties=[]</em>, <em class="sig-param">inputs=[]</em>, <em class="sig-param">outputs=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntity" title="Permalink to this definition">¶</a></dt>
-<dd><p>An entity, as reprented in a FGD file.</p>
+<em class="property">class </em><code class="sig-prename descclassname">fgdtools.</code><code class="sig-name descname">FgdEntity</code><span class="sig-paren">(</span><em class="sig-param">class_type</em>, <em class="sig-param">definitions</em>, <em class="sig-param">name</em>, <em class="sig-param">description=None</em>, <em class="sig-param">properties=[]</em>, <em class="sig-param">spawnflags=[]</em>, <em class="sig-param">inputs=[]</em>, <em class="sig-param">outputs=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntity" title="Permalink to this definition">¶</a></dt>
+<dd><p>An entity, as represented in a FGD file.</p>
+<p>Creates an instance of FgdEntity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -49,6 +50,7 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The entity’s name.</p></li>
 <li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – The entity’s description.</p></li>
 <li><p><strong>properties</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_property.html#fgdtools.FgdEntityProperty" title="fgdtools.FgdEntityProperty"><em>FgdEntityProperty</em></a><em>]</em><em>, </em><em>optional</em>) – The entity’s properties.</p></li>
+<li><p><strong>spawnflags</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_spawnflag.html#fgdtools.FgdEntitySpawnflag" title="fgdtools.FgdEntitySpawnflag"><em>FgdEntitySpawnflag</em></a><em>]</em><em>, </em><em>optional</em>) – The entity’s spawnflags.</p></li>
 <li><p><strong>inputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_input.html#fgdtools.FgdEntityInput" title="fgdtools.FgdEntityInput"><em>FgdEntityInput</em></a><em>]</em><em>, </em><em>optional</em>) – The entity’s inputs.</p></li>
 <li><p><strong>output</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="fgd_entity_output.html#fgdtools.FgdEntityOutput" title="fgdtools.FgdEntityOutput"><em>FgdEntityOutput</em></a><em>]</em><em>, </em><em>optional</em>) – The entity’s output.</p></li>
 </ul>
@@ -69,43 +71,57 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="fgdtools.FgdEntity.property_schema">
-<em class="property">property </em><code class="sig-name descname">property_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.property_schema" title="Permalink to this definition">¶</a></dt>
+<dt id="fgdtools.FgdEntity.properties_schema">
+<em class="property">property </em><code class="sig-name descname">properties_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.properties_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>A schematic view of this entity’s properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A dictionary</p>
+<dd class="field-odd"><p>A list of dictionaries</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="fgdtools.FgdEntity.input_schema">
-<em class="property">property </em><code class="sig-name descname">input_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.input_schema" title="Permalink to this definition">¶</a></dt>
+<dt id="fgdtools.FgdEntity.inputs_schema">
+<em class="property">property </em><code class="sig-name descname">inputs_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.inputs_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>A schematic view of this entity’s inputs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A dictionary</p>
+<dd class="field-odd"><p>A list of dictionaries</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="fgdtools.FgdEntity.output_schema">
-<em class="property">property </em><code class="sig-name descname">output_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.output_schema" title="Permalink to this definition">¶</a></dt>
+<dt id="fgdtools.FgdEntity.outputs_schema">
+<em class="property">property </em><code class="sig-name descname">outputs_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.outputs_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>A schematic view of this entity’s outputs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A dictionary</p>
+<dd class="field-odd"><p>A list of dictionaries</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntity.spawnflags_schema">
+<em class="property">property </em><code class="sig-name descname">spawnflags_schema</code><a class="headerlink" href="#fgdtools.FgdEntity.spawnflags_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>A schematic view of this entity’s spanwnflags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of dictionaries</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -169,9 +185,26 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dt id="fgdtools.FgdEntity.properties">
 <em class="property">property </em><code class="sig-name descname">properties</code><a class="headerlink" href="#fgdtools.FgdEntity.properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>The entity’s properties, including inherited inputs.</p>
+<p>Note: As in the way Hammer behaves,
+properties of the same name are overridden</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_output.html#fgdtools.FgdEntityOutput" title="fgdtools.FgdEntityOutput">FgdEntityOutput</a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_property.html#fgdtools.FgdEntityProperty" title="fgdtools.FgdEntityProperty">FgdEntityProperty</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntity.spawnflags">
+<em class="property">property </em><code class="sig-name descname">spawnflags</code><a class="headerlink" href="#fgdtools.FgdEntity.spawnflags" title="Permalink to this definition">¶</a></dt>
+<dd><p>The entity’s spawnflags, including inherited spawnflags.</p>
+<p>Note: As in the way Hammer behaves, spawnflags definition
+will merge with inherited definitions only if there is no
+collision between values. if there is a collision, only
+the latest definition will be taken into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_spawnflag.html#fgdtools.FgdEntitySpawnflag" title="fgdtools.FgdEntitySpawnflag">FgdEntitySpawnflag</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -180,6 +213,8 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dt id="fgdtools.FgdEntity.inputs">
 <em class="property">property </em><code class="sig-name descname">inputs</code><a class="headerlink" href="#fgdtools.FgdEntity.inputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>The entity’s inputs, including inherited inputs.</p>
+<p>Note: As in the way Hammer behaves, inputs cannot be overridden.
+All duplicate inputs are ignored, only the oldest is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_input.html#fgdtools.FgdEntityInput" title="fgdtools.FgdEntityInput">FgdEntityInput</a>]</p>
@@ -191,6 +226,8 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dt id="fgdtools.FgdEntity.outputs">
 <em class="property">property </em><code class="sig-name descname">outputs</code><a class="headerlink" href="#fgdtools.FgdEntity.outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>The entity’s outputs, including inherited outputs.</p>
+<p>Note: As in the way Hammer behaves, outputs cannot be overridden.
+All duplicate outputs are returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="fgd_entity_output.html#fgdtools.FgdEntityOutput" title="fgdtools.FgdEntityOutput">FgdEntityOutput</a>]</p>
@@ -210,10 +247,30 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.PropertyNotFound" title="fgdtools.PropertyNotFound"><strong>PropertyNotFound</strong></a> – whenever an entity property could not be found</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>An entity property with matching name, None if not found.</p>
+<dd class="field-odd"><p>An entity property with matching name.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="fgd_entity_property.html#fgdtools.FgdEntityProperty" title="fgdtools.FgdEntityProperty">FgdEntityProperty</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.FgdEntity.spawnflag_by_value">
+<code class="sig-name descname">spawnflag_by_value</code><span class="sig-paren">(</span><em class="sig-param">spawnflag_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#FgdEntity.spawnflag_by_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.FgdEntity.spawnflag_by_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a property choice by its value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>spawnflag_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The property spawnflag value to look for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>SpawnflagNotFound</strong> – Whenever an entity spawnflag could not be found.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An entity spawnflag with matching value.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="fgd_entity_spawnflag.html#fgdtools.FgdEntitySpawnflag" title="fgdtools.FgdEntitySpawnflag">FgdEntitySpawnflag</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -230,7 +287,7 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.InputNotFound" title="fgdtools.InputNotFound"><strong>InputNotFound</strong></a> – whenever an entity input could not be found</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>An entity input with matching name, None if not found.</p>
+<dd class="field-odd"><p>An entity input with matching name.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="fgd_entity_input.html#fgdtools.FgdEntityInput" title="fgdtools.FgdEntityInput">FgdEntityInput</a></p>
@@ -250,7 +307,7 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.OutputNotFound" title="fgdtools.OutputNotFound"><strong>OutputNotFound</strong></a> – whenever an entity output could not be found</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>An entity output with matching name, None if not found.</p>
+<dd class="field-odd"><p>An entity output with matching name.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="fgd_entity_output.html#fgdtools.FgdEntityOutput" title="fgdtools.FgdEntityOutput">FgdEntityOutput</a></p>
@@ -304,7 +361,8 @@ ex: ‘base()’, ‘size()’, ‘line()’, ‘studioprop()’ etc…</p></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd.html">Fgd</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">FgdEntity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_property.html">FgdEntityProperty</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_choice.html">FgdEntityPropertyChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_spawnflag.html">FgdEntitySpawnflag</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_input.html">FgdEntityInput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_output.html">FgdEntityOutput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_editor_data.html">FgdEditorData</a></li>

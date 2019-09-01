@@ -2,4 +2,5 @@ FgdEntityOutput
 =================
 
 .. autoclass:: fgdtools.FgdEntityOutput
+   :special-members:
    :members:

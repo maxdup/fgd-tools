@@ -41,21 +41,44 @@
 <dd><p>Contains all the data from an Fgd file such as
 entities and other editor informations.</p>
 <dl class="method">
+<dt id="fgdtools.Fgd.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="fgdtools.Fgd.__repr__">
+<code class="sig-name descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A partial, printable summary of an Fgd.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A python formated string.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="fgdtools.Fgd.includes">
 <em class="property">property </em><code class="sig-name descname">includes</code><a class="headerlink" href="#fgdtools.Fgd.includes" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list of included <a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.Fgd</span></code></a></p>
+<dd><p>A list of included <a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.Fgd</span></code></a>,
+including inherited includes from &#64;includes</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="fgdtools.Fgd.entities">
 <em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#fgdtools.Fgd.entities" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list containing all <a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEntity</span></code></a></p>
+<dd><p>A list containing all <a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEntity</span></code></a>,
+including inherited entities from &#64;includes</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="fgdtools.Fgd.editor_data">
 <em class="property">property </em><code class="sig-name descname">editor_data</code><a class="headerlink" href="#fgdtools.Fgd.editor_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list containing all <a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEditorData</span></code></a></p>
+<dd><p>A list containing all <a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEditorData</span></code></a>,
+including inherited data from &#64;includes</p>
 </dd></dl>
 
 <dl class="method">
@@ -111,11 +134,11 @@ to this Fgd instance.</p>
 <dl class="method">
 <dt id="fgdtools.Fgd.fgd_str">
 <code class="sig-name descname">fgd_str</code><span class="sig-paren">(</span><em class="sig-param">collapse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.fgd_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.fgd_str" title="Permalink to this definition">¶</a></dt>
-<dd><p>A string representation of the Fgd formated as in the a .fgd file</p>
+<dd><p>A string representation of the Fgd formated as in the a .fgd file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>collapse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, the content of included fgds will be included in
-the output and include statements will be removed.
+<dd class="field-odd"><p><strong>collapse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, the content of included fgds will be included
+in the output and &#64;include statements will be removed.
 If False, Include statements will be in the output
 and the content of other Fgds will not be present.</p>
 </dd>
@@ -160,7 +183,8 @@ and the content of other Fgds will not be present.</p>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Fgd</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity.html">FgdEntity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_property.html">FgdEntityProperty</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_option.html">FgdEntityPropertyOption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_property_choice.html">FgdEntityPropertyChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fgd_entity_spawnflag.html">FgdEntitySpawnflag</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_input.html">FgdEntityInput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_entity_output.html">FgdEntityOutput</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fgd_editor_data.html">FgdEditorData</a></li>

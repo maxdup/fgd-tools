@@ -2,4 +2,5 @@ FgdEntityProperty
 ===================
 
 .. autoclass:: fgdtools.FgdEntityProperty
+   :special-members:
    :members:

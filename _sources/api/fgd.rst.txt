@@ -2,4 +2,5 @@ Fgd
 ===
 
 .. autoclass:: fgdtools.Fgd
+   :special-members:
    :members:
