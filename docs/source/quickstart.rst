@@ -85,6 +85,10 @@ FgdEntity
 ~~~~~~~~~
 .. image:: /_static/fgdentity.jpg
 
+FgdEntityInput/Output
+~~~~~~~~~~~~~~~~~~~~~
+.. image:: /_static/fgdentityio.jpg
+
 FgdEntityProperty
 ~~~~~~~~~~~~~~~~~
 .. image:: /_static/fgdentityproperty.jpg
@@ -93,6 +97,6 @@ FgdEntityPropertyOption
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. image:: /_static/fgdentitypropertyoption.jpg
 
-FgdEntityInput/Output
-~~~~~~~~~~~~~~~~~~~~~
-.. image:: /_static/fgdentityio.jpg
+FgdEntitySpawnflag
+~~~~~~~~~~~~~~~~~
+.. image:: /_static/fgdentityspawnflags.jpg

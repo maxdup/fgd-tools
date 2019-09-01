@@ -79,11 +79,15 @@ Here are some color coded charts for the terminology used in this library for fg
 ### FgdEntity
 ![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentity.jpg "FgdEntity terminology")
 
+### FgdEntityInput/Output
+![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityio.jpg "FgdEntityInput/Output terminology")
+
 ### FgdEntityProperty
-![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityproperty.jpg "FgdEntity terminology")
+![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityproperty.jpg "FgdEntityProperty terminology")
 
 ### FgdEntityPropertyOption
-![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentitypropertyoption.jpg "FgdEntity terminology")
+![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentitypropertyoption.jpg "FgdEntityPropertyOption terminology")
 
-### FgdEntityInput/Output
-![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityio.jpg "FgdEntity terminology")
+### FgdEntitySpawnflag
+![alt text](https://github.com/maxdup/fgd-tools/raw/master/docs/source/_static/fgdentityspawnflags.jpg "FgdEntitySpawnflag terminology")
+
