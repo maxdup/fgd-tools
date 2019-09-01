@@ -10,8 +10,6 @@ from future import standard_library
 from collections import OrderedDict
 standard_library.install_aliases()
 
-import textwrap  # NOQA: E402
-
 
 class Fgd(object):
     """Contains all the data from a Fgd file such as

@@ -920,7 +920,7 @@ class FgdTestCase(unittest.TestCase):
 
     def test_editor_data_str_fgd_str(self):
         class_type = 'include'
-        data = "something.fgd"
+        data = u"something.fgd"
         name = None
         editor_data = FgdEditorData(class_type, data, name)
         expected = '@include "something.fgd"'
