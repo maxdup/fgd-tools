@@ -7,11 +7,11 @@
     <title>Quickstart &#8212; Fgd-tools 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -75,12 +75,12 @@
 <p>You can write an .fgd file from a Fgd object. It will write the fgd as it was parsed. The content of included Fgds will not be written unless you use the ‘collapse’ option.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Parsing/writing is destructive. Comments will be lost. The original structure of the file may be modified. The actual data about entities and the inheritance hierarchy is untouched however.</p>
+<p>Parsing/writing is destructive. Comments will be lost. The original structure of the file may be altered. The actual data about entities and the inheritance hierarchy is untouched however.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">fgdtools</span> <span class="kn">import</span> <span class="n">FgdWrite</span>
 
 <span class="o">&gt;</span> <span class="n">FgdWrite</span><span class="p">(</span><span class="n">fgd</span><span class="p">,</span> <span class="s1">&#39;tf-clone.fgd&#39;</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">FgdWrite</span><span class="p">(</span><span class="n">fgd</span><span class="p">,</span> <span class="s1">&#39;tf-clone.fgd&#39;</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">FgdWrite</span><span class="p">(</span><span class="n">fgd</span><span class="p">,</span> <span class="s1">&#39;tf-clone.fgd&#39;</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -88,7 +88,7 @@
 <h3>Getting entity schemas<a class="headerlink" href="#getting-entity-schemas" title="Permalink to this headline">¶</a></h3>
 <p>You can get entity schematics from an Fgd object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">env_fire</span> <span class="o">=</span> <span class="n">fgd</span><span class="o">.</span><span class="n">entity_by_name</span><span class="p">(</span><span class="s1">&#39;env_fire&#39;</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">env_fire</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">env_fire</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
 
 <span class="p">{</span><span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;targetname&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;The name...&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">},</span>
 <span class="s1">&#39;inputs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;StartFire&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;void&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Start the fire&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">},</span>
@@ -104,6 +104,10 @@
 <h3>FgdEntity<a class="headerlink" href="#fgdentity" title="Permalink to this headline">¶</a></h3>
 <img alt="_images/fgdentity.jpg" src="_images/fgdentity.jpg" />
 </div>
+<div class="section" id="fgdentityinput-output">
+<h3>FgdEntityInput/Output<a class="headerlink" href="#fgdentityinput-output" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentityio.jpg" src="_images/fgdentityio.jpg" />
+</div>
 <div class="section" id="fgdentityproperty">
 <h3>FgdEntityProperty<a class="headerlink" href="#fgdentityproperty" title="Permalink to this headline">¶</a></h3>
 <img alt="_images/fgdentityproperty.jpg" src="_images/fgdentityproperty.jpg" />
@@ -112,9 +116,9 @@
 <h3>FgdEntityPropertyOption<a class="headerlink" href="#fgdentitypropertyoption" title="Permalink to this headline">¶</a></h3>
 <img alt="_images/fgdentitypropertyoption.jpg" src="_images/fgdentitypropertyoption.jpg" />
 </div>
-<div class="section" id="fgdentityinput-output">
-<h3>FgdEntityInput/Output<a class="headerlink" href="#fgdentityinput-output" title="Permalink to this headline">¶</a></h3>
-<img alt="_images/fgdentityio.jpg" src="_images/fgdentityio.jpg" />
+<div class="section" id="fgdentityspawnflag">
+<h3>FgdEntitySpawnflag<a class="headerlink" href="#fgdentityspawnflag" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/fgdentityspawnflags.jpg" src="_images/fgdentityspawnflags.jpg" />
 </div>
 </div>
 </div>
@@ -172,7 +176,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -189,7 +193,7 @@
       &copy;2019, Maxime Dupuis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

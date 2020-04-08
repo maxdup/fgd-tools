@@ -7,11 +7,11 @@
     <title>Fgd &#8212; Fgd-tools 0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,95 +35,100 @@
             
   <div class="section" id="fgd">
 <h1>Fgd<a class="headerlink" href="#fgd" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="fgdtools.Fgd">
 <em class="property">class </em><code class="sig-prename descclassname">fgdtools.</code><code class="sig-name descname">Fgd</code><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains all the data from an Fgd file such as
+<dd><p>Contains all the data from a Fgd file such as
 entities and other editor informations.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dd><p>Creates an empty instance of Fgd.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.__repr__">
 <code class="sig-name descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.__repr__" title="Permalink to this definition">¶</a></dt>
-<dd><p>A partial, printable summary of an Fgd.</p>
+<dd><p>A partial, printable summary of a Fgd.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A python formated string.</p>
+<dd class="field-odd"><p>A Python formated string.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.includes">
 <em class="property">property </em><code class="sig-name descname">includes</code><a class="headerlink" href="#fgdtools.Fgd.includes" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of included <a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.Fgd</span></code></a>,
-including inherited includes from &#64;includes</p>
+including inherited includes from &#64;includes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.entities">
 <em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#fgdtools.Fgd.entities" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list containing all <a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEntity</span></code></a>,
-including inherited entities from &#64;includes</p>
+including inherited entities from &#64;includes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.editor_data">
 <em class="property">property </em><code class="sig-name descname">editor_data</code><a class="headerlink" href="#fgdtools.Fgd.editor_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list containing all <a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.FgdEditorData</span></code></a>,
-including inherited data from &#64;includes</p>
+including inherited data from &#64;includes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.add_include">
-<code class="sig-name descname">add_include</code><span class="sig-paren">(</span><em class="sig-param">parent_fgd</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_include" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a parent <a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.Fgd</span></code></a> to supplement this one</p>
+<code class="sig-name descname">add_include</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_fgd</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_include" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a parent <a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><code class="xref py py-class docutils literal notranslate"><span class="pre">fgdtools.Fgd</span></code></a> to supplement this one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent_fgd</strong> (<a class="reference internal" href="#fgdtools.Fgd" title="fgdtools.Fgd"><em>Fgd</em></a>) – The Fgd object to be added as a parent.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.add_entity">
-<code class="sig-name descname">add_entity</code><span class="sig-paren">(</span><em class="sig-param">fgd_entity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_entity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds an entity to the Fgd</p>
+<code class="sig-name descname">add_entity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fgd_entity</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an entity to the Fgd.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fgd_entity</strong> (<a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><em>FgdEntity</em></a>) – a FgdEntity object to be added
+<dd class="field-odd"><p><strong>fgd_entity</strong> (<a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity"><em>FgdEntity</em></a>) – The FgdEntity object to be added
 to this Fgd instance.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.add_editor_data">
-<code class="sig-name descname">add_editor_data</code><span class="sig-paren">(</span><em class="sig-param">fgd_editor_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_editor_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_editor_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds editor data to the Fgd</p>
+<code class="sig-name descname">add_editor_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fgd_editor_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.add_editor_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.add_editor_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds editor data to the Fgd.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fgd_editor_data</strong> (<a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><em>FgdEditorData</em></a>) – a FgdEditorData object to be added
+<dd class="field-odd"><p><strong>fgd_editor_data</strong> (<a class="reference internal" href="fgd_editor_data.html#fgdtools.FgdEditorData" title="fgdtools.FgdEditorData"><em>FgdEditorData</em></a>) – The FgdEditorData object to be added
 to this Fgd instance.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.entity_by_name">
-<code class="sig-name descname">entity_by_name</code><span class="sig-paren">(</span><em class="sig-param">entity_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.entity_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.entity_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds an entity by its name</p>
+<code class="sig-name descname">entity_by_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entity_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.entity_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.entity_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds an entity by its name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>entity_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The entity name to look for.</p>
+<dd class="field-odd"><p><strong>entity_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The entity name to look for.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.EntityNotFound" title="fgdtools.EntityNotFound"><strong>EntityNotFound</strong></a> – whenever an entity could not be found</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#fgdtools.EntityNotFound" title="fgdtools.EntityNotFound"><strong>EntityNotFound</strong></a> – Whenever an entity could not be found.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>An entity with matching name</p>
+<dd class="field-odd"><p>An entity with matching name.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="fgd_entity.html#fgdtools.FgdEntity" title="fgdtools.FgdEntity">FgdEntity</a></p>
@@ -131,13 +136,13 @@ to this Fgd instance.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="fgdtools.Fgd.fgd_str">
-<code class="sig-name descname">fgd_str</code><span class="sig-paren">(</span><em class="sig-param">collapse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.fgd_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.fgd_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fgd_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collapse</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fgdtools/fgd.html#Fgd.fgd_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fgdtools.Fgd.fgd_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>A string representation of the Fgd formated as in the a .fgd file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>collapse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, the content of included fgds will be included
+<dd class="field-odd"><p><strong>collapse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If True, the content of included fgds will be included
 in the output and &#64;include statements will be removed.
 If False, Include statements will be in the output
 and the content of other Fgds will not be present.</p>
@@ -146,7 +151,7 @@ and the content of other Fgds will not be present.</p>
 <dd class="field-even"><p>Fgd formated string.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,7 +221,7 @@ and the content of other Fgds will not be present.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -233,7 +238,7 @@ and the content of other Fgds will not be present.</p>
       &copy;2019, Maxime Dupuis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

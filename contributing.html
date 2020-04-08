@@ -7,11 +7,11 @@
     <title>Contributing &#8212; Fgd-tools 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -37,7 +37,7 @@
 <p>Few things to know before diving in the code.</p>
 <div class="section" id="project-guidelines">
 <h2>Project Guidelines<a class="headerlink" href="#project-guidelines" title="Permalink to this headline">¶</a></h2>
-<p>Be pythonic and document your code, that’s all.</p>
+<p>Be pythonic, document and test your code. That’s all.</p>
 </div>
 <div class="section" id="dev-environment">
 <h2>Dev Environment<a class="headerlink" href="#dev-environment" title="Permalink to this headline">¶</a></h2>
@@ -45,7 +45,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --editable .
 </pre></div>
 </div>
-<p>This will allow you to import the library normally and mess with the code directly from the git folder.</p>
+<p>This will allow you to import the fgdtools in other projects normally while being able to mess with the code directly from the git folder. This way, you can make sure fgdtools will work as intended in the context of your project.</p>
 </div>
 <div class="section" id="documenting">
 <h2>Documenting<a class="headerlink" href="#documenting" title="Permalink to this headline">¶</a></h2>
@@ -56,6 +56,13 @@ pip install sphinx-autobuild
 </pre></div>
 </div>
 <p>Then you can run sphinx-autobuild.sh in the docs/ directory. The documentation pages will be served on <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> by default.</p>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>Tests can be ran from the root folder using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 tests/tests.py
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -90,6 +97,7 @@ pip install sphinx-autobuild
 <li class="toctree-l2"><a class="reference internal" href="#project-guidelines">Project Guidelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dev-environment">Dev Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documenting">Documenting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 </ul>
 </li>
 </ul>
@@ -111,7 +119,7 @@ pip install sphinx-autobuild
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -128,7 +136,7 @@ pip install sphinx-autobuild
       &copy;2019, Maxime Dupuis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
