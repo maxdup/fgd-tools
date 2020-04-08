@@ -98,5 +98,5 @@ FgdEntityPropertyOption
 .. image:: /_static/fgdentitypropertyoption.jpg
 
 FgdEntitySpawnflag
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 .. image:: /_static/fgdentityspawnflags.jpg

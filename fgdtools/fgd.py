@@ -733,7 +733,7 @@ class FgdEntityProperty(object):
             return None
 
     def choice_by_value(self, choice_value):
-        """Finds a property choice by its value/
+        """Finds a property choice by its value
 
         :param choice_value: The property choice value to look for.
         :type choice_value: int
