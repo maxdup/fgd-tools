@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
     name='fgdtools',
     packages=['fgdtools'],
-    version='1.0.0',
+    version='1.0.1',
     license='gpl-3.0',
     description='A library to parse .fgd files used in the source engine.',
     author='Maxime Dupuis',
     author_email='mdupuis@hotmail.ca',
     url='https://maxdup.github.io/fgd-tools/',
-    download_url='https://github.com/maxdup/fgd-tools/archive/v1.0.0.tar.gz',
+    download_url='https://github.com/maxdup/fgd-tools/archive/v1.0.1.tar.gz',
     keywords=['fgd', 'source', 'hammer'],
     install_requires=['pyparsing', 'future'],
     classifiers=[
