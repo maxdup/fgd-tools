@@ -134,9 +134,11 @@ class ParseTestCase(unittest.TestCase):
             for d in ent.definitions:
                 self.assertTrue(isinstance(d, dict))
                 self.assertTrue(isinstance(d['name'], str))
-                self.assertTrue(isinstance(d['args'], list))
-                for a in d['args']:
-                    self.assertTrue(isinstance(a, str))
+                if 'args' in d:
+                    self.assertTrue(isinstance(d['args'], list))
+                    for a in d['args']:
+                        self.assertTrue(isinstance(a, str))
+
             for p in ent.parents:
                 self.assertTrue(isinstance(p, FgdEntity))
             for p in ent.properties:
