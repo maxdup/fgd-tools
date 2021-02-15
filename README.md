@@ -3,6 +3,9 @@
 [![PyPI version fury.io](https://badge.fury.io/py/fgdtools.svg)](https://pypi.python.org/pypi/fgdtools/)
 [![alt text](https://github.com/maxdup/fgd-tools/blob/master/docs/source/coverage.svg "coverage")]()
 
+
+***FGD-TOOLS IS DEPRECATED: development is continuing at https://github.com/pySourceSDK/ValveFGD***
+
 # Fgd-tools
 
 Fgd-tools is a Python library for parsing .fgd files for the Source Engine level editor Hammer. It provides entity schemas and other level editor configuration information.

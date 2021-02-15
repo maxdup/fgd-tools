@@ -10,6 +10,10 @@ from future import standard_library
 from collections import OrderedDict
 standard_library.install_aliases()
 
+import warnings
+warnings.warn(
+    "fgd-tools is deprecated, development is continued at https://github.com/pySourceSDK/ValveFGD")
+
 
 class Fgd(object):
     """Contains all the data from a Fgd file such as

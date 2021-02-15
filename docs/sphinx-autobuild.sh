@@ -1,5 +1,4 @@
 sphinx-autobuild \
-    -z ../fgdtools \
     --ignore "*~" \
     --ignore "*/#*#*" \
     --ignore "*.#*" \
