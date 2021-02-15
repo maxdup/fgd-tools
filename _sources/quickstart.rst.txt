@@ -25,7 +25,7 @@ You can easily clone the code with git:
 
    git clone git://github.com/maxdup/fgd-tools.git
 
-and install it with:
+and install it from the repo directory with:
 
 .. code-block:: bash
 

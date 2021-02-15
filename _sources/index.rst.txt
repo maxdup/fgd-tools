@@ -12,6 +12,8 @@ Welcome to Fgd-tools's documentation!
 
 .. image:: coverage.svg
 
+**FGD-TOOLS IS DEPRECATED: the project is continuing development as** `ValveFGD <https://pysourcesdk.github.io/ValveFGD/>`_
+
 Fgd-tools is a Python library for parsing .fgd files for the Source Engine level editor Hammer. It provides entity schemas and other level editor configuration information.
 
 User Guides

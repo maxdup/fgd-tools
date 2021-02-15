@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>fgdtools.fgd &#8212; Fgd-tools 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -43,6 +43,10 @@
 <span class="kn">from</span> <span class="nn">future</span> <span class="kn">import</span> <span class="n">standard_library</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="n">standard_library</span><span class="o">.</span><span class="n">install_aliases</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+    <span class="s2">&quot;fgd-tools is deprecated, development is continued at https://github.com/pySourceSDK/ValveFGD&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Fgd"><a class="viewcode-back" href="../../api/fgd.html#fgdtools.Fgd">[docs]</a><span class="k">class</span> <span class="nc">Fgd</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -767,7 +771,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="FgdEntityProperty.choice_by_value"><a class="viewcode-back" href="../../api/fgd_entity_property.html#fgdtools.FgdEntityProperty.choice_by_value">[docs]</a>    <span class="k">def</span> <span class="nf">choice_by_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choice_value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds a property choice by its value/</span>
+        <span class="sd">&quot;&quot;&quot;Finds a property choice by its value</span>
 
 <span class="sd">        :param choice_value: The property choice value to look for.</span>
 <span class="sd">        :type choice_value: int</span>
@@ -1256,7 +1260,7 @@
       &copy;2019, Maxime Dupuis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
